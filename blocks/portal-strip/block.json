@@ -1,0 +1,15 @@
+{
+	"$schema": "https://schemas.wp.org/trunk/block.json",
+	"apiVersion": 3,
+	"name": "tempo/portal-strip",
+	"title": "Portal strip",
+	"category": "theme",
+	"description": "The orange strip below the header: \"Booking portal\" (or \"Teacher portal\") on the left, the signed-in name and Log out on the right.",
+	"textdomain": "tempo-studio-manager",
+	"supports": {
+		"html": false,
+		"multiple": false,
+		"reusable": false
+	},
+	"render": "file:./render.php"
+}

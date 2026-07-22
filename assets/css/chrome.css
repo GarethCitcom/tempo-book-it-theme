@@ -1,0 +1,174 @@
+/**
+ * Tempo Studio Manager theme — chrome styles (header bar, portal strip, footer).
+ *
+ * Values come from the approved prototype and the design-system tokens
+ * (printed by theme.json as --wp--preset--* / --wp--custom--*).
+ * Never style .dsb-* internals here — the plugin owns those.
+ */
+
+/* -------------------------------------------------------------------------
+ * Header bar — white, thick purple bottom border, 1140px shell
+ * ---------------------------------------------------------------------- */
+
+.tempo-header {
+	background: var(--wp--custom--header--background, var(--wp--preset--color--base, #ffffff));
+	border-bottom: var(--wp--custom--header--border-width, 5px) solid var(--wp--preset--color--brand-secondary, #330164);
+}
+
+.tempo-header__inner {
+	display: flex;
+	align-items: center;
+	justify-content: space-between;
+	gap: 16px;
+	max-width: 1140px;
+	margin: 0 auto;
+	padding: 12px 20px;
+}
+
+.tempo-header__logo {
+	display: block;
+	line-height: 0;
+	text-decoration: none;
+}
+
+.tempo-header__logo img {
+	display: block;
+	height: var(--wp--custom--header--logo-height-mobile, 34px);
+	width: auto;
+}
+
+@media (min-width: 1000px) {
+	.tempo-header__logo img {
+		height: var(--wp--custom--header--logo-height, 46px);
+	}
+}
+
+/* Right side: [basket pill] + nav links */
+
+.tempo-header-nav {
+	display: flex;
+	align-items: center;
+	gap: 14px;
+}
+
+.tempo-header-nav__link {
+	color: var(--wp--custom--header--foreground, var(--wp--preset--color--brand-secondary, #330164));
+	font-family: var(--wp--preset--font-family--body, Montserrat, sans-serif);
+	font-size: 11px;
+	font-weight: 600;
+	line-height: 1.4;
+	text-decoration: none;
+	white-space: nowrap;
+}
+
+.tempo-header-nav__link:hover,
+.tempo-header-nav__link:focus {
+	color: var(--wp--custom--header--foreground, var(--wp--preset--color--brand-secondary, #330164));
+	opacity: 0.7;
+}
+
+/* Editable Navigation block (parts/header.html) — matched to the pinned
+ * link above so both read as one nav, and kept contrast-aware for a
+ * custom header background the same way. */
+
+.tempo-header__nav-cluster .wp-block-navigation {
+	--wp--style--root--padding-top: 0;
+	min-height: 0;
+}
+
+.tempo-header__nav-cluster .wp-block-navigation .wp-block-navigation-item__content {
+	color: var(--wp--custom--header--foreground, var(--wp--preset--color--brand-secondary, #330164));
+	font-family: var(--wp--preset--font-family--body, Montserrat, sans-serif);
+	font-size: 11px;
+	font-weight: 600;
+	line-height: 1.4;
+}
+
+.tempo-header__nav-cluster .wp-block-navigation .wp-block-navigation-item__content:hover {
+	color: var(--wp--custom--header--foreground, var(--wp--preset--color--brand-secondary, #330164));
+	opacity: 0.7;
+}
+
+.tempo-header__nav-cluster .wp-block-navigation .wp-block-navigation__responsive-container-open svg {
+	fill: var(--wp--custom--header--foreground, var(--wp--preset--color--brand-secondary, #330164));
+}
+
+/* -------------------------------------------------------------------------
+ * Portal strip — orange band directly below the header, no gap
+ * ---------------------------------------------------------------------- */
+
+.tempo-portal-strip {
+	background: var(--wp--preset--color--brand-primary, #ff7300);
+	margin-block-start: 0;
+}
+
+.tempo-portal-strip__inner {
+	display: flex;
+	align-items: center;
+	justify-content: space-between;
+	gap: 12px;
+	max-width: 1140px;
+	margin: 0 auto;
+	padding: 6px 20px;
+	font-family: var(--wp--preset--font-family--body, Montserrat, sans-serif);
+	font-size: 11px;
+	line-height: 1.5;
+	color: var(--wp--preset--color--brand-primary-contrast, #ffffff);
+}
+
+.tempo-portal-strip__label {
+	font-weight: 600;
+	white-space: nowrap;
+}
+
+.tempo-portal-strip__user {
+	opacity: 0.9;
+	white-space: nowrap;
+}
+
+.tempo-portal-strip__sep {
+	margin: 0 2px;
+}
+
+.tempo-portal-strip__logout {
+	color: inherit;
+	text-decoration: none;
+}
+
+.tempo-portal-strip__logout:hover,
+.tempo-portal-strip__logout:focus {
+	color: inherit;
+	text-decoration: underline;
+}
+
+/* -------------------------------------------------------------------------
+ * Footer — minimal light strip
+ * ---------------------------------------------------------------------- */
+
+.tempo-footer {
+	background: var(--wp--preset--color--base, #ffffff);
+	border-top: 1px solid var(--wp--preset--color--border, #e5e7eb);
+	margin-block-start: var(--wp--preset--spacing--48, 48px);
+}
+
+.tempo-footer__inner {
+	max-width: 1140px;
+	margin: 0 auto;
+	padding: 16px 20px;
+	font-size: var(--wp--preset--font-size--small, 12px);
+	color: var(--wp--preset--color--muted, #6b7280);
+}
+
+.tempo-footer__inner p {
+	margin: 0;
+}
+
+/* -------------------------------------------------------------------------
+ * Layout glue
+ * ---------------------------------------------------------------------- */
+
+/* Chrome parts sit flush against each other and the content area. */
+header.wp-block-template-part,
+footer.wp-block-template-part {
+	margin-block-start: 0;
+}
