@@ -87,7 +87,7 @@
 	font-family: var(--wp--preset--font-family--body, Montserrat, sans-serif);
 	font-size: 11px;
 	line-height: 1.5;
-	color: var(--wp--preset--color--base, #ffffff);
+	color: var(--wp--preset--color--brand-primary-contrast, #ffffff);
 }
 
 .tempo-portal-strip__label {

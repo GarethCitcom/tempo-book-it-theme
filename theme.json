@@ -18,6 +18,8 @@
 				{ "slug": "brand-accent", "name": "Brand accent (magenta)", "color": "#C5299B" },
 				{ "slug": "brand-tint-primary", "name": "Brand tint (primary)", "color": "#FFF4EB" },
 				{ "slug": "brand-tint-secondary", "name": "Brand tint (secondary)", "color": "#F5EFFA" },
+				{ "slug": "brand-primary-contrast", "name": "Text on brand primary", "color": "#FFFFFF" },
+				{ "slug": "brand-secondary-contrast", "name": "Text on brand secondary", "color": "#FFFFFF" },
 				{ "slug": "base", "name": "Surface (white)", "color": "#FFFFFF" },
 				{ "slug": "page", "name": "Page background", "color": "#F1F3F5" },
 				{ "slug": "border", "name": "Border", "color": "#E5E7EB" },
@@ -186,7 +188,7 @@
 			"button": {
 				"color": {
 					"background": "var(--wp--preset--color--brand-primary)",
-					"text": "var(--wp--preset--color--base)"
+					"text": "var(--wp--preset--color--brand-primary-contrast)"
 				},
 				"border": { "radius": "var(--wp--custom--radius--medium)" },
 				"typography": {
@@ -197,7 +199,7 @@
 				":hover": {
 					"color": {
 						"background": "var(--wp--preset--color--brand-secondary)",
-						"text": "var(--wp--preset--color--base)"
+						"text": "var(--wp--preset--color--brand-secondary-contrast)"
 					}
 				}
 			}

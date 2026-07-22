@@ -62,17 +62,29 @@ add_action( 'enqueue_block_editor_assets', 'tempo_studio_manager_editor_assets' 
 /**
  * Tenant logo URL, falling back to the theme's bundled default logo.
  *
- * @param string $variant 'default' (colour, for white surfaces) or 'white'.
+ * @param string $variant 'default' (colour, for light surfaces) or 'white'
+ *                        (light/inverse variant, for dark or brand-coloured
+ *                        surfaces — e.g. a header background matching the
+ *                        tenant's brand colour).
  */
 function tempo_logo_url( $variant = 'default' ) {
+	if ( 'white' === $variant ) {
+		if ( function_exists( 'dsb_logo_url_inverse' ) ) {
+			$url = dsb_logo_url_inverse();
+			if ( '' !== $url ) {
+				return $url;
+			}
+		}
+		return get_theme_file_uri( 'assets/images/logo-white.svg' );
+	}
+
 	if ( function_exists( 'dsb_logo_url' ) ) {
 		$url = dsb_logo_url();
 		if ( '' !== $url ) {
 			return $url;
 		}
 	}
-	$file = 'white' === $variant ? 'logo-white.svg' : 'logo.svg';
-	return get_theme_file_uri( 'assets/images/' . $file );
+	return get_theme_file_uri( 'assets/images/logo.svg' );
 }
 
 /**
@@ -85,6 +97,70 @@ function tempo_vocab( $word ) {
 		return dsb_vocab( $word );
 	}
 	return $word;
+}
+
+/**
+ * Readable text colour (white or the design system's dark ink) for placing
+ * on top of a brand colour used as a background. Mirrors the plugin's
+ * dsb_brand_colour_contrast() so the theme's own defaults (the fallback
+ * when the plugin is absent) behave the same way: white is kept unless it
+ * would be genuinely hard to read, so today's orange/purple stay white.
+ *
+ * @param string $which 'primary' or 'secondary'.
+ */
+function tempo_brand_colour_contrast( $which = 'primary' ) {
+	if ( function_exists( 'dsb_brand_colour_contrast' ) ) {
+		return dsb_brand_colour_contrast( $which );
+	}
+
+	$hex = tempo_studio_manager_hex( tempo_studio_manager_brand_colour_fallback( $which ) );
+	return tempo_studio_manager_contrast_text( $hex );
+}
+
+/** Theme's own default brand colour, used only when the plugin is absent. */
+function tempo_studio_manager_brand_colour_fallback( $which ) {
+	return 'secondary' === $which ? '#330164' : '#FF7300';
+}
+
+/**
+ * WCAG relative luminance (0-1) of a hex colour — theme's local copy of the
+ * plugin's Assets::relative_luminance(), for standalone use.
+ */
+function tempo_studio_manager_relative_luminance( $hex ) {
+	$hex = ltrim( trim( (string) $hex ), '#' );
+	if ( 3 === strlen( $hex ) ) {
+		$hex = $hex[0] . $hex[0] . $hex[1] . $hex[1] . $hex[2] . $hex[2];
+	}
+	if ( 6 !== strlen( $hex ) || ! ctype_xdigit( $hex ) ) {
+		$hex = '000000';
+	}
+
+	$linear = array();
+	foreach ( str_split( $hex, 2 ) as $channel ) {
+		$c        = hexdec( $channel ) / 255;
+		$linear[] = $c <= 0.03928 ? $c / 12.92 : pow( ( $c + 0.055 ) / 1.055, 2.4 );
+	}
+
+	return 0.2126 * $linear[0] + 0.7152 * $linear[1] + 0.0722 * $linear[2];
+}
+
+/**
+ * Readable text colour for a background — theme's local copy of the
+ * plugin's Assets::contrast_text(), kept in sync deliberately. White is
+ * kept unless its own contrast ratio drops below 1.5:1 (near-white/pale
+ * backgrounds); see the plugin's Assets::contrast_text() for the full
+ * rationale — this is a safety net for pale colours, not a WCAG repaint
+ * of the theme's default orange/purple, which stay white-on-brand.
+ */
+function tempo_studio_manager_contrast_text( $hex ) {
+	$bg_luminance = tempo_studio_manager_relative_luminance( $hex );
+	$white_ratio  = ( max( $bg_luminance, 1.0 ) + 0.05 ) / ( min( $bg_luminance, 1.0 ) + 0.05 );
+	return $white_ratio >= 1.5 ? '#FFFFFF' : '#3F3F46';
+}
+
+/** Normalise a hex colour, falling back to black for anything unusable. */
+function tempo_studio_manager_hex( $hex ) {
+	return sanitize_hex_color( (string) $hex ) ?: '#000000';
 }
 
 /**
@@ -199,12 +275,14 @@ function tempo_studio_manager_brand_palette( $theme_json ) {
 	$primary   = sanitize_hex_color( dsb_brand_colour( 'primary' ) );
 	$secondary = sanitize_hex_color( dsb_brand_colour( 'secondary' ) );
 	if ( $primary ) {
-		$overrides['brand-primary']        = $primary;
-		$overrides['brand-tint-primary']   = tempo_studio_manager_tint( $primary, 0.09 );
+		$overrides['brand-primary']          = $primary;
+		$overrides['brand-tint-primary']     = tempo_studio_manager_tint( $primary, 0.09 );
+		$overrides['brand-primary-contrast'] = tempo_brand_colour_contrast( 'primary' );
 	}
 	if ( $secondary ) {
-		$overrides['brand-secondary']      = $secondary;
-		$overrides['brand-tint-secondary'] = tempo_studio_manager_tint( $secondary, 0.05 );
+		$overrides['brand-secondary']          = $secondary;
+		$overrides['brand-tint-secondary']     = tempo_studio_manager_tint( $secondary, 0.05 );
+		$overrides['brand-secondary-contrast'] = tempo_brand_colour_contrast( 'secondary' );
 	}
 	if ( ! $overrides ) {
 		return $theme_json;
@@ -298,9 +376,11 @@ function tempo_studio_manager_login_styles() {
 		$vars      = '';
 		if ( $primary ) {
 			$vars .= '--tempo-brand-primary:' . $primary . ';';
+			$vars .= '--tempo-brand-on-primary:' . tempo_brand_colour_contrast( 'primary' ) . ';';
 		}
 		if ( $secondary ) {
 			$vars .= '--tempo-brand-secondary:' . $secondary . ';';
+			$vars .= '--tempo-brand-on-secondary:' . tempo_brand_colour_contrast( 'secondary' ) . ';';
 		}
 		if ( $vars ) {
 			$inline .= ' body.login {' . $vars . '}';
