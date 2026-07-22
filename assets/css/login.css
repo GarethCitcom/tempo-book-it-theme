@@ -9,6 +9,12 @@
  * tenant logo (Tempo Studio Manager setting) wins when present.
  */
 
+*,
+*::before,
+*::after {
+	box-sizing: border-box;
+}
+
 @font-face {
 	font-family: "Montserrat";
 	font-style: normal;

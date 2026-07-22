@@ -7,6 +7,17 @@
  */
 
 /* -------------------------------------------------------------------------
+ * Box-sizing reset — every element (and pseudo-element) sizes with border
+ * and padding included, so width/height math stays predictable theme-wide.
+ * ---------------------------------------------------------------------- */
+
+*,
+*::before,
+*::after {
+	box-sizing: border-box;
+}
+
+/* -------------------------------------------------------------------------
  * Header bar — white, thick purple bottom border, 1140px shell
  * ---------------------------------------------------------------------- */
 
@@ -189,4 +200,30 @@ footer.wp-block-template-part {
 
 .wp-site-blocks > main {
 	flex: 1 0 auto;
+}
+
+
+/* -----------------------------------------------------------------------
+ * Overrides for WooCommerce blocks — the plugin owns the content, but we need to make it look right in the chrome. These are all about spacing, typography, and colour.
+ * ---------------------------------------------------------------------- */
+
+.woocommerce-account .wp-block-post-title, .woocommerce-account main .woocommerce, .woocommerce-cart .wp-block-post-title, .woocommerce-cart main .woocommerce, .woocommerce-checkout .wp-block-post-title, .woocommerce-checkout main .woocommerce
+{
+    max-width: 1140px;
+}
+
+/* -----------------------------------------------------------------------
+ * Overrides for the plugin's own blocks — the plugin owns the content, but we need to make it look right in the chrome. These are all about spacing, typography, and colour.
+ * ---------------------------------------------------------------------- */
+
+.dsb-shell {
+    padding-left: 20px;
+	padding-right: 20px;
+}
+
+@media (max-width: 1160px) {
+	.dsb-shell {
+		padding-left: 0;
+		padding-right: 0;
+	}
 }
