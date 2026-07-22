@@ -28,6 +28,49 @@ function tempo_studio_manager_setup() {
 }
 add_action( 'after_setup_theme', 'tempo_studio_manager_setup' );
 
+/**
+ * Seed a starter header navigation menu so the editable Navigation block
+ * (parts/header.html) isn't empty on a fresh install, and — more
+ * importantly — doesn't fall back to WordPress's own default of "every
+ * top-level page", which would duplicate the pinned Book classes/My
+ * classes link (those pages are top-level too). Never runs again once any
+ * navigation menu exists, so it can't clobber a school's own editing.
+ */
+function tempo_studio_manager_seed_navigation() {
+	if ( ! post_type_exists( 'wp_navigation' ) ) {
+		return;
+	}
+
+	$existing = new WP_Query(
+		array(
+			'post_type'      => 'wp_navigation',
+			'post_status'    => 'publish',
+			'posts_per_page' => 1,
+			'fields'         => 'ids',
+			'no_found_rows'  => true,
+		)
+	);
+	if ( $existing->have_posts() ) {
+		return;
+	}
+
+	wp_insert_post(
+		array(
+			'post_type'    => 'wp_navigation',
+			'post_status'  => 'publish',
+			'post_title'   => __( 'Header navigation', 'tempo-studio-manager' ),
+			'post_content' => '<!-- wp:navigation-link ' . wp_json_encode(
+				array(
+					'label' => __( 'My account', 'tempo-studio-manager' ),
+					'url'   => tempo_account_url(),
+					'kind'  => 'custom',
+				)
+			) . ' /-->',
+		)
+	);
+}
+add_action( 'after_switch_theme', 'tempo_studio_manager_seed_navigation' );
+
 function tempo_studio_manager_register_blocks() {
 	register_block_type( get_theme_file_path( 'blocks/logo' ) );
 	register_block_type( get_theme_file_path( 'blocks/header-nav' ) );
@@ -216,16 +259,27 @@ function tempo_studio_manager_flush_shortcode_pages() {
 }
 add_action( 'save_post_page', 'tempo_studio_manager_flush_shortcode_pages' );
 
-/** URL of the page hosting [dsb_booking], auto-detected. */
+/**
+ * URL of the page hosting [dsb_booking]. The plugin creates this page on
+ * activation and lets a school reassign it (Settings → General), which is
+ * now authoritative; the shortcode scan is only a fallback for an older
+ * plugin version that predates dsb_booking_page_url().
+ */
 function tempo_book_url() {
+	if ( function_exists( 'dsb_booking_page_url' ) ) {
+		return apply_filters( 'tempo_studio_manager_book_url', dsb_booking_page_url() );
+	}
 	return apply_filters(
 		'tempo_studio_manager_book_url',
 		tempo_studio_manager_shortcode_page_url( 'dsb_booking', home_url( '/book-classes/' ) )
 	);
 }
 
-/** URL of the page hosting [dsb_register] (teacher day view), auto-detected. */
+/** URL of the page hosting [dsb_register] (teacher day view). See tempo_book_url(). */
 function tempo_my_classes_url() {
+	if ( function_exists( 'dsb_register_page_url' ) ) {
+		return apply_filters( 'tempo_studio_manager_my_classes_url', dsb_register_page_url() );
+	}
 	return apply_filters(
 		'tempo_studio_manager_my_classes_url',
 		tempo_studio_manager_shortcode_page_url( 'dsb_register', home_url( '/my-classes/' ) )

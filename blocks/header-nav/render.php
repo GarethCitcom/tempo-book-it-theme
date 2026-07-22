@@ -1,9 +1,15 @@
 <?php
 /**
- * Portal header nav — right-hand side of the white header bar.
+ * Portal header nav — the one role-aware link that a static WordPress menu
+ * item can't express, because both its label and target change per viewer:
  *
- * Customer: [basket pill] Book classes · My account
- * Teacher:  My classes · My account
+ * Customer: [basket pill] Book classes
+ * Teacher:  My classes
+ *
+ * Everything else (My account, and whatever else a school wants — Contact,
+ * Prices, About…) belongs in the editable Navigation block right next to
+ * this one (parts/header.html) — a normal WordPress menu, freely editable
+ * in the Site Editor, not hardcoded here.
  *
  * The basket pill markup comes from the plugin (dsb_basket_pill()); its
  * dsb-booking.js keeps the count/countdown live via [data-dsb-basket] hooks.
@@ -36,7 +42,4 @@ $tempo_is_teacher = tempo_is_teacher();
 			?>
 		</a>
 	<?php endif; ?>
-	<a class="tempo-header-nav__link" href="<?php echo esc_url( tempo_account_url() ); ?>">
-		<?php esc_html_e( 'My account', 'tempo-studio-manager' ); ?>
-	</a>
 </nav>

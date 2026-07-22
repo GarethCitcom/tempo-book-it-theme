@@ -44,7 +44,7 @@
 	registerStub(
 		'tempo/header-nav',
 		__( 'Portal header nav', 'tempo-studio-manager' ),
-		__( 'rendered on the front end: basket pill + role-aware links', 'tempo-studio-manager' )
+		__( 'rendered on the front end: basket pill + the role-aware Book classes / My classes link', 'tempo-studio-manager' )
 	);
 	registerStub(
 		'tempo/portal-strip',

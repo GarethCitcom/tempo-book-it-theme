@@ -63,8 +63,34 @@
 
 .tempo-header-nav__link:hover,
 .tempo-header-nav__link:focus {
-	color: var(--wp--preset--color--brand-secondary, #330164);
+	color: var(--wp--custom--header--foreground, var(--wp--preset--color--brand-secondary, #330164));
 	opacity: 0.7;
+}
+
+/* Editable Navigation block (parts/header.html) — matched to the pinned
+ * link above so both read as one nav, and kept contrast-aware for a
+ * custom header background the same way. */
+
+.tempo-header__nav-cluster .wp-block-navigation {
+	--wp--style--root--padding-top: 0;
+	min-height: 0;
+}
+
+.tempo-header__nav-cluster .wp-block-navigation .wp-block-navigation-item__content {
+	color: var(--wp--custom--header--foreground, var(--wp--preset--color--brand-secondary, #330164));
+	font-family: var(--wp--preset--font-family--body, Montserrat, sans-serif);
+	font-size: 11px;
+	font-weight: 600;
+	line-height: 1.4;
+}
+
+.tempo-header__nav-cluster .wp-block-navigation .wp-block-navigation-item__content:hover {
+	color: var(--wp--custom--header--foreground, var(--wp--preset--color--brand-secondary, #330164));
+	opacity: 0.7;
+}
+
+.tempo-header__nav-cluster .wp-block-navigation .wp-block-navigation__responsive-container-open svg {
+	fill: var(--wp--custom--header--foreground, var(--wp--preset--color--brand-secondary, #330164));
 }
 
 /* -------------------------------------------------------------------------
