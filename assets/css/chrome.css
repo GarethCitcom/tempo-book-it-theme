@@ -11,7 +11,7 @@
  * ---------------------------------------------------------------------- */
 
 .tempo-header {
-	background: var(--wp--preset--color--base, #ffffff);
+	background: var(--wp--custom--header--background, var(--wp--preset--color--base, #ffffff));
 	border-bottom: var(--wp--custom--header--border-width, 5px) solid var(--wp--preset--color--brand-secondary, #330164);
 }
 
@@ -52,7 +52,7 @@
 }
 
 .tempo-header-nav__link {
-	color: var(--wp--preset--color--brand-secondary, #330164);
+	color: var(--wp--custom--header--foreground, var(--wp--preset--color--brand-secondary, #330164));
 	font-family: var(--wp--preset--font-family--body, Montserrat, sans-serif);
 	font-size: 11px;
 	font-weight: 600;

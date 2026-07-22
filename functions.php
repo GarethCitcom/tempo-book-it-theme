@@ -19,6 +19,12 @@ function tempo_studio_manager_setup() {
 	add_theme_support( 'woocommerce' );
 	add_theme_support( 'editor-styles' );
 	add_editor_style( 'assets/css/chrome.css' );
+
+	// Capability handshake, not a slug check: the plugin exposes its
+	// "Header background colour" setting only to a theme that declares
+	// this — never hardcodes our theme's name — so a fork or rebrand of
+	// this theme keeps the setting simply by keeping this line.
+	add_theme_support( 'dsb-header-background' );
 }
 add_action( 'after_setup_theme', 'tempo_studio_manager_setup' );
 
@@ -238,6 +244,50 @@ function tempo_account_url() {
 }
 
 /**
+ * Tenant's custom header background colour, or the theme's own default
+ * white — the approved chrome — when nothing has been set. Declared via
+ * Settings → Branding → "Header background colour" (Tempo Studio Manager
+ * plugin), unlocked by this theme's `add_theme_support( 'dsb-header-background' )`.
+ */
+function tempo_header_background_colour() {
+	if ( function_exists( 'dsb_header_background_colour' ) ) {
+		$hex = dsb_header_background_colour();
+		if ( '' !== $hex ) {
+			return $hex;
+		}
+	}
+	return '#FFFFFF';
+}
+
+/** Whether the header has been branded away from the default white. */
+function tempo_header_is_custom() {
+	return '#FFFFFF' !== strtoupper( tempo_header_background_colour() );
+}
+
+/**
+ * Readable colour for header nav-link text and the logo choice, given
+ * whatever the header background is. On the default white header this
+ * deliberately returns '' (not a computed value) so the CSS falls back
+ * to the brand-secondary purple used throughout the approved design —
+ * only a genuinely custom header background needs a contrast calculation.
+ */
+function tempo_header_foreground_colour() {
+	if ( ! tempo_header_is_custom() ) {
+		return '';
+	}
+	$hex = tempo_header_background_colour();
+	if ( function_exists( 'dsb_contrast_text' ) ) {
+		return dsb_contrast_text( $hex );
+	}
+	return tempo_studio_manager_contrast_text( $hex );
+}
+
+/** 'white' when the header background needs the light/inverse logo, else 'default'. */
+function tempo_header_logo_variant() {
+	return '#FFFFFF' === strtoupper( tempo_header_foreground_colour() ) ? 'white' : 'default';
+}
+
+/**
  * Mix a hex colour towards white — mirrors the plugin's tinted "brand subtle"
  * backgrounds (colour-mix at a small percentage over white).
  *
@@ -309,6 +359,35 @@ function tempo_studio_manager_brand_palette( $theme_json ) {
 	);
 }
 add_filter( 'wp_theme_json_data_theme', 'tempo_studio_manager_brand_palette' );
+
+/**
+ * Feed a custom theme-header background into theme.json when the tenant
+ * has set one (Settings → Branding → "Header background colour"). Left
+ * untouched on the default white header — chrome.css's own CSS-variable
+ * fallback chain already gives the approved white-header look, and
+ * `settings.custom.header` is a keyed object so a partial override here
+ * doesn't disturb the untouched borderWidth/logoHeight siblings.
+ */
+function tempo_studio_manager_header_background( $theme_json ) {
+	if ( ! tempo_header_is_custom() ) {
+		return $theme_json;
+	}
+
+	return $theme_json->update_with(
+		array(
+			'version'  => 3,
+			'settings' => array(
+				'custom' => array(
+					'header' => array(
+						'background' => tempo_header_background_colour(),
+						'foreground' => tempo_header_foreground_colour(),
+					),
+				),
+			),
+		)
+	);
+}
+add_filter( 'wp_theme_json_data_theme', 'tempo_studio_manager_header_background' );
 
 /* -------------------------------------------------------------------------
  * Members-only gate — the whole front end requires login

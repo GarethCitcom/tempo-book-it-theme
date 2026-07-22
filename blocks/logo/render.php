@@ -9,5 +9,5 @@
 defined( 'ABSPATH' ) || exit;
 ?>
 <a class="tempo-header__logo" href="<?php echo esc_url( home_url( '/' ) ); ?>">
-	<img src="<?php echo esc_url( tempo_logo_url() ); ?>" alt="<?php echo esc_attr( get_bloginfo( 'name' ) ); ?>" />
+	<img src="<?php echo esc_url( tempo_logo_url( tempo_header_logo_variant() ) ); ?>" alt="<?php echo esc_attr( get_bloginfo( 'name' ) ); ?>" />
 </a>
