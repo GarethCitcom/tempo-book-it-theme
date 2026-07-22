@@ -33,6 +33,15 @@ chrome, or `teacher` / `password` for the teacher chrome.
 - **PHP bridge** (all `function_exists`-guarded, theme works standalone):
   `dsb_basket_pill()`, `dsb_logo_url()`, `dsb_vocab()` — wrapped by
   `tempo_logo_url()`, `tempo_vocab()` etc. in `functions.php`.
+- **Brand colours**: the plugin's branding settings (`dsb_brand_colour()`)
+  are fed into the theme.json palette at runtime
+  (`wp_theme_json_data_theme`), with light tints computed from them — so
+  the header border, portal strip, headings, links, buttons and the login
+  screen all follow the plugin's two brand colours automatically. The
+  theme.json values are only the fallback when the plugin is absent.
+- **Nav URLs**: "Book classes" / "My classes" links auto-detect the pages
+  hosting `[dsb_booking]` / `[dsb_register]` (cached daily, flushed on
+  page save); the filters below still override.
 - **JS**: the plugin's `dsb-booking.js` installs `window.dsbBooking` and
   auto-fills `[data-dsb-basket]` / `[data-dsb-basket-count]` /
   `[data-dsb-basket-clock]` — the theme ships **no basket JS of its own**.
@@ -53,8 +62,8 @@ public.
 | Filter | Default | Purpose |
 | --- | --- | --- |
 | `tempo_studio_manager_teacher_roles` | `['teacher']` | Roles that get the teacher chrome |
-| `tempo_studio_manager_book_url` | `/book-classes/` | Page hosting `[dsb_booking]` |
-| `tempo_studio_manager_my_classes_url` | `/my-classes/` | Page hosting `[dsb_register]` |
+| `tempo_studio_manager_book_url` | auto-detected, else `/book-classes/` | Page hosting `[dsb_booking]` |
+| `tempo_studio_manager_my_classes_url` | auto-detected, else `/my-classes/` | Page hosting `[dsb_register]` |
 | `tempo_studio_manager_public_paths` | `[]` | Path prefixes exempt from the login gate |
 
 ## Structure

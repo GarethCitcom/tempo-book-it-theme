@@ -103,14 +103,51 @@ function tempo_is_teacher( $user = null ) {
 	return (bool) array_intersect( $teacher_roles, (array) $user->roles );
 }
 
-/** URL of the page hosting [dsb_booking]. */
-function tempo_book_url() {
-	return apply_filters( 'tempo_studio_manager_book_url', home_url( '/book-classes/' ) );
+/**
+ * Permalink of the first published page containing a shortcode, cached for a
+ * day. Falls back when the plugin (and so the shortcode) isn't registered.
+ *
+ * @param string $shortcode Shortcode tag, e.g. 'dsb_booking'.
+ * @param string $fallback  URL to use when no page is found.
+ */
+function tempo_studio_manager_shortcode_page_url( $shortcode, $fallback ) {
+	$cache = get_transient( 'tempo_studio_manager_shortcode_pages' );
+	if ( ! is_array( $cache ) ) {
+		$cache = array();
+	}
+	if ( ! array_key_exists( $shortcode, $cache ) ) {
+		$cache[ $shortcode ] = 0;
+		foreach ( get_pages( array( 'number' => 200 ) ) as $page ) {
+			if ( has_shortcode( (string) $page->post_content, $shortcode ) ) {
+				$cache[ $shortcode ] = $page->ID;
+				break;
+			}
+		}
+		set_transient( 'tempo_studio_manager_shortcode_pages', $cache, DAY_IN_SECONDS );
+	}
+	$url = $cache[ $shortcode ] ? get_permalink( $cache[ $shortcode ] ) : '';
+	return $url ? $url : $fallback;
 }
 
-/** URL of the page hosting [dsb_register] (teacher day view). */
+function tempo_studio_manager_flush_shortcode_pages() {
+	delete_transient( 'tempo_studio_manager_shortcode_pages' );
+}
+add_action( 'save_post_page', 'tempo_studio_manager_flush_shortcode_pages' );
+
+/** URL of the page hosting [dsb_booking], auto-detected. */
+function tempo_book_url() {
+	return apply_filters(
+		'tempo_studio_manager_book_url',
+		tempo_studio_manager_shortcode_page_url( 'dsb_booking', home_url( '/book-classes/' ) )
+	);
+}
+
+/** URL of the page hosting [dsb_register] (teacher day view), auto-detected. */
 function tempo_my_classes_url() {
-	return apply_filters( 'tempo_studio_manager_my_classes_url', home_url( '/my-classes/' ) );
+	return apply_filters(
+		'tempo_studio_manager_my_classes_url',
+		tempo_studio_manager_shortcode_page_url( 'dsb_register', home_url( '/my-classes/' ) )
+	);
 }
 
 /** WooCommerce My Account URL, with a sane fallback when Woo is absent. */
@@ -123,6 +160,77 @@ function tempo_account_url() {
 	}
 	return home_url( '/my-account/' );
 }
+
+/**
+ * Mix a hex colour towards white — mirrors the plugin's tinted "brand subtle"
+ * backgrounds (colour-mix at a small percentage over white).
+ *
+ * @param string $hex    '#rrggbb' (or '#rgb') colour.
+ * @param float  $amount Portion of the colour to keep (0.09 = 9% colour, 91% white).
+ */
+function tempo_studio_manager_tint( $hex, $amount ) {
+	$hex = ltrim( (string) $hex, '#' );
+	if ( 3 === strlen( $hex ) ) {
+		$hex = $hex[0] . $hex[0] . $hex[1] . $hex[1] . $hex[2] . $hex[2];
+	}
+	if ( 6 !== strlen( $hex ) || ! ctype_xdigit( $hex ) ) {
+		return '';
+	}
+	$out = '#';
+	foreach ( str_split( $hex, 2 ) as $channel ) {
+		$mixed = (int) round( hexdec( $channel ) * $amount + 255 * ( 1 - $amount ) );
+		$out  .= str_pad( dechex( $mixed ), 2, '0', STR_PAD_LEFT );
+	}
+	return $out;
+}
+
+/**
+ * Feed the tenant brand colours from Tempo Studio Manager settings into the
+ * theme.json palette, so the chrome, buttons, headings and links follow the
+ * plugin's branding without any theme edits. The theme.json values remain
+ * the defaults when the plugin is absent or a colour is unset.
+ */
+function tempo_studio_manager_brand_palette( $theme_json ) {
+	if ( ! function_exists( 'dsb_brand_colour' ) ) {
+		return $theme_json;
+	}
+
+	$overrides = array();
+	$primary   = sanitize_hex_color( dsb_brand_colour( 'primary' ) );
+	$secondary = sanitize_hex_color( dsb_brand_colour( 'secondary' ) );
+	if ( $primary ) {
+		$overrides['brand-primary']        = $primary;
+		$overrides['brand-tint-primary']   = tempo_studio_manager_tint( $primary, 0.09 );
+	}
+	if ( $secondary ) {
+		$overrides['brand-secondary']      = $secondary;
+		$overrides['brand-tint-secondary'] = tempo_studio_manager_tint( $secondary, 0.05 );
+	}
+	if ( ! $overrides ) {
+		return $theme_json;
+	}
+
+	// get_data() may key presets by origin ('theme' => [...]); unwrap to the flat authored shape.
+	$data    = $theme_json->get_data();
+	$palette = isset( $data['settings']['color']['palette'] ) ? $data['settings']['color']['palette'] : array();
+	if ( isset( $palette['theme'] ) && is_array( $palette['theme'] ) ) {
+		$palette = $palette['theme'];
+	}
+	foreach ( $palette as &$colour ) {
+		if ( isset( $colour['slug'], $overrides[ $colour['slug'] ] ) && $overrides[ $colour['slug'] ] ) {
+			$colour['color'] = $overrides[ $colour['slug'] ];
+		}
+	}
+	unset( $colour );
+
+	return $theme_json->update_with(
+		array(
+			'version'  => 3,
+			'settings' => array( 'color' => array( 'palette' => $palette ) ),
+		)
+	);
+}
+add_filter( 'wp_theme_json_data_theme', 'tempo_studio_manager_brand_palette' );
 
 /* -------------------------------------------------------------------------
  * Members-only gate — the whole front end requires login
@@ -180,11 +288,26 @@ function tempo_studio_manager_login_styles() {
 		array(),
 		$version
 	);
-	$logo = tempo_logo_url();
-	wp_add_inline_style(
-		'tempo-studio-manager-login',
-		'#login h1 a { background-image: url(' . esc_url( $logo ) . '); }'
-	);
+	$logo   = tempo_logo_url();
+	$inline = '#login h1 a { background-image: url(' . esc_url( $logo ) . '); }';
+
+	// Tenant brand colours from plugin settings (login.css falls back to the defaults).
+	if ( function_exists( 'dsb_brand_colour' ) ) {
+		$primary   = sanitize_hex_color( dsb_brand_colour( 'primary' ) );
+		$secondary = sanitize_hex_color( dsb_brand_colour( 'secondary' ) );
+		$vars      = '';
+		if ( $primary ) {
+			$vars .= '--tempo-brand-primary:' . $primary . ';';
+		}
+		if ( $secondary ) {
+			$vars .= '--tempo-brand-secondary:' . $secondary . ';';
+		}
+		if ( $vars ) {
+			$inline .= ' body.login {' . $vars . '}';
+		}
+	}
+
+	wp_add_inline_style( 'tempo-studio-manager-login', $inline );
 }
 add_action( 'login_enqueue_scripts', 'tempo_studio_manager_login_styles' );
 
