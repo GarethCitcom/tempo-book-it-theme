@@ -1,8 +1,8 @@
 {
 	"$schema": "https://playground.wordpress.net/blueprint-schema.json",
 	"meta": {
-		"title": "SJP Theatre Arts theme preview",
-		"author": "sjp-theatre-arts",
+		"title": "Tempo Studio Manager theme preview",
+		"author": "tempo-studio-manager",
 		"description": "Previews the theme chrome (header, portal strip, footer, login) with WooCommerce but without the Tempo Studio Manager plugin. A demo mu-plugin stubs the plugin's basket pill and window.dsbBooking API."
 	},
 	"landingPage": "/",
@@ -17,13 +17,13 @@
 		},
 		{
 			"step": "activateTheme",
-			"themeFolderName": "sjp-theatre-arts",
-			"progress": { "caption": "Activating SJP Theatre Arts" }
+			"themeFolderName": "tempo-studio-manager",
+			"progress": { "caption": "Activating Tempo Studio Manager" }
 		},
 		{
 			"step": "writeFile",
-			"path": "/wordpress/wp-content/mu-plugins/sjp-dsb-demo-stub.php",
-			"data": "<?php\n/**\n * Plugin Name: SJP demo stub (Playground only)\n * Description: Fakes the Tempo Studio Manager integration surface — dsb_basket_pill() and window.dsbBooking — so the theme chrome can be previewed without the plugin. Never use in production.\n */\n\nif ( ! function_exists( 'dsb_basket_pill' ) ) {\n\tfunction dsb_basket_pill() {\n\t\tif ( ! is_user_logged_in() ) {\n\t\t\treturn;\n\t\t}\n\t\techo '<a class=\"dsb-basket-pill\" data-dsb-basket href=\"#\" hidden><span data-dsb-basket-count>0</span> held · <span data-dsb-basket-clock></span></a>';\n\t}\n}\n\nadd_action( 'wp_head', function () {\n\techo '<style>.dsb-basket-pill{background:#FF7300;color:#fff;border-radius:999px;padding:7px 12px;font-size:11px;font-weight:600;line-height:1;text-decoration:none;white-space:nowrap;font-variant-numeric:tabular-nums}.dsb-basket-pill:hover{opacity:.9}</style>';\n} );\n\nadd_action( 'wp_footer', function () {\n\tif ( ! is_user_logged_in() ) {\n\t\treturn;\n\t}\n\t?>\n\t<script>\n\t( function () {\n\t\tvar expires = Date.now() + 10 * 60 * 1000;\n\t\tvar state = { basketCount: 2, soonestExpires: expires, student: 'Demo Student' };\n\t\tvar listeners = [];\n\t\twindow.dsbBooking = {\n\t\t\tgetState: function () { return state; },\n\t\t\trefresh: function () {},\n\t\t\ton: function ( cb ) { listeners.push( cb ); }\n\t\t};\n\t\tvar pill = document.querySelector( '[data-dsb-basket]' );\n\t\tif ( ! pill ) { return; }\n\t\tvar count = pill.querySelector( '[data-dsb-basket-count]' );\n\t\tvar clock = pill.querySelector( '[data-dsb-basket-clock]' );\n\t\tpill.hidden = false;\n\t\tif ( count ) { count.textContent = state.basketCount; }\n\t\tfunction tick() {\n\t\t\tvar left = Math.max( 0, Math.round( ( expires - Date.now() ) / 1000 ) );\n\t\t\tif ( clock ) { clock.textContent = Math.floor( left / 60 ) + ':' + String( left % 60 ).padStart( 2, '0' ); }\n\t\t\tif ( left <= 0 ) { pill.hidden = true; clearInterval( timer ); }\n\t\t}\n\t\tvar timer = setInterval( tick, 1000 );\n\t\ttick();\n\t} )();\n\t</script>\n\t<?php\n} );\n",
+			"path": "/wordpress/wp-content/mu-plugins/tempo-dsb-demo-stub.php",
+			"data": "<?php\n/**\n * Plugin Name: Tempo demo stub (Playground only)\n * Description: Fakes the Tempo Studio Manager integration surface — dsb_basket_pill() and window.dsbBooking — so the theme chrome can be previewed without the plugin. Never use in production.\n */\n\nif ( ! function_exists( 'dsb_basket_pill' ) ) {\n\tfunction dsb_basket_pill() {\n\t\tif ( ! is_user_logged_in() ) {\n\t\t\treturn;\n\t\t}\n\t\techo '<a class=\"dsb-basket-pill\" data-dsb-basket href=\"#\" hidden><span data-dsb-basket-count>0</span> held · <span data-dsb-basket-clock></span></a>';\n\t}\n}\n\nadd_action( 'wp_head', function () {\n\techo '<style>.dsb-basket-pill{background:#FF7300;color:#fff;border-radius:999px;padding:7px 12px;font-size:11px;font-weight:600;line-height:1;text-decoration:none;white-space:nowrap;font-variant-numeric:tabular-nums}.dsb-basket-pill:hover{opacity:.9}</style>';\n} );\n\nadd_action( 'wp_footer', function () {\n\tif ( ! is_user_logged_in() ) {\n\t\treturn;\n\t}\n\t?>\n\t<script>\n\t( function () {\n\t\tvar expires = Date.now() + 10 * 60 * 1000;\n\t\tvar state = { basketCount: 2, soonestExpires: expires, student: 'Demo Student' };\n\t\tvar listeners = [];\n\t\twindow.dsbBooking = {\n\t\t\tgetState: function () { return state; },\n\t\t\trefresh: function () {},\n\t\t\ton: function ( cb ) { listeners.push( cb ); }\n\t\t};\n\t\tvar pill = document.querySelector( '[data-dsb-basket]' );\n\t\tif ( ! pill ) { return; }\n\t\tvar count = pill.querySelector( '[data-dsb-basket-count]' );\n\t\tvar clock = pill.querySelector( '[data-dsb-basket-clock]' );\n\t\tpill.hidden = false;\n\t\tif ( count ) { count.textContent = state.basketCount; }\n\t\tfunction tick() {\n\t\t\tvar left = Math.max( 0, Math.round( ( expires - Date.now() ) / 1000 ) );\n\t\t\tif ( clock ) { clock.textContent = Math.floor( left / 60 ) + ':' + String( left % 60 ).padStart( 2, '0' ); }\n\t\t\tif ( left <= 0 ) { pill.hidden = true; clearInterval( timer ); }\n\t\t}\n\t\tvar timer = setInterval( tick, 1000 );\n\t\ttick();\n\t} )();\n\t</script>\n\t<?php\n} );\n",
 			"progress": { "caption": "Adding demo integration stub" }
 		},
 		{

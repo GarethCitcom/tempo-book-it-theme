@@ -37,18 +37,18 @@
 	}
 
 	registerStub(
-		'sjp/logo',
-		__( 'Portal logo', 'sjp-theatre-arts' ),
-		__( 'rendered on the front end: tenant logo linked home', 'sjp-theatre-arts' )
+		'tempo/logo',
+		__( 'Portal logo', 'tempo-studio-manager' ),
+		__( 'rendered on the front end: tenant logo linked home', 'tempo-studio-manager' )
 	);
 	registerStub(
-		'sjp/header-nav',
-		__( 'Portal header nav', 'sjp-theatre-arts' ),
-		__( 'rendered on the front end: basket pill + role-aware links', 'sjp-theatre-arts' )
+		'tempo/header-nav',
+		__( 'Portal header nav', 'tempo-studio-manager' ),
+		__( 'rendered on the front end: basket pill + role-aware links', 'tempo-studio-manager' )
 	);
 	registerStub(
-		'sjp/portal-strip',
-		__( 'Portal strip', 'sjp-theatre-arts' ),
-		__( 'rendered on the front end: portal label, signed-in name, log out', 'sjp-theatre-arts' )
+		'tempo/portal-strip',
+		__( 'Portal strip', 'tempo-studio-manager' ),
+		__( 'rendered on the front end: portal label, signed-in name, log out', 'tempo-studio-manager' )
 	);
 } )( window.wp.blocks, window.wp.element, window.wp.i18n );

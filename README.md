@@ -1,4 +1,4 @@
-# SJP Theatre Arts — Tempo Studio Manager companion theme
+# Tempo Studio Manager — companion block theme
 
 WordPress block theme providing the site chrome around the
 [Tempo Studio Manager](https://github.com/GarethCitcom/dance-school-booking-system)
@@ -18,7 +18,7 @@ background and login. It contains **no booking UI**.
 ```bash
 npx @wp-playground/cli server \
   --blueprint=blueprint.json \
-  --mount=.:/wordpress/wp-content/themes/sjp-theatre-arts
+  --mount=.:/wordpress/wp-content/themes/tempo-studio-manager
 ```
 
 The blueprint installs WooCommerce, activates the theme, creates demo pages
@@ -32,7 +32,7 @@ chrome, or `teacher` / `password` for the teacher chrome.
 
 - **PHP bridge** (all `function_exists`-guarded, theme works standalone):
   `dsb_basket_pill()`, `dsb_logo_url()`, `dsb_vocab()` — wrapped by
-  `sjp_logo_url()`, `sjp_vocab()` etc. in `functions.php`.
+  `tempo_logo_url()`, `tempo_vocab()` etc. in `functions.php`.
 - **JS**: the plugin's `dsb-booking.js` installs `window.dsbBooking` and
   auto-fills `[data-dsb-basket]` / `[data-dsb-basket-count]` /
   `[data-dsb-basket-clock]` — the theme ships **no basket JS of its own**.
@@ -52,19 +52,19 @@ public.
 
 | Filter | Default | Purpose |
 | --- | --- | --- |
-| `sjp_theatre_arts_teacher_roles` | `['teacher']` | Roles that get the teacher chrome |
-| `sjp_theatre_arts_book_url` | `/book-classes/` | Page hosting `[dsb_booking]` |
-| `sjp_theatre_arts_my_classes_url` | `/my-classes/` | Page hosting `[dsb_register]` |
-| `sjp_theatre_arts_public_paths` | `[]` | Path prefixes exempt from the login gate |
+| `tempo_studio_manager_teacher_roles` | `['teacher']` | Roles that get the teacher chrome |
+| `tempo_studio_manager_book_url` | `/book-classes/` | Page hosting `[dsb_booking]` |
+| `tempo_studio_manager_my_classes_url` | `/my-classes/` | Page hosting `[dsb_register]` |
+| `tempo_studio_manager_public_paths` | `[]` | Path prefixes exempt from the login gate |
 
 ## Structure
 
-- `theme.json` — SJP design-system tokens (colours, type scale, spacing,
+- `theme.json` — design-system tokens (colours, type scale, spacing,
   radii, shadows) mapped verbatim from `design/_ds/…/fig-tokens.css`;
   `wideSize: 1140px` (the plugin's desktop layouts assume it).
 - `blocks/` — three tiny PHP-rendered blocks (no build step):
-  `sjp/logo`, `sjp/header-nav` (role-aware links + plugin pill),
-  `sjp/portal-strip`. `assets/js/editor-stub.js` gives them Site Editor
+  `tempo/logo`, `tempo/header-nav` (role-aware links + plugin pill),
+  `tempo/portal-strip`. `assets/js/editor-stub.js` gives them Site Editor
   placeholders.
 - `parts/`, `templates/`, `patterns/` — chrome parts and page templates.
 - `assets/fonts/` — Poppins 600/700 + Montserrat variable, bundled locally

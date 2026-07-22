@@ -1,11 +1,11 @@
 {
 	"$schema": "https://schemas.wp.org/trunk/block.json",
 	"apiVersion": 3,
-	"name": "sjp/header-nav",
+	"name": "tempo/header-nav",
 	"title": "Portal header nav",
 	"category": "theme",
 	"description": "Role-aware header navigation: basket pill (customers, plugin-rendered) plus Book classes / My classes and My account links.",
-	"textdomain": "sjp-theatre-arts",
+	"textdomain": "tempo-studio-manager",
 	"supports": {
 		"html": false,
 		"multiple": false,
