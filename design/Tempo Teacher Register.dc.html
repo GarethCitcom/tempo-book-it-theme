@@ -1,0 +1,784 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+  <link rel="stylesheet" href="_ds/sjp-theatre-arts-design-system-175e544c-62db-4215-acdb-7b1da4bfaa75/tokens/fonts.css">
+  <link rel="stylesheet" href="_ds/sjp-theatre-arts-design-system-175e544c-62db-4215-acdb-7b1da4bfaa75/tokens/shadows.css">
+  <link rel="stylesheet" href="_ds/sjp-theatre-arts-design-system-175e544c-62db-4215-acdb-7b1da4bfaa75/components/fig-tokens.css">
+  <link rel="stylesheet" href="_ds/sjp-theatre-arts-design-system-175e544c-62db-4215-acdb-7b1da4bfaa75/components/fig-typography.css">
+  <link rel="stylesheet" href="_ds/sjp-theatre-arts-design-system-175e544c-62db-4215-acdb-7b1da4bfaa75/tokens/typography.css">
+  <link rel="stylesheet" href="_ds/sjp-theatre-arts-design-system-175e544c-62db-4215-acdb-7b1da4bfaa75/styles.css">
+  <script src="_ds/sjp-theatre-arts-design-system-175e544c-62db-4215-acdb-7b1da4bfaa75/_ds_bundle.js"></script>
+  <style>
+    body { margin: 0; background: var(--color-bg-subtle); }
+    a { color: var(--color-brand-primary); }
+    a:hover { color: var(--color-brand-secondary); }
+    textarea:focus, input:focus { outline: 2px solid var(--color-brand-focus); outline-offset: 1px; }
+    input::placeholder { letter-spacing: normal; font-family: Montserrat, sans-serif; font-size: 13px; color: var(--color-text-muted); }
+  </style>
+</helmet>
+<div style="min-height: 100vh; background: var(--color-bg-subtle); font-family: Montserrat, sans-serif; color: var(--color-text-primary); display: flex; flex-direction: column;">
+
+  <!-- ══ THEME CHROME (reference — lives in the WordPress theme) ══ -->
+  <sc-if value="{{ showChrome }}" hint-placeholder-val="{{ true }}">
+    <div data-screen-label="Theme chrome" style="background: var(--color-bg-surface); border-bottom: 5px solid var(--color-brand-secondary); flex-shrink: 0;">
+      <div style="max-width: {{ chromeMax }}; margin: 0 auto; padding: 12px 20px; display: flex; align-items: center; justify-content: space-between; gap: 16px;">
+        <img src="assets/logo.svg" alt="SJP Theatre Arts" style="height: {{ logoH }}; cursor: pointer;" onClick="{{ goDay }}">
+        <div style="display: flex; align-items: center; gap: 14px;">
+          <span onClick="{{ goDay }}" style="font-size: 11px; font-weight: 600; color: var(--color-brand-secondary); cursor: pointer; white-space: nowrap;" style-hover="opacity: 0.7;">{{ navClassesLabel }}</span>
+          <span onClick="{{ goAccount }}" style="font-size: 11px; font-weight: 600; color: var(--color-brand-secondary); cursor: pointer; white-space: nowrap;" style-hover="opacity: 0.7;">My account</span>
+        </div>
+      </div>
+    </div>
+    <div style="background: var(--color-brand-primary); flex-shrink: 0;">
+      <div style="max-width: {{ chromeMax }}; margin: 0 auto; padding: 6px 20px; display: flex; align-items: center; justify-content: space-between; gap: 12px;">
+        <span style="font-size: 11px; font-weight: 600; color: var(--color-text-inverse);">{{ portalLabel }}</span>
+        <span style="font-size: 11px; color: var(--color-text-inverse); opacity: 0.9;">{{ teacherName }} · Log out</span>
+      </div>
+    </div>
+  </sc-if>
+
+  <!-- ══ PLUGIN SURFACE ══ -->
+  <div style="max-width: {{ shellMax }}; margin: 0 auto; width: 100%; box-sizing: border-box; padding: {{ shellPad }}; flex: 1; display: grid; grid-template-columns: {{ shellCols }}; gap: 32px; align-items: start;">
+    <div style="min-width: 0; max-width: {{ mainMax }}; width: 100%; margin: 0 auto; box-sizing: border-box;">
+
+    <!-- DAY VIEW -->
+    <sc-if value="{{ isDay }}" hint-placeholder-val="{{ true }}">
+      <div data-screen-label="Teacher day view" style="display: flex; flex-direction: column; gap: 14px;">
+        <span style="font-size: 11px; font-weight: 600; line-height: 16px; letter-spacing: 0.06em; color: var(--color-text-muted);">{{ eyebrowDay }}</span>
+        <h1 style="margin: 0; font-family: Poppins, sans-serif; font-weight: 700; font-size: 25px; line-height: 32px; color: var(--color-text-brand);">{{ greeting }}</h1>
+
+        <sc-if value="{{ dvToday }}" hint-placeholder-val="{{ false }}">
+          <span style="font-weight: 600; font-size: 13px; line-height: 18px; color: var(--color-brand-secondary);">{{ dayHeading }}</span>
+        </sc-if>
+        <sc-if value="{{ dvNav }}" hint-placeholder-val="{{ true }}">
+          <div style="display: flex; align-items: center; gap: 12px;">
+            <span onClick="{{ prevDay }}" style="cursor: pointer; width: 44px; height: 44px; border-radius: 999px; background: var(--color-bg-surface); box-shadow: inset 0 0 0 1px var(--color-border-default); display: flex; align-items: center; justify-content: center; font-weight: 700; color: var(--color-brand-secondary); flex-shrink: 0; user-select: none;" style-hover="box-shadow: inset 0 0 0 2px var(--color-brand-focus);">‹</span>
+            <span style="flex: 1; display: flex; flex-direction: column; gap: 1px; align-items: center;">
+              <span style="font-family: Poppins, sans-serif; font-weight: 600; font-size: 15px; line-height: 20px; color: var(--color-brand-secondary);">{{ dayHeading }}</span>
+              <span style="font-size: 11px; line-height: 16px; color: var(--color-text-muted);">{{ daySub }}</span>
+            </span>
+            <span onClick="{{ nextDay }}" style="cursor: pointer; width: 44px; height: 44px; border-radius: 999px; background: var(--color-bg-surface); box-shadow: inset 0 0 0 1px var(--color-border-default); display: flex; align-items: center; justify-content: center; font-weight: 700; color: var(--color-brand-secondary); flex-shrink: 0; user-select: none;" style-hover="box-shadow: inset 0 0 0 2px var(--color-brand-focus);">›</span>
+          </div>
+        </sc-if>
+        <sc-if value="{{ dvWeek }}" hint-placeholder-val="{{ false }}">
+          <div style="display: flex; gap: 8px; flex-wrap: wrap;">
+            <sc-for list="{{ weekChips }}" as="w" hint-placeholder-count="7">
+              <span onClick="{{ w.set }}" style="cursor: pointer; min-height: 44px; box-sizing: border-box; border-radius: 999px; padding: 12px 14px; font-size: 11px; font-weight: 600; display: inline-flex; align-items: center; background: {{ w.bg }}; color: {{ w.fg }}; box-shadow: {{ w.ring }};">{{ w.label }}</span>
+            </sc-for>
+          </div>
+        </sc-if>
+
+        <sc-if value="{{ pickClosedM }}" hint-placeholder-val="{{ false }}">
+          <span onClick="{{ openPick }}" style="cursor: pointer; align-self: center; font-weight: 600; font-size: 12px; color: var(--color-brand-primary); min-height: 24px; display: inline-flex; align-items: center;">Jump to a date ›</span>
+        </sc-if>
+        <sc-if value="{{ pickOpenM }}" hint-placeholder-val="{{ false }}">
+          <div style="align-self: center; display: flex; align-items: center; gap: 10px;">
+            <input type="date" value="{{ pickIso }}" onChange="{{ pickChange }}" style="min-height: 44px; box-sizing: border-box; border: none; border-radius: 10px; box-shadow: inset 0 0 0 1px var(--color-border-default); padding: 0 12px; font-family: Montserrat, sans-serif; font-size: 13px; font-weight: 600; color: var(--color-brand-secondary); background: var(--color-bg-surface);">
+            <span onClick="{{ closePick }}" style="cursor: pointer; font-weight: 600; font-size: 12px; color: var(--color-text-muted); padding: 12px 4px;">Close</span>
+          </div>
+        </sc-if>
+
+        <sc-if value="{{ dayEmpty }}" hint-placeholder-val="{{ false }}">
+          <div style="border-radius: 14px; background: var(--color-bg-surface); box-shadow: inset 0 0 0 1px var(--color-border-default); padding: 20px; display: flex; flex-direction: column; gap: 4px;">
+            <span style="font-family: Poppins, sans-serif; font-weight: 600; font-size: 14px; color: var(--color-brand-secondary);">No classes {{ dayEmptyWhen }}</span>
+            <span style="font-size: 12px; line-height: 18px; color: var(--color-text-muted);">Enjoy the break — your next class shows here.</span>
+          </div>
+        </sc-if>
+
+        <sc-for list="{{ dayClasses }}" as="c" hint-placeholder-count="3">
+          <div onClick="{{ c.open }}" style="cursor: {{ c.cursor }}; border-radius: 14px; background: var(--color-bg-surface); box-shadow: inset 0 0 0 1px var(--color-border-default); border-left: 4px solid {{ c.color }}; padding: 14px; display: flex; flex-direction: column; gap: 7px;" style-hover="box-shadow: {{ c.hoverRing }};">
+            <div style="display: flex; justify-content: space-between; align-items: center; gap: 12px;">
+              <span style="font-family: Poppins, sans-serif; font-weight: 600; font-size: 15px; line-height: 20px; color: var(--color-brand-secondary);">{{ c.name }}</span>
+              <span style="border-radius: 999px; padding: 4px 10px; font-size: 10px; font-weight: 600; white-space: nowrap; background: {{ c.badgeBg }}; color: {{ c.badgeFg }};">{{ c.badge }}</span>
+            </div>
+            <span style="font-weight: 600; font-size: 12px; line-height: 18px; color: var(--color-text-primary);">{{ c.when }}</span>
+            <sc-if value="{{ c.hasHint }}" hint-placeholder-val="{{ false }}">
+              <span style="font-size: 11px; line-height: 16px; color: var(--color-text-muted);">{{ c.hint }}</span>
+            </sc-if>
+          </div>
+        </sc-for>
+      </div>
+    </sc-if>
+
+    <!-- CLASS REGISTER -->
+    <sc-if value="{{ isRegister }}" hint-placeholder-val="{{ false }}">
+      <div data-screen-label="Class register" style="display: flex; flex-direction: column; gap: 14px;">
+        <span onClick="{{ goDay }}" style="cursor: pointer; font-size: 12px; font-weight: 600; color: var(--color-brand-primary);">‹ {{ backLabel }}</span>
+        <span style="font-size: 11px; font-weight: 600; line-height: 16px; letter-spacing: 0.06em; color: var(--color-text-muted);">{{ eyebrowReg }}</span>
+        <h1 style="margin: 0; font-family: Poppins, sans-serif; font-weight: 700; font-size: 25px; line-height: 32px; color: var(--color-text-brand);">{{ regTitle }}</h1>
+        <div style="display: flex; align-items: center; gap: 10px; flex-wrap: wrap;">
+          <span style="border-radius: 999px; padding: 3px 10px; font-size: 10px; font-weight: 600; letter-spacing: 0.04em; background: {{ typeBg }}; color: {{ typeFg }};">{{ typeLabel }}</span>
+          <span style="font-weight: 600; font-size: 12px; line-height: 18px; color: var(--color-text-primary);">{{ regMeta }}</span>
+        </div>
+
+        <div style="border-radius: 12px; background: {{ bannerBg }}; padding: 10px 12px; display: flex; align-items: center; gap: 8px;">
+          <span style="flex: 1; font-weight: 600; font-size: 12px; line-height: 18px; color: {{ bannerFg }};">{{ bannerLabel }}</span>
+          <span style="font-family: Poppins, sans-serif; font-weight: 700; font-size: 15px; color: {{ bannerFg }}; font-variant-numeric: tabular-nums;">{{ bannerPct }}</span>
+        </div>
+
+        <sc-if value="{{ isCompleted }}" hint-placeholder-val="{{ false }}">
+          <div style="border-radius: 14px; background: var(--color-status-success-bg); padding: 14px; display: flex; flex-direction: column; gap: 6px;">
+            <span style="font-weight: 600; font-size: 13px; line-height: 18px; color: var(--color-status-success-fg);">{{ completedLine }}</span>
+            <span style="font-size: 11px; line-height: 16px; color: var(--color-status-success-fg);">You can reopen and amend until the end of today. After that, ask the office.</span>
+            <span onClick="{{ reopen }}" style="cursor: pointer; align-self: flex-start; font-weight: 600; font-size: 12px; color: var(--color-brand-primary); min-height: 24px; display: inline-flex; align-items: center;">Reopen to amend</span>
+          </div>
+        </sc-if>
+
+        <sc-if value="{{ showMarkAll }}" hint-placeholder-val="{{ true }}">
+          <div style="display: flex; align-items: center; gap: 10px; flex-wrap: wrap;">
+            <span onClick="{{ markAll }}" style="cursor: pointer; min-height: 44px; box-sizing: border-box; border-radius: 12px; padding: 12px 16px; display: inline-flex; align-items: center; background: var(--color-bg-surface); box-shadow: inset 0 0 0 2px var(--color-brand-primary); color: var(--color-brand-primary); font-weight: 600; font-size: 12px;" style-hover="opacity: 0.85;">✓ Mark all present</span>
+            <span style="font-size: 11px; color: var(--color-text-muted);">then flag the exceptions</span>
+          </div>
+        </sc-if>
+
+        <div style="display: grid; grid-template-columns: {{ cardCols }}; gap: 12px; align-items: start;">
+          <sc-for list="{{ roster }}" as="st" hint-placeholder-count="4">
+            <div style="border-radius: 14px; background: var(--color-bg-surface); box-shadow: inset 0 0 0 1px var(--color-border-default); padding: 12px; display: flex; flex-direction: column; gap: 10px;">
+              <div style="display: flex; align-items: center; gap: 10px;">
+                <span style="position: relative; flex-shrink: 0;">
+                  <span style="width: 38px; height: 38px; border-radius: 999px; background: var(--color-bg-brand-subtle); color: var(--color-brand-secondary); font-weight: 700; font-size: 13px; display: flex; align-items: center; justify-content: center;">{{ st.initials }}</span>
+                  <sc-if value="{{ st.medFlag }}" hint-placeholder-val="{{ false }}">
+                    <span title="Medical note on file — open the profile" style="position: absolute; top: -3px; right: -3px; width: 15px; height: 15px; border-radius: 999px; background: var(--color-status-warning-bg); box-shadow: inset 0 0 0 1px var(--color-status-warning-fg); color: var(--color-status-warning-fg); font-size: 9px; font-weight: 700; display: flex; align-items: center; justify-content: center;">!</span>
+                  </sc-if>
+                </span>
+                <span style="flex: 1; min-width: 0; display: flex; flex-direction: column; gap: 1px;">
+                  <span style="font-family: Poppins, sans-serif; font-weight: 600; font-size: 14px; line-height: 19px; color: var(--color-brand-secondary);">{{ st.name }}</span>
+                  <span style="font-weight: 600; font-size: 11px; line-height: 15px; color: {{ st.subColor }};">{{ st.subLabel }}</span>
+                </span>
+                <sc-if value="{{ st.hasProfile }}" hint-placeholder-val="{{ true }}">
+                  <span onClick="{{ st.viewProfile }}" style="cursor: pointer; font-weight: 600; font-size: 11px; color: var(--color-brand-primary); white-space: nowrap; min-height: 44px; display: inline-flex; align-items: center;" style-hover="opacity: 0.75;">View profile ›</span>
+                </sc-if>
+                <sc-if value="{{ st.isWalkIn }}" hint-placeholder-val="{{ false }}">
+                  <span style="border-radius: 999px; padding: 3px 9px; font-size: 10px; font-weight: 600; background: var(--color-status-info-bg); color: var(--color-status-info-fg); white-space: nowrap;">Walk-in</span>
+                </sc-if>
+              </div>
+              <sc-if value="{{ st.hasReported }}" hint-placeholder-val="{{ false }}">
+                <div style="border-radius: 10px; background: var(--color-status-info-bg); padding: 8px 10px;">
+                  <span style="font-weight: 600; font-size: 11px; line-height: 16px; color: var(--color-status-info-fg);">i Reported absent in advance · {{ st.reported }}</span>
+                </div>
+              </sc-if>
+              <sc-if value="{{ regMarkable }}" hint-placeholder-val="{{ true }}">
+                <div style="display: flex; gap: 8px;">
+                  <sc-for list="{{ st.chips }}" as="ch" hint-placeholder-count="3">
+                    <span onClick="{{ ch.set }}" style="cursor: pointer; flex: 1; min-height: 44px; box-sizing: border-box; border-radius: 12px; padding: 10px 6px; display: inline-flex; align-items: center; justify-content: center; font-weight: 600; font-size: 12px; background: {{ ch.bg }}; color: {{ ch.fg }}; box-shadow: {{ ch.ring }}; user-select: none;" style-hover="opacity: 0.85;">{{ ch.label }}</span>
+                  </sc-for>
+                </div>
+              </sc-if>
+            </div>
+          </sc-for>
+        </div>
+
+        <sc-if value="{{ walkInClosed }}" hint-placeholder-val="{{ true }}">
+          <span onClick="{{ openWalkIn }}" style="cursor: pointer; align-self: flex-start; font-weight: 600; font-size: 12px; color: var(--color-brand-primary); min-height: 44px; display: inline-flex; align-items: center;">＋ {{ addWalkInLabel }}</span>
+        </sc-if>
+        <sc-if value="{{ walkInOpen }}" hint-placeholder-val="{{ false }}">
+          <div style="border-radius: 14px; background: var(--color-bg-surface); box-shadow: inset 0 0 0 1px var(--color-border-default); padding: 12px; display: flex; flex-direction: column; gap: 8px;">
+            <span style="font-family: Poppins, sans-serif; font-weight: 600; font-size: 13px; color: var(--color-brand-secondary);">{{ addWalkInLabel }}</span>
+            <div style="display: flex; gap: 8px; align-items: center;">
+              <input type="text" value="{{ walkInName }}" onChange="{{ walkInChange }}" placeholder="Full name" style="flex: 1; min-width: 0; min-height: 44px; box-sizing: border-box; border: none; border-radius: 10px; box-shadow: inset 0 0 0 1px var(--color-border-default); padding: 0 12px; font-family: Montserrat, sans-serif; font-size: 13px; color: var(--color-text-primary); background: var(--color-bg-surface);">
+              <span onClick="{{ addWalkIn }}" style="cursor: {{ walkInCursor }}; min-height: 44px; box-sizing: border-box; border-radius: 12px; padding: 12px 16px; display: inline-flex; align-items: center; background: {{ walkInBtnBg }}; color: {{ walkInBtnFg }}; font-weight: 600; font-size: 12px;">Add</span>
+              <span onClick="{{ closeWalkIn }}" style="cursor: pointer; font-weight: 600; font-size: 12px; color: var(--color-text-muted); padding: 12px 4px;">Cancel</span>
+            </div>
+            <span style="font-size: 10px; line-height: 14px; color: var(--color-text-muted);">Walk-ins and trials are flagged to the office with this register.</span>
+          </div>
+        </sc-if>
+
+        <sc-if value="{{ regMarkable }}" hint-placeholder-val="{{ true }}">
+          <div style="border-radius: 14px; background: var(--color-bg-surface); box-shadow: inset 0 0 0 1px var(--color-border-default); padding: 14px; display: flex; flex-direction: column; gap: 8px;">
+            <div style="display: flex; align-items: center; gap: 12px;">
+              <span style="flex: 1; display: flex; flex-direction: column; gap: 2px;">
+                <span style="font-family: Poppins, sans-serif; font-weight: 600; font-size: 14px; color: var(--color-brand-secondary);">Headcount check</span>
+                <span style="font-size: 11px; line-height: 16px; color: var(--color-text-muted);">Count the room, compare with your marks.</span>
+              </span>
+              <span onClick="{{ headMinus }}" style="cursor: pointer; width: 44px; height: 44px; border-radius: 999px; background: var(--color-bg-surface); box-shadow: inset 0 0 0 1px var(--color-border-default); display: flex; align-items: center; justify-content: center; font-weight: 700; font-size: 16px; color: var(--color-brand-secondary); flex-shrink: 0; user-select: none;" style-hover="box-shadow: inset 0 0 0 2px var(--color-brand-focus);">−</span>
+              <span style="width: 34px; text-align: center; font-family: Poppins, sans-serif; font-weight: 700; font-size: 19px; color: var(--color-brand-secondary); font-variant-numeric: tabular-nums;">{{ headVal }}</span>
+              <span onClick="{{ headPlus }}" style="cursor: pointer; width: 44px; height: 44px; border-radius: 999px; background: var(--color-bg-surface); box-shadow: inset 0 0 0 1px var(--color-border-default); display: flex; align-items: center; justify-content: center; font-weight: 700; font-size: 16px; color: var(--color-brand-secondary); flex-shrink: 0; user-select: none;" style-hover="box-shadow: inset 0 0 0 2px var(--color-brand-focus);">＋</span>
+            </div>
+            <span style="font-weight: 600; font-size: 12px; line-height: 18px; color: {{ headColor }};">{{ headLine }}</span>
+          </div>
+
+          <div style="border-radius: 14px; background: var(--color-bg-surface); box-shadow: inset 0 0 0 1px var(--color-border-default); padding: 14px; display: flex; flex-direction: column; gap: 8px; margin-top: 14px;">
+            <span style="font-family: Poppins, sans-serif; font-weight: 600; font-size: 14px; color: var(--color-brand-secondary);">Notes for the office <span style="font-family: Montserrat, sans-serif; font-weight: 400; font-size: 11px; color: var(--color-text-muted);">(optional)</span></span>
+            <textarea value="{{ noteVal }}" onChange="{{ noteChange }}" placeholder="{{ notePlaceholder }}" style="min-height: 72px; border: none; border-radius: 10px; box-shadow: inset 0 0 0 1px var(--color-border-default); padding: 10px 12px; font-family: Montserrat, sans-serif; font-size: 13px; line-height: 19px; color: var(--color-text-primary); background: var(--color-bg-surface); resize: vertical; box-sizing: border-box; width: 100%;"></textarea>
+          </div>
+        </sc-if>
+
+        <div style="border-radius: 10px; background: var(--color-status-info-bg); padding: 10px 12px;">
+          <span style="font-size: 11px; line-height: 16px; color: var(--color-status-info-fg);">i {{ protectedInfo }}</span>
+        </div>
+      </div>
+    </sc-if>
+
+    <!-- MY ACCOUNT (teacher) -->
+    <sc-if value="{{ isAccount }}" hint-placeholder-val="{{ false }}">
+      <div data-screen-label="Teacher account" style="display: flex; flex-direction: column; gap: 14px;">
+        <span style="font-size: 11px; font-weight: 600; line-height: 16px; letter-spacing: 0.06em; color: var(--color-text-muted);">MY ACCOUNT</span>
+        <h1 style="margin: 0; font-family: Poppins, sans-serif; font-weight: 700; font-size: 25px; line-height: 32px; color: var(--color-text-brand);">{{ greeting }}</h1>
+
+        <div style="border-radius: 14px; background: var(--color-bg-surface); box-shadow: inset 0 0 0 1px var(--color-border-default); padding: 16px; display: flex; flex-direction: column; gap: 10px;">
+          <span style="font-family: Poppins, sans-serif; font-weight: 600; font-size: 15px; color: var(--color-brand-secondary);">{{ pinCardTitle }}</span>
+          <span style="font-size: 12px; line-height: 18px; color: var(--color-text-primary);">{{ pinCardCopy }}</span>
+          <input type="password" value="{{ pinPw }}" onChange="{{ pinPwChange }}" placeholder="Account password" style="max-width: 240px; min-height: 44px; box-sizing: border-box; border: none; border-radius: 10px; box-shadow: inset 0 0 0 1px var(--color-border-default); padding: 0 12px; font-family: Montserrat, sans-serif; font-size: 13px; color: var(--color-text-primary); background: var(--color-bg-surface);">
+          <div style="display: flex; gap: 8px; flex-wrap: wrap; align-items: center;">
+            <input type="password" value="{{ pinNew }}" onChange="{{ pinNewChange }}" placeholder="New PIN" style="width: 110px; min-height: 44px; box-sizing: border-box; border: none; border-radius: 10px; box-shadow: inset 0 0 0 1px var(--color-border-default); padding: 0 12px; text-align: center; font-family: Poppins, sans-serif; font-size: 16px; letter-spacing: 6px; color: var(--color-brand-secondary); background: var(--color-bg-surface);">
+            <input type="password" value="{{ pinNew2 }}" onChange="{{ pinNew2Change }}" placeholder="Confirm" style="width: 110px; min-height: 44px; box-sizing: border-box; border: none; border-radius: 10px; box-shadow: inset 0 0 0 1px var(--color-border-default); padding: 0 12px; text-align: center; font-family: Poppins, sans-serif; font-size: 16px; letter-spacing: 6px; color: var(--color-brand-secondary); background: var(--color-bg-surface);">
+            <span onClick="{{ savePin }}" style="cursor: {{ pinSaveCursor }}; min-height: 44px; box-sizing: border-box; border-radius: 12px; padding: 12px 18px; display: inline-flex; align-items: center; background: {{ pinSaveBg }}; color: {{ pinSaveFg }}; font-weight: 600; font-size: 12px;" style-hover="opacity: 0.9;">Save PIN</span>
+          </div>
+          <sc-if value="{{ pinSaved }}" hint-placeholder-val="{{ false }}">
+            <span style="font-weight: 600; font-size: 12px; color: var(--color-status-success-fg);">✓ PIN updated</span>
+          </sc-if>
+          <span style="font-size: 10px; line-height: 14px; color: var(--color-text-muted);">4 digits. Changing your PIN needs your account password. You'll be asked for the PIN before any protected profile opens, and access re-locks after {{ protMinsLabel }} minutes. (Demo — any password works.)</span>
+        </div>
+
+        <div style="border-radius: 14px; background: var(--color-bg-surface); box-shadow: inset 0 0 0 1px var(--color-border-default); padding: 16px; display: flex; flex-direction: column; gap: 6px;">
+          <span style="font-family: Poppins, sans-serif; font-weight: 600; font-size: 15px; color: var(--color-brand-secondary);">Sign-in details</span>
+          <span style="font-size: 12px; line-height: 18px; color: var(--color-text-primary);">Your email and password are managed in the standard account area — nothing changes there.</span>
+          <span style="cursor: pointer; align-self: flex-start; font-weight: 600; font-size: 12px; color: var(--color-brand-primary); min-height: 24px; display: inline-flex; align-items: center;">Account details ›</span>
+        </div>
+      </div>
+    </sc-if>
+    </div>
+
+    <!-- Desktop context rail -->
+    <sc-if value="{{ railVisible }}" hint-placeholder-val="{{ false }}">
+      <div style="display: flex; flex-direction: column; gap: 14px; position: sticky; top: 20px;">
+        <sc-if value="{{ railIsDay }}" hint-placeholder-val="{{ true }}">
+          <div style="border-radius: 14px; background: var(--color-bg-surface); box-shadow: inset 0 0 0 1px var(--color-border-default); padding: 16px; display: flex; flex-direction: column; gap: 12px;">
+            <span style="font-weight: 600; font-size: 11px; letter-spacing: 0.06em; color: var(--color-text-muted);">{{ glanceEyebrow }}</span>
+            <sc-for list="{{ glanceRows }}" as="g" hint-placeholder-count="3">
+              <div style="display: flex; justify-content: space-between; align-items: center; gap: 12px;">
+                <span style="font-size: 12px; color: var(--color-text-primary);">{{ g.label }}</span>
+                <span style="font-family: Poppins, sans-serif; font-weight: 700; font-size: 15px; color: var(--color-brand-secondary); font-variant-numeric: tabular-nums;">{{ g.value }}</span>
+              </div>
+            </sc-for>
+          </div>
+          <sc-if value="{{ pickClosed }}" hint-placeholder-val="{{ true }}">
+            <span onClick="{{ openPick }}" style="cursor: pointer; align-self: flex-start; font-weight: 600; font-size: 12px; color: var(--color-brand-primary); min-height: 24px; display: inline-flex; align-items: center; padding: 0 2px;">Jump to a date ›</span>
+          </sc-if>
+          <sc-if value="{{ pickOpen }}" hint-placeholder-val="{{ false }}">
+            <div style="align-self: stretch; display: flex; align-items: center; gap: 10px;">
+              <input type="date" value="{{ pickIso }}" onChange="{{ pickChange }}" style="flex: 1; min-width: 0; min-height: 44px; box-sizing: border-box; border: none; border-radius: 10px; box-shadow: inset 0 0 0 1px var(--color-border-default); padding: 0 12px; font-family: Montserrat, sans-serif; font-size: 13px; font-weight: 600; color: var(--color-brand-secondary); background: var(--color-bg-surface);">
+              <span onClick="{{ closePick }}" style="cursor: pointer; font-weight: 600; font-size: 12px; color: var(--color-text-muted); padding: 12px 4px;">Close</span>
+            </div>
+          </sc-if>
+          <div style="border-radius: 14px; background: var(--color-bg-brand-subtle); padding: 14px; display: flex; flex-direction: column; gap: 4px;">
+            <span style="font-weight: 600; font-size: 12px; line-height: 18px; color: var(--color-brand-secondary);">Profiles stay protected</span>
+            <span style="font-size: 11px; line-height: 16px; color: var(--color-text-primary);">{{ protectedInfo }}</span>
+          </div>
+        </sc-if>
+        <sc-if value="{{ railIsAccount }}" hint-placeholder-val="{{ false }}">
+          <div style="border-radius: 14px; background: var(--color-bg-brand-subtle); padding: 14px; display: flex; flex-direction: column; gap: 4px;">
+            <span style="font-weight: 600; font-size: 12px; line-height: 18px; color: var(--color-brand-secondary);">Why a PIN?</span>
+            <span style="font-size: 11px; line-height: 16px; color: var(--color-text-primary);">{{ protectedInfo }}</span>
+          </div>
+        </sc-if>
+        <sc-if value="{{ railIsReg }}" hint-placeholder-val="{{ false }}">
+          <div style="border-radius: 14px; background: var(--color-bg-brand-subtle); padding: 14px; display: flex; gap: 9px; align-items: center;">
+            <span style="width: 12px; height: 12px; border-radius: 999px; background: {{ typeDot }}; flex-shrink: 0;"></span>
+            <span style="flex: 1; display: flex; flex-direction: column; gap: 2px; min-width: 0;">
+              <span style="font-weight: 600; font-size: 13px; line-height: 18px; color: var(--color-brand-secondary);">{{ regTitle }}</span>
+              <span style="font-size: 11px; line-height: 16px; color: var(--color-text-muted);">{{ ctxMeta }}</span>
+            </span>
+            <span onClick="{{ goDay }}" style="cursor: pointer; font-weight: 600; font-size: 11px; color: var(--color-brand-primary);">All classes</span>
+          </div>
+          <sc-if value="{{ regMarkable }}" hint-placeholder-val="{{ true }}">
+            <div style="border-radius: 14px; background: var(--color-bg-surface); box-shadow: inset 0 0 0 1px var(--color-border-default); padding: 16px; display: flex; flex-direction: column; gap: 14px;">
+              <span style="font-weight: 600; font-size: 11px; letter-spacing: 0.06em; color: var(--color-text-muted);">REGISTER CHECKLIST</span>
+              <sc-for list="{{ checklist }}" as="st" hint-placeholder-count="3">
+                <div style="display: flex; align-items: center; gap: 12px;">
+                  <span style="width: 44px; height: 44px; border-radius: 999px; flex-shrink: 0; display: flex; align-items: center; justify-content: center; font-family: Poppins, sans-serif; font-weight: 700; font-size: 17px; background: {{ st.bg }}; color: {{ st.fg }}; box-shadow: {{ st.ring }};">{{ st.glyph }}</span>
+                  <span style="display: flex; flex-direction: column; gap: 1px;">
+                    <span style="font-weight: 600; font-size: 12px; line-height: 17px; color: {{ st.labelColor }};">{{ st.label }}</span>
+                    <span style="font-size: 10px; line-height: 14px; color: var(--color-text-muted);">{{ st.sub }}</span>
+                  </span>
+                </div>
+              </sc-for>
+            </div>
+            <div style="border-radius: 14px; background: var(--color-bg-surface); box-shadow: inset 0 0 0 1px var(--color-border-default); padding: 16px; display: flex; flex-direction: column; gap: 10px; margin-top: 14px;">
+              <span style="font-weight: 600; font-size: 12px; line-height: 18px; color: {{ promptColor }};">{{ promptLine }}</span>
+              <div onClick="{{ ctaAction }}" style="cursor: {{ ctaCursor }}; display: flex;" style-hover="opacity: 0.92;">
+                <div style="flex: 1; min-height: 48px; box-sizing: border-box; border-radius: 12px; padding: 12px 20px; display: flex; align-items: center; justify-content: center; background: {{ ctaBg }}; color: {{ ctaFg }}; font-weight: 600; font-size: 13px; font-family: Montserrat, sans-serif; box-shadow: {{ ctaRing }};">{{ ctaLabel }}</div>
+              </div>
+              <span style="font-size: 10px; line-height: 14px; color: var(--color-text-muted);">{{ ctaNote }}</span>
+            </div>
+          </sc-if>
+        </sc-if>
+      </div>
+    </sc-if>
+  </div>
+
+  <!-- Sticky bottom action bar (mobile, register only) -->
+  <sc-if value="{{ stickyVisible }}" hint-placeholder-val="{{ false }}">
+    <div style="position: fixed; bottom: 0; left: 0; right: 0; background: var(--color-bg-surface); border-top: 1px solid var(--color-border-default); z-index: 30;">
+      <div style="max-width: 560px; margin: 0 auto; padding: 13px 20px 16px; display: flex; flex-direction: column; gap: 8px;">
+        <span style="font-weight: 600; font-size: 12px; line-height: 18px; color: {{ promptColor }};">{{ promptLine }}</span>
+        <div onClick="{{ ctaAction }}" style="cursor: {{ ctaCursor }}; align-self: stretch; display: flex;" style-hover="opacity: 0.92;">
+          <div style="flex: 1; min-height: 48px; box-sizing: border-box; border-radius: 12px; padding: 12px 20px; display: flex; align-items: center; justify-content: center; background: {{ ctaBg }}; color: {{ ctaFg }}; font-weight: 600; font-size: 13px; font-family: Montserrat, sans-serif; box-shadow: {{ ctaRing }};">{{ ctaLabel }}</div>
+        </div>
+        <span style="font-size: 10px; line-height: 14px; color: var(--color-text-muted);">{{ ctaNote }}</span>
+      </div>
+    </div>
+  </sc-if>
+
+  <!-- Student profile popup -->
+  <sc-if value="{{ profileOpen }}" hint-placeholder-val="{{ false }}">
+    <div data-screen-label="Student profile popup" onClick="{{ closeProfile }}" style="position: fixed; inset: 0; background: rgba(24,12,36,0.48); z-index: 50; display: flex; align-items: center; justify-content: center; padding: 20px; box-sizing: border-box;">
+      <div onClick="{{ stopClick }}" style="width: 100%; max-width: 350px; max-height: 90vh; overflow-y: auto; border-radius: 24px; background: var(--color-bg-surface); box-shadow: var(--shadow-raised); padding: 20px; box-sizing: border-box; display: flex; flex-direction: column; gap: 14px;">
+        <div style="display: flex; justify-content: space-between; align-items: center; gap: 12px;">
+          <div style="display: flex; align-items: center; gap: 10px; min-width: 0;">
+            <span style="width: 44px; height: 44px; border-radius: 999px; background: var(--color-bg-brand-subtle); color: var(--color-brand-secondary); font-weight: 700; font-size: 15px; display: flex; align-items: center; justify-content: center; flex-shrink: 0;">{{ profInitials }}</span>
+            <span style="display: flex; flex-direction: column; gap: 2px; min-width: 0;">
+              <span style="font-family: Poppins, sans-serif; font-weight: 600; font-size: 18px; line-height: 22px; color: var(--color-brand-secondary);">{{ profName }}</span>
+              <span style="font-size: 11px; line-height: 15px; color: var(--color-text-muted);">{{ profMeta }}</span>
+            </span>
+          </div>
+          <span onClick="{{ closeProfile }}" style="cursor: pointer; width: 36px; height: 36px; border-radius: 999px; background: var(--color-bg-subtle); color: var(--color-brand-secondary); font-weight: 600; font-size: 18px; display: flex; align-items: center; justify-content: center; flex-shrink: 0;" style-hover="opacity: 0.8;">×</span>
+        </div>
+
+        <sc-if value="{{ profLocked }}" hint-placeholder-val="{{ false }}">
+          <div style="border-radius: 12px; background: var(--color-status-warning-bg); padding: 10px 12px; display: flex; flex-direction: column; gap: 3px;">
+            <span style="font-weight: 600; font-size: 11px; line-height: 16px; color: var(--color-status-warning-fg);">! This profile is protected</span>
+            <span style="font-size: 10px; line-height: 15px; color: var(--color-status-warning-fg);">Emergency and medical details stay off-screen until you unlock them.</span>
+          </div>
+          <span style="font-family: Poppins, sans-serif; font-weight: 600; font-size: 14px; color: var(--color-brand-secondary);">Enter your teacher PIN</span>
+          <input type="password" value="{{ pinDraft }}" onChange="{{ pinChange }}" placeholder="••••" style="min-height: 52px; box-sizing: border-box; border: none; border-radius: 12px; box-shadow: inset 0 0 0 1px var(--color-border-default); text-align: center; font-size: 24px; letter-spacing: 14px; font-family: Poppins, sans-serif; color: var(--color-brand-secondary); background: var(--color-bg-surface); width: 100%;">
+          <div onClick="{{ pinSubmit }}" style="cursor: {{ pinCursor }}; display: flex;" style-hover="opacity: 0.92;">
+            <div style="flex: 1; min-height: 48px; box-sizing: border-box; border-radius: 12px; padding: 12px 20px; display: flex; align-items: center; justify-content: center; background: {{ pinBtnBg }}; color: {{ pinBtnFg }}; font-weight: 600; font-size: 13px;">Unlock profile</div>
+          </div>
+          <span style="font-size: 10px; line-height: 14px; color: var(--color-text-muted);">{{ pinNote }}</span>
+        </sc-if>
+
+        <sc-if value="{{ profUnlocked }}" hint-placeholder-val="{{ false }}">
+          <div style="border-radius: 12px; background: var(--color-status-success-bg); padding: 12px; display: flex; align-items: center; gap: 8px;">
+            <span style="flex: 1; font-weight: 600; font-size: 11px; line-height: 16px; color: var(--color-status-success-fg);">✓ Protected access active</span>
+            <span style="font-family: Poppins, sans-serif; font-weight: 700; font-size: 13px; color: var(--color-status-success-fg); font-variant-numeric: tabular-nums;">{{ authClock }}</span>
+          </div>
+          <div style="border-radius: 14px; background: var(--color-bg-surface); box-shadow: inset 0 0 0 1px var(--color-border-default); padding: 12px 14px; display: flex; flex-direction: column; gap: 4px;">
+            <span style="font-family: Poppins, sans-serif; font-weight: 600; font-size: 14px; color: var(--color-brand-secondary);">Emergency contact</span>
+            <span style="font-size: 12px; line-height: 17px; color: var(--color-text-primary);">{{ profContact }}</span>
+            <span style="font-family: Poppins, sans-serif; font-weight: 600; font-size: 15px; color: var(--color-brand-secondary); font-variant-numeric: tabular-nums;">{{ profPhone }}</span>
+          </div>
+          <div style="border-radius: 14px; background: var(--color-bg-surface); box-shadow: inset 0 0 0 1px var(--color-border-default); padding: 12px 14px; display: flex; flex-direction: column; gap: 4px;">
+            <span style="font-family: Poppins, sans-serif; font-weight: 600; font-size: 14px; color: var(--color-brand-secondary);">Medical conditions</span>
+            <span style="font-size: 12px; line-height: 17px; color: var(--color-text-primary);">{{ profMedical }}</span>
+          </div>
+          <div style="border-radius: 14px; background: var(--color-bg-surface); box-shadow: inset 0 0 0 1px var(--color-border-default); padding: 12px 14px; display: flex; flex-direction: column; gap: 4px;">
+            <span style="font-family: Poppins, sans-serif; font-weight: 600; font-size: 14px; color: var(--color-brand-secondary);">Collection notes</span>
+            <span style="font-size: 12px; line-height: 17px; color: var(--color-text-primary);">{{ profCollection }}</span>
+          </div>
+          <div onClick="{{ closeProfile }}" style="cursor: pointer; display: flex;" style-hover="opacity: 0.92;">
+            <div style="flex: 1; min-height: 48px; box-sizing: border-box; border-radius: 12px; padding: 12px 20px; display: flex; align-items: center; justify-content: center; background: var(--color-brand-primary); color: var(--color-text-inverse); font-weight: 600; font-size: 13px;">Close profile</div>
+          </div>
+        </sc-if>
+      </div>
+    </div>
+  </sc-if>
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props="{
+  &quot;vocabulary&quot;: {&quot;editor&quot;: &quot;enum&quot;, &quot;options&quot;: [&quot;Student / class / teacher (SJP)&quot;, &quot;Participant / lesson / instructor (demo)&quot;], &quot;default&quot;: &quot;Student / class / teacher (SJP)&quot;, &quot;tsType&quot;: &quot;string&quot;, &quot;section&quot;: &quot;Tenant configuration&quot;},
+  &quot;brandColors&quot;: {&quot;editor&quot;: &quot;color&quot;, &quot;default&quot;: [&quot;#FF7300&quot;, &quot;#330164&quot;], &quot;options&quot;: [[&quot;#FF7300&quot;, &quot;#330164&quot;], [&quot;#0E7C6B&quot;, &quot;#0F2B46&quot;], [&quot;#C5299B&quot;, &quot;#3D0A54&quot;]], &quot;tsType&quot;: &quot;string[]&quot;, &quot;section&quot;: &quot;Tenant configuration&quot;},
+  &quot;protectedMinutes&quot;: {&quot;editor&quot;: &quot;int&quot;, &quot;default&quot;: 5, &quot;min&quot;: 1, &quot;max&quot;: 15, &quot;tsType&quot;: &quot;number&quot;, &quot;section&quot;: &quot;Tenant configuration&quot;},
+  &quot;dayViewStyle&quot;: {&quot;editor&quot;: &quot;enum&quot;, &quot;options&quot;: [&quot;Today only&quot;, &quot;Day navigation&quot;, &quot;Week strip&quot;], &quot;default&quot;: &quot;Day navigation&quot;, &quot;tsType&quot;: &quot;string&quot;, &quot;section&quot;: &quot;Explore&quot;},
+  &quot;showThemeChrome&quot;: {&quot;editor&quot;: &quot;boolean&quot;, &quot;default&quot;: true, &quot;tsType&quot;: &quot;boolean&quot;, &quot;section&quot;: &quot;Prototype&quot;}
+}">
+class Component extends DCLogic {
+  state = {
+    screen: "day", dayOff: 0, selClass: null, selOff: 0,
+    regs: {}, profile: null, pinDraft: "", authUntil: 0,
+    walkInOpen: false, walkInName: "", pickOpen: false,
+    pinNew: "", pinNew2: "", pinPw: "", pinSaved: false, now: Date.now(),
+    vw: typeof window !== "undefined" ? window.innerWidth : 1200,
+  };
+
+  componentDidMount() {
+    this._tick = setInterval(() => this.setState({ now: Date.now() }), 1000);
+    this.applyBrand();
+    this._onRes = () => this.setState({ vw: window.innerWidth });
+    window.addEventListener("resize", this._onRes);
+  }
+  componentDidUpdate() { this.applyBrand(); }
+  componentWillUnmount() { clearInterval(this._tick); window.removeEventListener("resize", this._onRes); }
+
+  applyBrand() {
+    const pal = Array.isArray(this.props.brandColors) ? this.props.brandColors : ["#FF7300", "#330164"];
+    const key = pal.join(",");
+    if (this._brandKey === key) return;
+    this._brandKey = key;
+    const r = document.documentElement.style;
+    r.setProperty("--color-brand-primary", pal[0]);
+    r.setProperty("--color-brand-focus", pal[0]);
+    r.setProperty("--color-brand-secondary", pal[1] || "#330164");
+    r.setProperty("--color-text-brand", pal[1] || "#330164");
+    r.setProperty("--color-bg-brand-subtle", "color-mix(in srgb, " + pal[0] + " 9%, white)");
+  }
+
+  vocab() {
+    const alt = (this.props.vocabulary || "").indexOf("Participant") === 0;
+    return alt
+      ? { cls: "lesson", clsPl: "lessons", stu: "participant", stuPl: "participants", tch: "instructor" }
+      : { cls: "class", clsPl: "classes", stu: "student", stuPl: "students", tch: "teacher" };
+  }
+  protMins() { return Number(this.props.protectedMinutes) || 5; }
+
+  static TYPE_COLORS = { "Ballet": "#7A54A8", "Musical theatre": "#2F6FA8", "Acro": "#0E7C6B", "Jazz": "#C5299B", "Street dance": "#8A5A00" };
+  // demo "today": Tuesday 21 July 2026 — classes recur weekly on a weekday (0=Mon..6=Sun)
+  static BASE = new Date(2026, 6, 21);
+  static MONTHS = ["January", "February", "March", "April", "May", "June", "July", "August", "September", "October", "November", "December"];
+  static DAYS = ["Sunday", "Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday"];
+  static CLASSES = [
+    { id: "mon-jazz", day: 0, name: "Jazz Blast", type: "Jazz", time: "5:00–5:45pm", studio: "Studio 2", count: 10, off: 5 },
+    { id: "tue-ballet", day: 1, name: "Ballet Fundamentals", type: "Ballet", time: "4:15–5:00pm", studio: "Studio 1", count: 8, off: 0 },
+    { id: "tue-acro", day: 1, name: "Acro Stars", type: "Acro", time: "5:15–6:00pm", studio: "Studio 2", count: 10, off: 4 },
+    { id: "tue-mt", day: 1, name: "Musical Theatre Group", type: "Musical theatre", time: "6:15–7:15pm", studio: "Studio 1", count: 12, off: 2 },
+    { id: "wed-mini", day: 2, name: "Mini Movers", type: "Ballet", time: "4:00–4:30pm", studio: "Studio 1", count: 6, off: 8 },
+    { id: "fri-jnr", day: 4, name: "Ballet Juniors", type: "Ballet", time: "4:30–5:15pm", studio: "Studio 1", count: 9, off: 6 },
+    { id: "sat-mts", day: 5, name: "Musical Theatre Seniors", type: "Musical theatre", time: "10:00–11:30am", studio: "Studio 1", count: 14, off: 1 },
+  ];
+  // [name, age, emergency contact, phone, medical|null, collection|null]
+  static POOL = [
+    ["Ava Williams", 8, "Gareth Williams · Dad", "07700 900123", "Mild asthma — inhaler kept in the front office.", "Authorised: Gareth Williams, Emma Jones."],
+    ["Ben Carter", 8, "Laura Carter · Mum", "07700 900184", null, null],
+    ["Mia Jones", 7, "Emma Jones · Mum", "07700 900211", "Nut allergy — EpiPen kept in her bag.", "Authorised: Emma Jones only."],
+    ["Oliver Smith", 8, "Dan Smith · Dad", "07700 900236", null, null],
+    ["Isla Brown", 7, "Kate Brown · Mum", "07700 900248", null, null],
+    ["Noah Davis", 8, "Sam Davis · Dad", "07700 900259", null, null],
+    ["Poppy Wilson", 7, "Jo Wilson · Mum", "07700 900263", null, null],
+    ["Freya Taylor", 8, "Amy Taylor · Mum", "07700 900277", null, null],
+    ["Leo Martin", 9, "Chris Martin · Dad", "07700 900281", "Wears a hearing aid — face him when giving instructions.", null],
+    ["Grace Turner", 9, "Beth Turner · Mum", "07700 900294", null, null],
+    ["Charlie Walker", 8, "Tom Walker · Dad", "07700 900305", null, null],
+    ["Sofia Hughes", 7, "Ana Hughes · Mum", "07700 900318", null, null],
+    ["Jack Palmer", 9, "Rob Palmer · Dad", "07700 900322", null, null],
+    ["Lily Morgan", 8, "Cerys Morgan · Mum", "07700 900336", null, null],
+    ["Max Edwards", 7, "Gwen Edwards · Mum", "07700 900341", null, null],
+    ["Ruby Clarke", 8, "Paul Clarke · Dad", "07700 900357", null, null],
+  ];
+  // advance-reported absences (parent told the office before class), keyed by student id
+  static REPORTED = {
+    "tue-ballet-4": "holiday until 28 July",
+    "tue-acro-2": "illness, reported this morning",
+  };
+
+  dateOf(off) { const b = Component.BASE; return new Date(b.getFullYear(), b.getMonth(), b.getDate() + off); }
+  dayLabel(off) { const d = this.dateOf(off); return Component.DAYS[d.getDay()] + " " + d.getDate() + " " + Component.MONTHS[d.getMonth()]; }
+  weekdayIdx(off) { return (this.dateOf(off).getDay() + 6) % 7; }
+  isoOf(off) {
+    const d = this.dateOf(off), p = (n) => (n < 10 ? "0" : "") + n;
+    return d.getFullYear() + "-" + p(d.getMonth() + 1) + "-" + p(d.getDate());
+  }
+
+  students(cls) {
+    return Array.from({ length: cls.count }, (_, i) => {
+      const p = Component.POOL[(cls.off + i) % Component.POOL.length];
+      const sid = cls.id + "-" + i;
+      return { sid, name: p[0], age: p[1], contact: p[2], phone: p[3], medical: p[4], collection: p[5], reported: Component.REPORTED[sid] || null };
+    });
+  }
+  reg(cid) { return this.state.regs[cid] || { marks: {}, head: null, note: "", walkIns: [], completed: false, completedAt: null }; }
+  setReg(cid, patch) {
+    this.setState((s) => {
+      const cur = s.regs[cid] || { marks: {}, head: null, note: "", walkIns: [], completed: false, completedAt: null };
+      return { regs: { ...s.regs, [cid]: { ...cur, ...patch } } };
+    });
+  }
+  openClass(c, off) {
+    if (off === 0 && !this.state.regs[c.id]) {
+      // pre-mark advance-reported absences so the register can complete without touching them
+      const marks = {};
+      this.students(c).forEach((st) => { if (st.reported) marks[st.sid] = "absent"; });
+      this.setReg(c.id, { marks });
+    }
+    this.setState({ screen: "register", selClass: c.id, selOff: off, walkInOpen: false });
+  }
+  initials(name) { return name.split(" ").map((w) => w[0]).join("").slice(0, 2).toUpperCase(); }
+  cap(s) { return s.charAt(0).toUpperCase() + s.slice(1); }
+
+  renderVals() {
+    const S = this.state, v = this.vocab();
+    const desktop = S.vw >= 1000;
+    const dvMode = this.props.dayViewStyle || "Day navigation";
+    const dayOff = dvMode === "Today only" ? 0 : S.dayOff;
+    const isDay = S.screen === "day", isRegister = S.screen === "register" && !!S.selClass, isAccount = S.screen === "account";
+    const success = "var(--color-status-success-fg)", warn = "var(--color-status-warning-fg)", danger = "var(--color-status-danger-fg)", neutral = "var(--color-status-neutral-fg)", info = "var(--color-status-info-fg)", muted = "var(--color-text-muted)";
+
+    const goDay = () => this.setState({ screen: "day", selClass: null, walkInOpen: false });
+    const goAccount = () => this.setState({ screen: "account", selClass: null, walkInOpen: false });
+
+    // ── Day view
+    const classesOn = (off) => Component.CLASSES.filter((c) => c.day === this.weekdayIdx(off));
+    const dayClasses = classesOn(dayOff).map((c) => {
+      const isToday = dayOff === 0, past = dayOff < 0, future = dayOff > 0;
+      const R = isToday ? this.reg(c.id) : { marks: {}, walkIns: [], completed: false };
+      const total = c.count + R.walkIns.length;
+      const marked = Object.keys(R.marks).length;
+      let badge, badgeBg, badgeFg, hint = "";
+      if (past) { badge = "✓ Completed"; badgeBg = "var(--color-status-success-bg)"; badgeFg = success; hint = "Registers lock at midnight — ask the office to amend."; }
+      else if (future) { badge = c.count + " booked so far"; badgeBg = "var(--color-status-info-bg)"; badgeFg = info; hint = "Tap to see who's booked — the register opens on the day."; }
+      else if (R.completed) { badge = "✓ Completed"; badgeBg = "var(--color-status-success-bg)"; badgeFg = success; hint = "Tap to reopen and amend — today only."; }
+      else if (marked > 0) { badge = "! In progress · " + marked + " of " + total; badgeBg = "var(--color-status-warning-bg)"; badgeFg = warn; }
+      else { badge = "Not started"; badgeBg = "var(--color-status-neutral-bg)"; badgeFg = neutral; }
+      const clickable = !past;
+      return {
+        name: c.name, color: Component.TYPE_COLORS[c.type] || "#6B7280",
+        when: c.time + " · " + c.studio + " · " + c.count + " " + v.stuPl,
+        badge, badgeBg, badgeFg, hasHint: !!hint, hint,
+        open: clickable ? () => this.openClass(c, dayOff) : () => {},
+        cursor: clickable ? "pointer" : "default",
+        hoverRing: clickable ? "inset 0 0 0 2px var(--color-brand-focus)" : "inset 0 0 0 1px var(--color-border-default)",
+      };
+    });
+    const weekChips = Array.from({ length: 7 }, (_, i) => {
+      const off = i - 1; // Mon..Sun of the demo week; today = Tue
+      const d = this.dateOf(off), sel = off === dayOff;
+      return {
+        label: Component.DAYS[d.getDay()].slice(0, 3).toUpperCase() + " " + d.getDate() + (off === 0 ? " · Today" : ""),
+        set: () => this.setState({ dayOff: off }),
+        bg: sel ? "var(--color-brand-secondary)" : "var(--color-bg-surface)",
+        fg: sel ? "var(--color-text-inverse)" : "var(--color-brand-secondary)",
+        ring: sel ? "none" : "inset 0 0 0 1px var(--color-border-default)",
+      };
+    });
+    const todayClasses = classesOn(0);
+    const glanceRows = [
+      { label: this.cap(v.clsPl) + " today", value: String(todayClasses.length) },
+      { label: this.cap(v.stuPl) + " expected", value: String(todayClasses.reduce((a, c) => a + c.count, 0)) },
+      { label: "Registers completed", value: todayClasses.filter((c) => this.reg(c.id).completed).length + " of " + todayClasses.length },
+    ];
+
+    // ── Register
+    const cls = Component.CLASSES.find((c) => c.id === S.selClass) || Component.CLASSES[1];
+    const selOff = S.selOff, regMarkable = selOff === 0;
+    const selDayName = this.dayLabel(selOff);
+    const R = regMarkable ? this.reg(cls.id) : { ...this.reg(cls.id), marks: {}, walkIns: [], completed: false, head: null, note: "" };
+    const kids = this.students(cls);
+    const all = kids.concat(R.walkIns.map((w) => ({ sid: w.id, name: w.name, walkIn: true })));
+    const total = all.length;
+    const marked = all.filter((st) => R.marks[st.sid]).length;
+    const unmarked = total - marked;
+    const inRoom = all.filter((st) => R.marks[st.sid] === "present" || R.marks[st.sid] === "late").length;
+    const pct = total ? Math.round((marked / total) * 100) : 0;
+    const allMarked = unmarked === 0;
+    const STATUSES = [
+      { k: "present", label: "✓ Present", fg: success, bg: "var(--color-status-success-bg)" },
+      { k: "late", label: "! Late", fg: warn, bg: "var(--color-status-warning-bg)" },
+      { k: "absent", label: "× Absent", fg: danger, bg: "var(--color-status-danger-bg)" },
+    ];
+    const setMark = (sid, k) => {
+      if (R.completed || !regMarkable) return;
+      const marks = { ...R.marks };
+      if (marks[sid] === k) delete marks[sid]; else marks[sid] = k;
+      this.setReg(cls.id, { marks });
+    };
+    const roster = all.map((st) => {
+      const m = R.marks[st.sid];
+      const stat = STATUSES.find((x) => x.k === m);
+      let subLabel, subColor;
+      if (!regMarkable) { subLabel = "• Booked"; subColor = muted; }
+      else if (stat) { subLabel = st.reported && m === "absent" ? "× Absent · reported" : stat.label; subColor = stat.fg; }
+      else { subLabel = "• Expected"; subColor = muted; }
+      return {
+        initials: this.initials(st.name), name: st.name, subLabel, subColor,
+        medFlag: !!st.medical, isWalkIn: !!st.walkIn, hasProfile: !st.walkIn,
+        hasReported: !!st.reported, reported: st.reported || "",
+        viewProfile: () => this.setState({ profile: st, pinDraft: "" }),
+        chips: STATUSES.map((x) => {
+          const sel = m === x.k;
+          return {
+            label: x.label, set: () => setMark(st.sid, x.k),
+            bg: sel ? x.bg : "var(--color-bg-surface)",
+            fg: sel ? x.fg : "var(--color-text-primary)",
+            ring: sel ? "inset 0 0 0 2px " + x.fg : "inset 0 0 0 1px var(--color-border-default)",
+          };
+        }),
+      };
+    });
+    const markAll = () => {
+      if (R.completed || !regMarkable) return;
+      const marks = { ...R.marks };
+      all.forEach((st) => { if (!marks[st.sid]) marks[st.sid] = "present"; });
+      this.setReg(cls.id, { marks });
+    };
+    const headVal = R.head === null ? "—" : String(R.head);
+    const headMinus = () => this.setReg(cls.id, { head: Math.max(0, (R.head === null ? inRoom : R.head) - 1) });
+    const headPlus = () => this.setReg(cls.id, { head: (R.head === null ? inRoom : R.head) + 1 });
+    let headLine, headColor;
+    if (R.head === null) { headLine = "Not counted yet — you've marked " + inRoom + " in the room."; headColor = muted; }
+    else if (R.head === inRoom) { headLine = "✓ Matches your register — " + R.head + " in the room."; headColor = success; }
+    else { headLine = "! You counted " + R.head + " but marked " + inRoom + " in the room — check for walk-ins or a wrong mark."; headColor = warn; }
+    const walkInReady = S.walkInName.trim().length > 1;
+    const addWalkIn = () => {
+      if (!walkInReady || R.completed || !regMarkable) return;
+      const w = { id: "walkin-" + Date.now(), name: S.walkInName.trim() };
+      this.setReg(cls.id, { walkIns: [...R.walkIns, w] });
+      this.setState({ walkInName: "", walkInOpen: false });
+    };
+    const fmtTime = (d) => {
+      let h = d.getHours(), m = d.getMinutes(), ap = h >= 12 ? "pm" : "am";
+      h = h % 12 || 12; return h + ":" + (m < 10 ? "0" : "") + m + ap;
+    };
+    const complete = () => { if (allMarked && !R.completed && regMarkable) this.setReg(cls.id, { completed: true, completedAt: fmtTime(new Date()) }); };
+    const reopen = () => this.setReg(cls.id, { completed: false });
+    let promptLine, promptColor, ctaLabel, ctaBg, ctaFg, ctaRing = "none", ctaAction, ctaCursor, ctaNote;
+    if (R.completed) {
+      promptLine = "✓ Register completed at " + R.completedAt; promptColor = success;
+      ctaLabel = "Reopen to amend"; ctaBg = "var(--color-bg-surface)"; ctaFg = "var(--color-brand-primary)"; ctaRing = "inset 0 0 0 2px var(--color-brand-primary)";
+      ctaAction = reopen; ctaCursor = "pointer";
+      ctaNote = "Amendments are allowed until the end of today.";
+    } else {
+      promptLine = allMarked ? "✓ All " + total + " marked — ready to complete" : unmarked + " " + (unmarked === 1 ? v.stu + " still needs" : v.stuPl + " still need") + " a status";
+      promptColor = allMarked ? success : warn;
+      ctaLabel = "Complete register";
+      ctaBg = allMarked ? "var(--color-brand-primary)" : "var(--color-border-default)";
+      ctaFg = allMarked ? "var(--color-text-inverse)" : muted;
+      ctaAction = complete; ctaCursor = allMarked ? "pointer" : "default";
+      ctaNote = "Saved as you go — the office sees updates live.";
+    }
+    let bannerBg, bannerFg, bannerLabel, bannerPct;
+    if (!regMarkable) { bannerBg = "var(--color-status-info-bg)"; bannerFg = info; bannerLabel = "i Register opens on the day — this is who's booked so far."; bannerPct = ""; }
+    else if (allMarked) { bannerBg = "var(--color-status-success-bg)"; bannerFg = success; bannerLabel = "✓ All " + total + " marked"; bannerPct = pct + "%"; }
+    else { bannerBg = "var(--color-status-warning-bg)"; bannerFg = warn; bannerLabel = "! " + marked + " of " + total + " marked"; bannerPct = pct + "%"; }
+    const checklist = [
+      { n: 1, label: "Mark attendance", sub: marked + " of " + total + " marked", done: allMarked },
+      { n: 2, label: "Headcount check", sub: R.head === null ? "Optional but recommended" : R.head + " counted", done: R.head !== null },
+      { n: 3, label: "Complete register", sub: R.completed ? "Done at " + R.completedAt : "Sends to the office", done: R.completed },
+    ].map((s2, i, arr) => {
+      const active = !s2.done && arr.slice(0, i).every((p) => p.done);
+      return {
+        glyph: s2.done ? "✓" : String(s2.n), label: s2.label, sub: s2.sub,
+        bg: s2.done ? "var(--color-status-success-bg)" : active ? "var(--color-brand-secondary)" : "var(--color-bg-surface)",
+        fg: s2.done ? success : active ? "var(--color-text-inverse)" : muted,
+        ring: s2.done || active ? "none" : "inset 0 0 0 1px var(--color-border-default)",
+        labelColor: active ? "var(--color-brand-secondary)" : "var(--color-text-primary)",
+      };
+    });
+
+    // ── Account (PIN)
+    const pinValid = S.pinNew.length === 4 && S.pinNew === S.pinNew2 && S.pinPw.length > 0;
+    // ── Profile popup
+    const p = S.profile;
+    const authLeft = S.authUntil - S.now;
+    const unlocked = authLeft > 0;
+    const mm = Math.max(0, Math.floor(authLeft / 60000)), ss = Math.max(0, Math.floor((authLeft % 60000) / 1000));
+    const pinReady = S.pinDraft.length === 4;
+    const typeColor = Component.TYPE_COLORS[cls.type] || "#6B7280";
+
+    return {
+      showChrome: this.props.showThemeChrome !== false,
+      chromeMax: desktop ? "1140px" : "560px",
+      logoH: desktop ? "46px" : "34px",
+      teacherName: "Miss Sophie",
+      portalLabel: this.cap(v.tch) + " portal",
+      navClassesLabel: "My " + v.clsPl,
+      shellMax: desktop ? "1140px" : "560px",
+      shellPad: desktop ? "28px 20px 48px" : "24px 20px 140px",
+      shellCols: desktop ? "minmax(0, 1fr) 320px" : "1fr",
+      mainMax: desktop ? "none" : "560px",
+      goDay, goAccount, isDay, isRegister, isAccount,
+      // day view
+      eyebrowDay: (this.cap(v.tch) + " register").toUpperCase(),
+      greeting: "Hello, Sophie",
+      dvToday: dvMode === "Today only", dvNav: dvMode === "Day navigation", dvWeek: dvMode === "Week strip",
+      dayHeading: this.dayLabel(dayOff),
+      daySub: dayOff === 0 ? "Today" : dayOff === 1 ? "Tomorrow" : dayOff === -1 ? "Yesterday" : dayOff < 0 ? "Past — registers locked" : "In " + dayOff + " days",
+      prevDay: () => this.setState({ dayOff: dayOff - 1 }),
+      nextDay: () => this.setState({ dayOff: dayOff + 1 }),
+      weekChips, dayClasses,
+      pickClosed: !S.pickOpen, pickOpen: S.pickOpen,
+      pickClosedM: !desktop && !S.pickOpen, pickOpenM: !desktop && S.pickOpen,
+      openPick: () => this.setState({ pickOpen: true }),
+      closePick: () => this.setState({ pickOpen: false }),
+      pickIso: this.isoOf(dayOff),
+      pickChange: (e) => {
+        const parts = (e.target.value || "").split("-").map(Number);
+        if (parts.length === 3 && parts[0]) {
+          const d = new Date(parts[0], parts[1] - 1, parts[2]), b = Component.BASE;
+          this.setState({ dayOff: Math.round((d - b) / 86400000), pickOpen: false });
+        }
+      },
+      dayEmpty: dayClasses.length === 0, dayEmptyWhen: dayOff === 0 ? "today" : "on " + this.dayLabel(dayOff),
+      glanceEyebrow: "TODAY AT A GLANCE", glanceRows,
+      protectedInfo: this.cap(v.stu) + " profiles are protected — you'll be asked for your PIN before emergency or medical details appear.",
+      // register
+      regMarkable,
+      backLabel: (selOff === 0 ? "Today's" : selDayName.split(" ")[0] + "'s") + " " + v.clsPl,
+      eyebrowReg: (selDayName + " · " + (regMarkable ? "register" : "booked list")).toUpperCase(),
+      regTitle: cls.name,
+      regMeta: cls.time + " · " + cls.studio + " · " + total + " " + (regMarkable ? v.stuPl : "booked"),
+      ctxMeta: selDayName + " · " + cls.time + " · " + cls.studio,
+      typeLabel: cls.type.toUpperCase(), typeDot: typeColor,
+      typeBg: "color-mix(in srgb, " + typeColor + " 12%, white)", typeFg: typeColor,
+      bannerBg, bannerFg, bannerLabel, bannerPct,
+      isCompleted: R.completed,
+      completedLine: "✓ Register completed at " + R.completedAt,
+      reopen,
+      showMarkAll: regMarkable && !R.completed && unmarked > 0,
+      markAll, cardCols: desktop ? "1fr 1fr" : "1fr",
+      roster,
+      walkInClosed: regMarkable && !S.walkInOpen && !R.completed,
+      walkInOpen: regMarkable && S.walkInOpen && !R.completed,
+      openWalkIn: () => this.setState({ walkInOpen: true }),
+      closeWalkIn: () => this.setState({ walkInOpen: false, walkInName: "" }),
+      addWalkInLabel: "Add a walk-in / trial " + v.stu,
+      walkInName: S.walkInName,
+      walkInChange: (e) => this.setState({ walkInName: e.target.value }),
+      addWalkIn,
+      walkInCursor: walkInReady ? "pointer" : "default",
+      walkInBtnBg: walkInReady ? "var(--color-brand-primary)" : "var(--color-border-default)",
+      walkInBtnFg: walkInReady ? "var(--color-text-inverse)" : muted,
+      headVal, headMinus, headPlus, headLine, headColor,
+      noteVal: R.note,
+      noteChange: (e) => this.setReg(cls.id, { note: e.target.value }),
+      notePlaceholder: "e.g. Ava left at 4:40pm with Dad · two visitors watched the class",
+      // account
+      pinCardTitle: this.cap(v.tch) + " PIN",
+      pinCardCopy: "Your PIN unlocks protected " + v.stu + " details (emergency contacts, medical notes) during class. Keep it private — it's separate from your password.",
+      pinNew: S.pinNew, pinNew2: S.pinNew2,
+      pinNewChange: (e) => this.setState({ pinNew: e.target.value.replace(/\D/g, "").slice(0, 4), pinSaved: false }),
+      pinNew2Change: (e) => this.setState({ pinNew2: e.target.value.replace(/\D/g, "").slice(0, 4), pinSaved: false }),
+      pinPw: S.pinPw,
+      pinPwChange: (e) => this.setState({ pinPw: e.target.value, pinSaved: false }),
+      savePin: () => { if (pinValid) this.setState({ pinSaved: true, pinNew: "", pinNew2: "", pinPw: "" }); },
+      pinSaveCursor: pinValid ? "pointer" : "default",
+      pinSaveBg: pinValid ? "var(--color-brand-primary)" : "var(--color-border-default)",
+      pinSaveFg: pinValid ? "var(--color-text-inverse)" : muted,
+      pinSaved: S.pinSaved,
+      protMinsLabel: String(this.protMins()),
+      // rail + sticky
+      railVisible: desktop, railIsDay: desktop && isDay, railIsReg: desktop && isRegister, railIsAccount: desktop && isAccount,
+      checklist,
+      promptLine, promptColor, ctaLabel, ctaBg, ctaFg, ctaRing, ctaAction, ctaCursor, ctaNote,
+      stickyVisible: isRegister && !desktop && regMarkable,
+      // profile popup
+      profileOpen: !!p,
+      profInitials: p ? this.initials(p.name) : "",
+      profName: p ? p.name : "",
+      profMeta: p ? "Age " + p.age + " · " + this.cap(v.stu) : "",
+      profLocked: !!p && !unlocked, profUnlocked: !!p && unlocked,
+      pinDraft: S.pinDraft,
+      pinChange: (e) => this.setState({ pinDraft: e.target.value.replace(/\D/g, "").slice(0, 4) }),
+      pinSubmit: () => { if (pinReady) this.setState({ authUntil: Date.now() + this.protMins() * 60000, pinDraft: "" }); },
+      pinCursor: pinReady ? "pointer" : "default",
+      pinBtnBg: pinReady ? "var(--color-brand-primary)" : "var(--color-border-default)",
+      pinBtnFg: pinReady ? "var(--color-text-inverse)" : muted,
+      pinNote: "Access stays open for " + this.protMins() + " minutes on this device, then locks again. (Demo — any 4 digits.)",
+      authClock: mm + ":" + (ss < 10 ? "0" : "") + ss,
+      profContact: p ? p.contact || "Parent/guardian on the account" : "",
+      profPhone: p ? p.phone || "" : "",
+      profMedical: p ? p.medical || "No known medical conditions." : "",
+      profCollection: p ? p.collection || "Authorised: parents/guardians listed on the account." : "",
+      closeProfile: () => this.setState({ profile: null, pinDraft: "" }),
+      stopClick: (e) => e.stopPropagation(),
+    };
+  }
+}
+</script>
+</body>
+</html>

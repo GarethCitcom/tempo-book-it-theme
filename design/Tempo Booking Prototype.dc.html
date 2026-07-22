@@ -1,0 +1,1162 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+  <link rel="stylesheet" href="_ds/sjp-theatre-arts-design-system-175e544c-62db-4215-acdb-7b1da4bfaa75/tokens/fonts.css">
+  <link rel="stylesheet" href="_ds/sjp-theatre-arts-design-system-175e544c-62db-4215-acdb-7b1da4bfaa75/tokens/shadows.css">
+  <link rel="stylesheet" href="_ds/sjp-theatre-arts-design-system-175e544c-62db-4215-acdb-7b1da4bfaa75/components/fig-tokens.css">
+  <link rel="stylesheet" href="_ds/sjp-theatre-arts-design-system-175e544c-62db-4215-acdb-7b1da4bfaa75/components/fig-typography.css">
+  <link rel="stylesheet" href="_ds/sjp-theatre-arts-design-system-175e544c-62db-4215-acdb-7b1da4bfaa75/tokens/typography.css">
+  <link rel="stylesheet" href="_ds/sjp-theatre-arts-design-system-175e544c-62db-4215-acdb-7b1da4bfaa75/styles.css">
+  <script src="_ds/sjp-theatre-arts-design-system-175e544c-62db-4215-acdb-7b1da4bfaa75/_ds_bundle.js"></script>
+  <style>
+    body { margin: 0; background: var(--color-bg-subtle); }
+    a { color: var(--color-brand-primary); }
+    a:hover { color: var(--color-brand-secondary); }
+    @keyframes dsbPulse { 0% { opacity: 0.45; } 50% { opacity: 1; } 100% { opacity: 0.45; } }
+  </style>
+</helmet>
+<div style="min-height: 100vh; background: var(--color-bg-subtle); font-family: Montserrat, sans-serif; color: var(--color-text-primary); display: flex; flex-direction: column;">
+
+  <!-- ══ THEME CHROME (reference — lives in the WordPress theme, not the plugin) ══ -->
+  <sc-if value="{{ showChrome }}" hint-placeholder-val="{{ true }}">
+    <div data-screen-label="Theme chrome" style="background: var(--color-bg-surface); border-bottom: 5px solid var(--color-brand-secondary); flex-shrink: 0;">
+      <div style="max-width: {{ chromeMax }}; margin: 0 auto; padding: 12px 20px; display: flex; align-items: center; justify-content: space-between; gap: 16px;">
+        <img src="assets/logo.svg" alt="SJP Theatre Arts" style="height: {{ logoH }}; cursor: pointer;" onClick="{{ goDiscover }}">
+        <div style="display: flex; align-items: center; gap: 14px;">
+          <sc-if value="{{ hasBasket }}" hint-placeholder-val="{{ false }}">
+            <div onClick="{{ goCheckout }}" style="cursor: pointer; background: var(--color-brand-primary); color: var(--color-text-inverse); border-radius: 999px; padding: 7px 12px; font-size: 11px; font-weight: 600; white-space: nowrap; font-variant-numeric: tabular-nums;" style-hover="opacity: 0.9;">{{ basketPill }}</div>
+          </sc-if>
+          <span onClick="{{ goDiscover }}" style="font-size: 11px; font-weight: 600; color: var(--color-brand-secondary); cursor: pointer; white-space: nowrap;" style-hover="opacity: 0.7;">{{ navBookLabel }}</span>
+          <span onClick="{{ goAccount }}" style="font-size: 11px; font-weight: 600; color: var(--color-brand-secondary); cursor: pointer; white-space: nowrap;" style-hover="opacity: 0.7;">My account</span>
+        </div>
+      </div>
+    </div>
+    <div style="background: var(--color-brand-primary); flex-shrink: 0;">
+      <div style="max-width: {{ chromeMax }}; margin: 0 auto; padding: 6px 20px; display: flex; align-items: center; justify-content: space-between; gap: 12px;">
+        <span style="font-size: 11px; font-weight: 600; color: var(--color-text-inverse);">Booking portal</span>
+        <span style="font-size: 11px; color: var(--color-text-inverse); opacity: 0.9;">Becky Smith · Log out</span>
+      </div>
+    </div>
+  </sc-if>
+
+  <!-- ══ PLUGIN SURFACE ══ -->
+  <div style="max-width: {{ shellMax }}; margin: 0 auto; width: 100%; box-sizing: border-box; padding: {{ shellPad }}; position: relative; flex: 1; display: grid; grid-template-columns: {{ shellCols }}; gap: 32px; align-items: start;">
+    <div style="min-width: 0; max-width: {{ mainMax }}; width: 100%; margin: 0 auto; box-sizing: border-box;">
+
+    <!-- STEP 1 · STUDENT -->
+    <sc-if value="{{ isStudent }}" hint-placeholder-val="{{ true }}">
+      <div data-screen-label="Step 1 — Student" style="display: flex; flex-direction: column; gap: 14px;">
+        <span style="font-size: 11px; font-weight: 600; line-height: 16px; letter-spacing: 0.06em; color: var(--color-text-muted);">{{ eyebrowStudent }}</span>
+        <h1 style="margin: 0; font-family: Poppins, sans-serif; font-weight: 700; font-size: 25px; line-height: 32px; color: var(--color-text-brand);">Who is this booking for?</h1>
+        <sc-for list="{{ students }}" as="kid" hint-placeholder-count="2">
+          <div onClick="{{ kid.choose }}" style="cursor: pointer; border-radius: 14px; background: var(--color-bg-surface); box-shadow: inset 0 0 0 1px var(--color-border-default); padding: 14px; display: flex; align-items: center; gap: 12px;" style-hover="box-shadow: inset 0 0 0 2px var(--color-brand-focus);">
+            <span style="width: 44px; height: 44px; border-radius: 999px; background: var(--color-bg-brand-subtle); color: var(--color-brand-secondary); font-weight: 700; font-size: 15px; display: flex; align-items: center; justify-content: center; flex-shrink: 0;">{{ kid.initials }}</span>
+            <span style="flex: 1; display: flex; flex-direction: column; gap: 2px;">
+              <span style="font-weight: 600; font-size: 14px; color: var(--color-brand-secondary);">{{ kid.title }}</span>
+              <span style="font-size: 11px; line-height: 16px; color: var(--color-text-muted);">{{ kid.next }}</span>
+            </span>
+            <span style="font-weight: 600; font-size: 12px; color: var(--color-brand-primary); white-space: nowrap;">{{ kid.cta }} ›</span>
+          </div>
+        </sc-for>
+        <span style="font-size: 12px; line-height: 18px; color: var(--color-text-muted);">{{ switchNote }}</span>
+      </div>
+    </sc-if>
+
+    <!-- STEP 2 · DISCOVER -->
+    <sc-if value="{{ isDiscover }}" hint-placeholder-val="{{ false }}">
+      <div data-screen-label="Step 2 — Choose a class" style="display: flex; flex-direction: column; gap: 14px;">
+        <sc-if value="{{ isParent }}" hint-placeholder-val="{{ true }}">
+          <span onClick="{{ goStudent }}" style="cursor: pointer; font-size: 12px; font-weight: 600; color: var(--color-brand-primary);">‹ {{ backStudentLabel }}</span>
+        </sc-if>
+        <span style="font-size: 11px; font-weight: 600; line-height: 16px; letter-spacing: 0.06em; color: var(--color-text-muted);">{{ eyebrowClass }}</span>
+        <h1 style="margin: 0; font-family: Poppins, sans-serif; font-weight: 700; font-size: 25px; line-height: 32px; color: var(--color-text-brand);">{{ discoverTitle }}</h1>
+        <sc-if value="{{ showCtxInline }}" hint-placeholder-val="{{ true }}">
+          <div style="border-radius: 14px; background: var(--color-bg-brand-subtle); display: flex; gap: 9px; padding: 14px; align-items: center;">
+            <span style="width: 44px; height: 44px; border-radius: 999px; background: var(--color-bg-surface); color: var(--color-brand-secondary); font-weight: 700; font-size: 15px; display: flex; align-items: center; justify-content: center; flex-shrink: 0;">{{ selInitials }}</span>
+            <span style="flex: 1; display: flex; flex-direction: column; gap: 2px;">
+              <span style="font-size: 11px; line-height: 16px; color: var(--color-text-muted);">Booking for</span>
+              <span style="font-weight: 600; font-size: 13px; line-height: 18px; color: var(--color-brand-secondary);">{{ selTitle }}</span>
+            </span>
+            <span onClick="{{ goStudent }}" style="cursor: pointer; font-weight: 600; font-size: 11px; color: var(--color-brand-primary);">Change</span>
+          </div>
+        </sc-if>
+        <div style="display: flex; gap: 8px; flex-wrap: wrap;">
+          <sc-for list="{{ dayChips }}" as="chip" hint-placeholder-count="4">
+            <span onClick="{{ chip.set }}" style="cursor: pointer; min-height: 30px; box-sizing: border-box; border-radius: 999px; padding: 6px 14px; font-size: 12px; font-weight: 600; display: inline-flex; align-items: center; background: {{ chip.bg }}; color: {{ chip.fg }}; box-shadow: {{ chip.ring }};">{{ chip.label }}</span>
+          </sc-for>
+        </div>
+        <div style="display: flex; gap: 8px; flex-wrap: wrap; align-items: center; justify-content: space-between;">
+          <select onChange="{{ typeSelect }}" value="{{ typeValue }}" style="appearance: auto; cursor: pointer; min-height: 44px; box-sizing: border-box; border: none; border-radius: 12px; padding: 10px 12px; font-family: Montserrat, sans-serif; font-size: 12px; font-weight: 600; color: var(--color-text-primary); background: var(--color-bg-surface); box-shadow: inset 0 0 0 1px var(--color-border-default);">
+            <sc-for list="{{ typeOptions }}" as="t" hint-placeholder-count="3">
+              <option value="{{ t.value }}">{{ t.label }}</option>
+            </sc-for>
+          </select>
+          <div style="display: flex; border-radius: 999px; box-shadow: inset 0 0 0 1px var(--color-border-default); overflow: hidden;">
+            <span onClick="{{ setList }}" style="cursor: pointer; padding: 6px 12px; font-size: 11px; font-weight: 600; background: {{ listBg }}; color: {{ listFg }};">List</span>
+            <span onClick="{{ setWeek }}" style="cursor: pointer; padding: 6px 12px; font-size: 11px; font-weight: 600; background: {{ weekBg }}; color: {{ weekFg }};">Week</span>
+          </div>
+        </div>
+
+        <sc-if value="{{ isList }}" hint-placeholder-val="{{ true }}">
+          <div style="display: grid; grid-template-columns: {{ cardCols }}; gap: 14px;">
+          <sc-for list="{{ filteredClasses }}" as="c" hint-placeholder-count="3">
+            <div style="border-radius: 14px; background: var(--color-bg-surface); box-shadow: inset 0 0 0 1px var(--color-border-default); padding: 14px; display: flex; flex-direction: column; gap: 8px;">
+              <div style="display: flex; align-items: center; gap: 10px;">
+                <span style="flex: 1; font-family: Poppins, sans-serif; font-weight: 600; font-size: 16px; line-height: 22px; color: var(--color-brand-secondary);">{{ c.name }}</span>
+                <span style="font-size: 11px; color: var(--color-text-muted); white-space: nowrap;">{{ c.ages }}</span>
+              </div>
+              <span style="align-self: flex-start; border-radius: 999px; padding: 3px 10px; font-size: 10px; font-weight: 600; letter-spacing: 0.04em; background: {{ c.typeBg }}; color: {{ c.typeFg }};">{{ c.type }}</span>
+              <span style="font-weight: 600; font-size: 12px; line-height: 18px; color: var(--color-text-primary);">{{ c.when }}</span>
+              <span style="font-size: 11px; line-height: 16px; color: var(--color-text-muted);">{{ c.teacherLine }}</span>
+              <span style="font-weight: 600; font-size: 12px; line-height: 18px; color: {{ c.statusColor }};">{{ c.statusLine }}</span>
+              <div style="display: flex; align-items: center; justify-content: space-between; gap: 12px; margin-top: auto;">
+                <span style="font-family: Poppins, sans-serif; font-weight: 700; font-size: 15px; color: var(--color-brand-secondary);">{{ c.priceLine }} <span style="font-family: Montserrat, sans-serif; font-weight: 400; font-size: 11px; color: var(--color-text-muted);">per session</span></span>
+                <sc-if value="{{ c.open }}" hint-placeholder-val="{{ true }}">
+                  <div onClick="{{ c.view }}" style="cursor: pointer;" style-hover="opacity: 0.88;">
+                    <x-import component-from-global-scope="SJPTheatreArtsDesignSystem_175e54.Button" from="_ds/sjp-theatre-arts-design-system-175e544c-62db-4215-acdb-7b1da4bfaa75/_ds_bundle.js" size="mobile" style2="outline" state="default" label="View options" hint-size="130px,48px"></x-import>
+                  </div>
+                </sc-if>
+                <sc-if value="{{ c.full }}" hint-placeholder-val="{{ false }}">
+                  <x-import component-from-global-scope="SJPTheatreArtsDesignSystem_175e54.StatusBadge" from="_ds/sjp-theatre-arts-design-system-175e544c-62db-4215-acdb-7b1da4bfaa75/_ds_bundle.js" severity="danger" text1="×" text2="Full this term" hint-size="120px,32px"></x-import>
+                </sc-if>
+              </div>
+            </div>
+          </sc-for>
+          </div>
+        </sc-if>
+
+        <sc-if value="{{ isWeek }}" hint-placeholder-val="{{ false }}">
+          <div ref="{{ weekRef }}" onPointerDown="{{ weekDragStart }}" onPointerMove="{{ weekDragMove }}" onPointerUp="{{ weekDragEnd }}" onPointerCancel="{{ weekDragEnd }}" onClickCapture="{{ weekClickCapture }}" style="overflow-x: auto; -webkit-overflow-scrolling: touch; padding-bottom: 6px; cursor: grab; user-select: none;">
+          <div style="display: grid; grid-template-columns: repeat(7, minmax(118px, 1fr)); gap: 10px; align-items: start; min-width: 880px;">
+            <sc-for list="{{ weekCols }}" as="col" hint-placeholder-count="7">
+              <div style="display: flex; flex-direction: column; gap: 8px;">
+                <span style="font-weight: 600; font-size: 11px; letter-spacing: 0.06em; color: var(--color-text-muted); text-align: center;">{{ col.day }}</span>
+                <sc-if value="{{ col.none }}" hint-placeholder-val="{{ false }}">
+                  <div style="border-radius: 8px; border: 1px dashed var(--color-border-default); padding: 12px 6px; text-align: center; font-size: 10px; line-height: 14px; color: var(--color-text-muted);">No {{ colNoneLabel }}</div>
+                </sc-if>
+                <sc-for list="{{ col.items }}" as="c" hint-placeholder-count="2">
+                  <div onClick="{{ c.view }}" style="cursor: pointer; border-radius: 8px; background: var(--color-bg-surface); box-shadow: inset 0 0 0 1px var(--color-border-default); border-left: 4px solid {{ c.color }}; padding: 8px; display: flex; flex-direction: column; gap: 3px;" style-hover="box-shadow: inset 0 0 0 2px var(--color-brand-focus);">
+                    <span style="font-weight: 600; font-size: 11px; line-height: 15px; color: var(--color-brand-secondary);">{{ c.name }}</span>
+                    <span style="font-size: 10px; line-height: 14px; color: var(--color-text-muted);">{{ c.timeShort }}</span>
+                    <span style="font-weight: 600; font-size: 10px; line-height: 14px; color: {{ c.statusColor }};">{{ c.spacesShort }}</span>
+                  </div>
+                </sc-for>
+              </div>
+            </sc-for>
+          </div>
+          </div>
+          <span style="font-size: 11px; line-height: 16px; color: var(--color-text-muted);">{{ weekHint }} Tap a {{ vocabCls }} to see booking options. The week view is a browse aid — booking always continues through the guided steps.</span>
+        </sc-if>
+      </div>
+    </sc-if>
+
+    <!-- STEP 3 · PACKAGE -->
+    <sc-if value="{{ isOptions }}" hint-placeholder-val="{{ false }}">
+      <div data-screen-label="Step 3 — Choose a package" style="display: flex; flex-direction: column; gap: 14px;">
+        <span onClick="{{ goDiscover }}" style="cursor: pointer; font-size: 12px; font-weight: 600; color: var(--color-brand-primary);">‹ {{ backClassesLabel }}</span>
+        <span style="font-size: 11px; font-weight: 600; line-height: 16px; letter-spacing: 0.06em; color: var(--color-text-muted);">{{ eyebrowPkg }}</span>
+        <h1 style="margin: 0; font-family: Poppins, sans-serif; font-weight: 700; font-size: 25px; line-height: 32px; color: var(--color-text-brand);">{{ pkgTitle }}</h1>
+        <span style="font-weight: 600; font-size: 13px; line-height: 19px; color: var(--color-text-primary);">{{ optClassLine }}</span>
+        <sc-if value="{{ showCtxInline }}" hint-placeholder-val="{{ true }}">
+          <div style="border-radius: 12px; background: var(--color-bg-surface); box-shadow: inset 0 0 0 1px var(--color-border-default); display: flex; padding: 10px 12px; justify-content: space-between; align-items: center;">
+            <span style="font-weight: 600; font-size: 12px; color: var(--color-brand-secondary);">{{ bookingForLine }}</span>
+            <span onClick="{{ goStudent }}" style="cursor: pointer; font-weight: 600; font-size: 11px; color: var(--color-brand-primary);">Change</span>
+          </div>
+        </sc-if>
+
+        <div style="display: grid; grid-template-columns: {{ pkgCols }}; gap: 14px; align-items: stretch;">
+        <div style="border-radius: 14px; background: var(--color-bg-brand-subtle); box-shadow: inset 0 0 0 2px var(--color-brand-primary); padding: 14px; display: flex; flex-direction: column; gap: 8px;">
+          <span style="font-weight: 600; font-size: 10px; line-height: 14px; letter-spacing: 0.06em; color: var(--color-status-success-fg);">RECOMMENDED · BEST VALUE</span>
+          <div style="display: flex; justify-content: space-between; align-items: center; gap: 12px;">
+            <span style="font-family: Poppins, sans-serif; font-weight: 600; font-size: 16px; line-height: 22px; color: var(--color-brand-secondary);">Full term</span>
+            <span style="font-family: Poppins, sans-serif; font-weight: 700; font-size: 17px; line-height: 24px; color: var(--color-brand-secondary);">{{ fullPrice }}</span>
+          </div>
+          <span style="font-weight: 600; font-size: 12px; line-height: 18px; color: var(--color-text-primary);">{{ fullMeta }}</span>
+          <span style="font-weight: 600; font-size: 12px; line-height: 18px; color: var(--color-status-success-fg);">{{ fullSaving }}</span>
+          <span onClick="{{ toggleFullDates }}" style="cursor: pointer; font-weight: 600; font-size: 11px; color: var(--color-brand-primary); min-height: 24px; display: inline-flex; align-items: center;">{{ fullDatesToggle }}</span>
+          <sc-if value="{{ showFullDates }}" hint-placeholder-val="{{ false }}">
+            <div style="display: flex; flex-wrap: wrap; gap: 6px;">
+              <sc-for list="{{ fullDates }}" as="d" hint-placeholder-count="4">
+                <span style="font-size: 11px; padding: 4px 8px; border-radius: 8px; background: var(--color-bg-surface); box-shadow: inset 0 0 0 1px var(--color-border-default); color: var(--color-text-primary);">{{ d.label }}</span>
+              </sc-for>
+            </div>
+          </sc-if>
+          <div onClick="{{ chooseFull }}" style="cursor: pointer; align-self: flex-start; margin-top: auto;" style-hover="opacity: 0.88;">
+            <x-import component-from-global-scope="SJPTheatreArtsDesignSystem_175e54.Button" from="_ds/sjp-theatre-arts-design-system-175e544c-62db-4215-acdb-7b1da4bfaa75/_ds_bundle.js" size="mobile" style2="primary" state="default" label="Choose Full term" hint-size="150px,48px"></x-import>
+          </div>
+        </div>
+
+        <div style="border-radius: 14px; background: var(--color-bg-surface); box-shadow: inset 0 0 0 1px var(--color-border-default); padding: 14px; display: flex; flex-direction: column; gap: 8px;">
+          <div style="display: flex; justify-content: space-between; align-items: center; gap: 12px;">
+            <span style="font-family: Poppins, sans-serif; font-weight: 600; font-size: 16px; line-height: 22px; color: var(--color-brand-secondary);">First half of term</span>
+            <span style="font-family: Poppins, sans-serif; font-weight: 700; font-size: 17px; line-height: 24px; color: var(--color-brand-secondary);">{{ halfPrice }}</span>
+          </div>
+          <span style="font-weight: 600; font-size: 12px; line-height: 18px; color: var(--color-text-primary);">{{ halfMeta }}</span>
+          <span style="font-size: 11px; line-height: 17px; color: var(--color-text-muted);">Up to the October half-term break</span>
+          <div onClick="{{ chooseHalf }}" style="cursor: pointer; align-self: flex-start; margin-top: auto;" style-hover="opacity: 0.88;">
+            <x-import component-from-global-scope="SJPTheatreArtsDesignSystem_175e54.Button" from="_ds/sjp-theatre-arts-design-system-175e544c-62db-4215-acdb-7b1da4bfaa75/_ds_bundle.js" size="mobile" style2="outline" state="default" label="Choose First half" hint-size="150px,48px"></x-import>
+          </div>
+        </div>
+
+        <div style="border-radius: 14px; background: var(--color-bg-surface); box-shadow: inset 0 0 0 1px var(--color-border-default); padding: 14px; display: flex; flex-direction: column; gap: 8px;">
+          <div style="display: flex; justify-content: space-between; align-items: center; gap: 12px;">
+            <span style="font-family: Poppins, sans-serif; font-weight: 600; font-size: 16px; line-height: 22px; color: var(--color-brand-secondary);">{{ singleHeading }}</span>
+            <span style="font-family: Poppins, sans-serif; font-weight: 700; font-size: 17px; line-height: 24px; color: var(--color-brand-secondary);">{{ singleRate }}</span>
+          </div>
+          <span style="font-size: 11px; line-height: 17px; color: var(--color-text-muted);">Flexible — pick any date with spaces</span>
+          <sc-if value="{{ showSinglesAside }}" hint-placeholder-val="{{ false }}">
+            <span style="font-size: 11px; line-height: 17px; color: var(--color-status-info-fg); margin-top: auto;">i All term dates are listed below — book any date with spaces.</span>
+          </sc-if>
+          <sc-if value="{{ showSinglesInline }}" hint-placeholder-val="{{ true }}">
+          <sc-for list="{{ singles }}" as="s" hint-placeholder-count="4">
+            <div style="display: flex; flex-wrap: wrap; align-items: center; gap: 10px; padding: 8px 0; border-top: 1px solid var(--color-border-default);">
+              <span style="flex: 1; font-weight: 600; font-size: 12px; color: {{ s.dateColor }};">{{ s.label }}</span>
+              <sc-if value="{{ s.open }}" hint-placeholder-val="{{ true }}">
+                <span style="font-weight: 600; font-size: 11px; color: var(--color-status-success-fg);">{{ s.places }}</span>
+                <span onClick="{{ s.book }}" style="cursor: pointer; min-height: 44px; box-sizing: border-box; border-radius: 12px; padding: 12px 16px; display: inline-flex; align-items: center; background: var(--color-bg-surface); box-shadow: inset 0 0 0 2px var(--color-brand-focus); font-weight: 600; font-size: 12px; color: var(--color-text-brand);" style-hover="opacity: 0.85;">Book this date</span>
+              </sc-if>
+              <sc-if value="{{ s.fullDate }}" hint-placeholder-val="{{ false }}">
+                <span style="font-weight: 600; font-size: 11px; color: var(--color-status-danger-fg);">× Full</span>
+              </sc-if>
+              <sc-if value="{{ s.booked }}" hint-placeholder-val="{{ false }}">
+                <span style="font-weight: 600; font-size: 11px; color: var(--color-status-neutral-fg);">• Already booked</span>
+              </sc-if>
+            </div>
+          </sc-for>
+          </sc-if>
+        </div>
+        </div>
+
+        <sc-if value="{{ showDatesMain }}" hint-placeholder-val="{{ false }}">
+          <div style="border-radius: 14px; background: var(--color-bg-surface); box-shadow: inset 0 0 0 1px var(--color-border-default); padding: 16px; display: flex; flex-direction: column; gap: 4px;">
+            <span style="font-weight: 600; font-size: 11px; letter-spacing: 0.06em; color: var(--color-text-muted);">{{ railDatesTitle }}</span>
+            <span style="font-size: 11px; line-height: 16px; color: var(--color-text-muted); margin-bottom: 6px;">{{ railDatesSub }}</span>
+            <div style="display: grid; grid-template-columns: 1fr 1fr; column-gap: 32px;">
+              <sc-for list="{{ railDates }}" as="s" hint-placeholder-count="6">
+                <div style="display: flex; align-items: center; gap: 8px; padding: 8px 0; border-top: 1px solid var(--color-border-default);">
+                  <span style="flex: 1; font-weight: 600; font-size: 12px; color: {{ s.dateColor }};">{{ s.dshort }}</span>
+                  <sc-if value="{{ s.open }}" hint-placeholder-val="{{ true }}">
+                    <span style="font-weight: 600; font-size: 10px; color: var(--color-status-success-fg); white-space: nowrap;">{{ s.placesShort }}</span>
+                    <span onClick="{{ s.book }}" style="cursor: pointer; font-weight: 600; font-size: 11px; color: var(--color-brand-primary); min-height: 24px; display: inline-flex; align-items: center;" style-hover="opacity: 0.8;">Book ›</span>
+                  </sc-if>
+                  <sc-if value="{{ s.fullDate }}" hint-placeholder-val="{{ false }}">
+                    <span style="font-weight: 600; font-size: 11px; color: var(--color-status-danger-fg);">× Full</span>
+                  </sc-if>
+                  <sc-if value="{{ s.booked }}" hint-placeholder-val="{{ false }}">
+                    <span style="font-weight: 600; font-size: 11px; color: var(--color-status-neutral-fg);">• Booked</span>
+                  </sc-if>
+                </div>
+              </sc-for>
+            </div>
+          </div>
+        </sc-if>
+
+        <div style="border-radius: 10px; background: var(--color-status-info-bg); padding: 10px 12px; display: flex; flex-direction: column; gap: 4px;">
+          <span style="font-weight: 600; font-size: 11px; line-height: 16px; color: var(--color-status-info-fg);">i Joining after term start?</span>
+          <span style="font-size: 11px; line-height: 16px; color: var(--color-status-info-fg);">Packages always show exactly which remaining dates are included before you pay.</span>
+        </div>
+      </div>
+    </sc-if>
+
+    <!-- STEP 4 · REVIEW -->
+    <sc-if value="{{ isReview }}" hint-placeholder-val="{{ false }}">
+      <div data-screen-label="Step 4 — Review" style="display: flex; flex-direction: column; gap: 14px;">
+        <span onClick="{{ goOptions }}" style="cursor: pointer; font-size: 12px; font-weight: 600; color: var(--color-brand-primary);">‹ Back to packages</span>
+        <span style="font-size: 11px; font-weight: 600; line-height: 16px; letter-spacing: 0.06em; color: var(--color-text-muted);">{{ eyebrowReview }}</span>
+        <h1 style="margin: 0; font-family: Poppins, sans-serif; font-weight: 700; font-size: 25px; line-height: 32px; color: var(--color-text-brand);">{{ reviewTitle }}</h1>
+        <sc-if value="{{ showCtxInline }}" hint-placeholder-val="{{ true }}">
+          <div style="border-radius: 12px; background: var(--color-bg-surface); box-shadow: inset 0 0 0 1px var(--color-border-default); display: flex; padding: 10px 12px; justify-content: space-between; align-items: center;">
+            <span style="font-weight: 600; font-size: 12px; color: var(--color-brand-secondary);">{{ bookingForLine }}</span>
+            <span onClick="{{ goStudent }}" style="cursor: pointer; font-weight: 600; font-size: 11px; color: var(--color-brand-primary);">Change</span>
+          </div>
+        </sc-if>
+        <div style="border-radius: 12px; background: var(--color-bg-surface); box-shadow: inset 0 0 0 1px var(--color-border-default); padding: 14px; display: flex; flex-direction: column; gap: 10px;">
+          <div style="display: flex; align-items: center; gap: 10px;">
+            <span style="width: 10px; height: 10px; border-radius: 999px; background: {{ revColor }}; flex-shrink: 0;"></span>
+            <span style="font-family: Poppins, sans-serif; font-weight: 600; font-size: 16px; line-height: 22px; color: var(--color-brand-secondary);">{{ revClass }}</span>
+          </div>
+          <span style="font-weight: 600; font-size: 12px; line-height: 18px; color: var(--color-text-primary);">{{ revWhen }}</span>
+          <span style="font-weight: 600; font-size: 12px; line-height: 18px; color: var(--color-status-success-fg);">{{ revAvailability }}</span>
+          <div style="display: flex; justify-content: space-between; gap: 12px; padding-top: 8px; border-top: 1px solid var(--color-border-default);">
+            <span style="font-size: 12px; color: var(--color-text-muted);">Package</span>
+            <span style="font-weight: 600; font-size: 12px; color: var(--color-text-primary);">{{ revOptionLabel }}</span>
+          </div>
+          <div style="display: flex; justify-content: space-between; gap: 12px;">
+            <span style="font-size: 12px; color: var(--color-text-muted);">Dates</span>
+            <span onClick="{{ toggleRevDates }}" style="cursor: pointer; font-weight: 600; font-size: 12px; color: var(--color-brand-primary); text-align: right;">{{ revDatesToggle }}</span>
+          </div>
+          <sc-if value="{{ showRevDates }}" hint-placeholder-val="{{ false }}">
+            <div style="display: flex; flex-wrap: wrap; gap: 6px;">
+              <sc-for list="{{ revDates }}" as="d" hint-placeholder-count="4">
+                <span style="font-size: 11px; padding: 4px 8px; border-radius: 8px; background: var(--color-bg-subtle); color: var(--color-text-primary);">{{ d.label }}</span>
+              </sc-for>
+            </div>
+          </sc-if>
+          <div style="display: flex; justify-content: space-between; gap: 12px;">
+            <span style="font-size: 12px; color: var(--color-text-muted);">Standard rate</span>
+            <span style="font-weight: 600; font-size: 12px; color: var(--color-text-primary);">{{ revStandard }}</span>
+          </div>
+          <sc-if value="{{ revHasSaving }}" hint-placeholder-val="{{ false }}">
+            <div style="display: flex; justify-content: space-between; gap: 12px;">
+              <span style="font-size: 12px; color: var(--color-text-muted);">Package rate</span>
+              <span style="font-weight: 600; font-size: 12px; color: var(--color-text-primary);">{{ revPkgRate }}</span>
+            </div>
+            <div style="display: flex; justify-content: space-between; gap: 12px;">
+              <span style="font-size: 12px; color: var(--color-text-muted);">Saving</span>
+              <span style="font-weight: 600; font-size: 12px; color: var(--color-status-success-fg);">{{ revSaving }}</span>
+            </div>
+          </sc-if>
+          <div style="display: flex; justify-content: space-between; gap: 12px; padding-top: 8px; border-top: 1px solid var(--color-border-default);">
+            <span style="font-weight: 600; font-size: 12px; color: var(--color-text-primary);">Total due</span>
+            <span style="font-family: Poppins, sans-serif; font-weight: 700; font-size: 17px; color: var(--color-brand-secondary);">{{ revTotal }}</span>
+          </div>
+        </div>
+
+        <sc-if value="{{ revOverlap }}" hint-placeholder-val="{{ false }}">
+          <div style="border-radius: 10px; background: var(--color-status-warning-bg); padding: 12px; display: flex; flex-direction: column; gap: 8px;">
+            <span style="font-weight: 600; font-size: 12px; line-height: 18px; color: var(--color-status-warning-fg);">{{ overlapLine }}</span>
+            <label style="display: flex; align-items: center; gap: 8px; font-weight: 600; font-size: 12px; color: var(--color-status-warning-fg); cursor: pointer; min-height: 44px;">
+              <input type="checkbox" checked="{{ overlapAck }}" onChange="{{ toggleAck }}" style="width: 18px; height: 18px; accent-color: var(--color-brand-primary);">
+              I understand these times overlap and want to book anyway.
+            </label>
+          </div>
+        </sc-if>
+
+        <div style="border-radius: 10px; background: var(--color-status-info-bg); padding: 10px 12px;">
+          <span style="font-size: 11px; line-height: 16px; color: var(--color-status-info-fg);">{{ reviewGuidance }}</span>
+        </div>
+        <div style="border-radius: 10px; background: var(--color-bg-surface); box-shadow: inset 0 0 0 1px var(--color-border-default); padding: 12px; display: flex; flex-direction: column; gap: 4px;">
+          <span style="font-weight: 600; font-size: 12px; color: var(--color-text-primary);">Cancellation conditions</span>
+          <span style="font-size: 11px; line-height: 16px; color: var(--color-text-muted);">{{ cancellationCopy }}</span>
+        </div>
+      </div>
+    </sc-if>
+
+    <!-- CHECKOUT -->
+    <sc-if value="{{ isCheckout }}" hint-placeholder-val="{{ false }}">
+      <div data-screen-label="Checkout" style="display: flex; flex-direction: column; gap: 14px;">
+        <span onClick="{{ goDiscover }}" style="cursor: pointer; font-size: 12px; font-weight: 600; color: var(--color-brand-primary);">‹ {{ addAnotherLabel }}</span>
+        <span style="font-size: 11px; font-weight: 600; line-height: 16px; letter-spacing: 0.06em; color: var(--color-text-muted);">CHECKOUT  •  SECURE PAYMENT</span>
+        <h1 style="margin: 0; font-family: Poppins, sans-serif; font-weight: 700; font-size: 25px; line-height: 32px; color: var(--color-text-brand);">{{ checkoutTitle }}</h1>
+
+        <div style="border-radius: 12px; background: var(--color-status-warning-bg); display: flex; padding: 12px; justify-content: space-between; align-items: center;">
+          <span style="font-weight: 600; font-size: 11px; line-height: 16px; color: var(--color-status-warning-fg);">! Places held while you pay</span>
+          <span style="font-family: Poppins, sans-serif; font-weight: 700; font-size: 16px; line-height: 22px; color: var(--color-status-warning-fg); font-variant-numeric: tabular-nums;">{{ soonClock }}</span>
+        </div>
+
+        <sc-for list="{{ basketItems }}" as="b" hint-placeholder-count="1">
+          <div style="border-radius: 14px; background: var(--color-bg-surface); box-shadow: inset 0 0 0 1px {{ b.ring }}; padding: 14px; display: flex; flex-direction: column; gap: 8px;">
+            <div style="display: flex; justify-content: space-between; align-items: center; gap: 12px;">
+              <span style="font-family: Poppins, sans-serif; font-weight: 600; font-size: 15px; line-height: 20px; color: var(--color-brand-secondary);">{{ b.cls }}</span>
+              <span style="font-family: Poppins, sans-serif; font-weight: 700; font-size: 16px; color: var(--color-brand-secondary);">{{ b.total }}</span>
+            </div>
+            <span style="font-weight: 600; font-size: 12px; line-height: 18px; color: var(--color-text-primary);">{{ b.meta }}</span>
+            <span style="font-size: 11px; line-height: 16px; color: var(--color-text-muted);">{{ b.datesLine }}</span>
+            <div style="display: flex; justify-content: space-between; align-items: center; gap: 12px;">
+              <span style="font-weight: 600; font-size: 11px; color: {{ b.clockColor }}; font-variant-numeric: tabular-nums;">{{ b.holdLine }}</span>
+              <span onClick="{{ b.remove }}" style="cursor: pointer; font-weight: 600; font-size: 11px; color: var(--color-text-muted); text-decoration: underline; min-height: 24px; display: inline-flex; align-items: center;">Remove</span>
+            </div>
+          </div>
+        </sc-for>
+
+        <div onClick="{{ toggleCredit }}" style="cursor: pointer; border-radius: 12px; background: {{ creditBg }}; padding: 12px; display: flex; flex-direction: column; gap: 4px;" style-hover="opacity: 0.92;">
+          <div style="display: flex; justify-content: space-between; align-items: center; gap: 12px;">
+            <span style="font-weight: 600; font-size: 12px; line-height: 18px; color: var(--color-status-success-fg);">{{ creditLabel }}</span>
+            <span style="width: 40px; height: 22px; border-radius: 999px; background: {{ creditKnobBg }}; position: relative; flex-shrink: 0;"><span style="position: absolute; top: 2px; left: {{ creditKnobLeft }}; width: 18px; height: 18px; border-radius: 999px; background: var(--color-bg-surface); transition: left 0.15s ease;"></span></span>
+          </div>
+          <span style="font-size: 11px; line-height: 16px; color: var(--color-status-success-fg);">{{ creditNote }}</span>
+          <sc-if value="{{ creditShowEditLink }}" hint-placeholder-val="{{ false }}">
+            <span onClick="{{ editCredit }}" style="cursor: pointer; align-self: flex-start; font-weight: 600; font-size: 11px; color: var(--color-brand-primary); min-height: 24px; display: inline-flex; align-items: center; text-decoration: underline;">Edit amount</span>
+          </sc-if>
+          <sc-if value="{{ creditEditing }}" hint-placeholder-val="{{ false }}">
+            <div onClick="{{ creditStop }}" style="display: flex; align-items: center; gap: 8px; cursor: default;">
+              <span style="font-weight: 600; font-size: 13px; color: var(--color-status-success-fg);">£</span>
+              <input type="number" min="0" max="25" step="0.5" value="{{ creditDraft }}" onChange="{{ creditDraftChange }}" style="width: 90px; min-height: 44px; box-sizing: border-box; border: none; border-radius: 8px; padding: 10px 12px; font-family: Montserrat, sans-serif; font-size: 13px; font-weight: 600; color: var(--color-text-primary); background: var(--color-bg-surface); box-shadow: inset 0 0 0 1px var(--color-border-default);">
+              <span onClick="{{ applyCredit }}" style="cursor: pointer; min-height: 44px; box-sizing: border-box; border-radius: 12px; padding: 12px 16px; display: inline-flex; align-items: center; background: var(--color-status-success-fg); color: var(--color-text-inverse); font-weight: 600; font-size: 12px;" style-hover="opacity: 0.88;">Apply</span>
+              <span style="font-size: 11px; color: var(--color-status-success-fg);">{{ creditEditMax }}</span>
+            </div>
+          </sc-if>
+        </div>
+
+        <div style="border-radius: 12px; background: var(--color-bg-surface); box-shadow: inset 0 0 0 1px var(--color-border-default); padding: 14px; display: flex; flex-direction: column; gap: 8px;">
+          <div style="display: flex; justify-content: space-between; gap: 12px;">
+            <span style="font-size: 12px; color: var(--color-text-muted);">Bookings subtotal</span>
+            <span style="font-weight: 600; font-size: 12px; color: var(--color-text-primary);">{{ subtotal }}</span>
+          </div>
+          <sc-if value="{{ creditOn }}" hint-placeholder-val="{{ false }}">
+            <div style="display: flex; justify-content: space-between; gap: 12px;">
+              <span style="font-size: 12px; color: var(--color-text-muted);">{{ creditRowLabel }}</span>
+              <span style="font-weight: 600; font-size: 12px; color: var(--color-status-success-fg);">{{ creditRowValue }}</span>
+            </div>
+          </sc-if>
+          <div style="display: flex; justify-content: space-between; gap: 12px; padding-top: 8px; border-top: 1px solid var(--color-border-default);">
+            <span style="font-weight: 600; font-size: 12px; color: var(--color-text-primary);">To pay today</span>
+            <span style="font-family: Poppins, sans-serif; font-weight: 700; font-size: 17px; color: var(--color-brand-secondary);">{{ toPay }}</span>
+          </div>
+        </div>
+
+        <sc-if value="{{ showPayInline }}" hint-placeholder-val="{{ true }}">
+        <div style="border-radius: 12px; background: var(--color-bg-subtle); box-shadow: inset 0 0 0 1px var(--color-border-default); padding: 14px; display: flex; flex-direction: column; gap: 8px;">
+          <span style="font-weight: 600; font-size: 11px; letter-spacing: 0.06em; color: var(--color-text-muted);">PAYMENT — WOOCOMMERCE CHECKOUT BLOCK</span>
+          <div style="height: 40px; border-radius: 8px; background: var(--color-bg-surface); box-shadow: inset 0 0 0 1px var(--color-border-default); display: flex; align-items: center; padding: 0 12px; font-size: 12px; color: var(--color-text-muted);">Card number</div>
+          <div style="display: flex; gap: 8px;">
+            <div style="flex: 1; height: 40px; border-radius: 8px; background: var(--color-bg-surface); box-shadow: inset 0 0 0 1px var(--color-border-default); display: flex; align-items: center; padding: 0 12px; font-size: 12px; color: var(--color-text-muted);">MM / YY</div>
+            <div style="flex: 1; height: 40px; border-radius: 8px; background: var(--color-bg-surface); box-shadow: inset 0 0 0 1px var(--color-border-default); display: flex; align-items: center; padding: 0 12px; font-size: 12px; color: var(--color-text-muted);">CVC</div>
+          </div>
+          <span style="font-size: 10px; line-height: 14px; color: var(--color-text-muted);">The payment form is WooCommerce's Checkout Block (Stripe today). The plugin supplies the booking panel, hold countdown and credit above it.</span>
+        </div>
+        </sc-if>
+      </div>
+    </sc-if>
+
+    <!-- CONFIRMED -->
+    <sc-if value="{{ isConfirmed }}" hint-placeholder-val="{{ false }}">
+      <div data-screen-label="Booking confirmed" style="display: flex; flex-direction: column; gap: 14px; padding-top: 24px;">
+        <x-import component-from-global-scope="SJPTheatreArtsDesignSystem_175e54.StatusBadge" from="_ds/sjp-theatre-arts-design-system-175e544c-62db-4215-acdb-7b1da4bfaa75/_ds_bundle.js" severity="success" text1="✓" text2="Booking confirmed" hint-size="170px,32px"></x-import>
+        <h1 style="margin: 0; font-family: Poppins, sans-serif; font-weight: 700; font-size: 25px; line-height: 32px; color: var(--color-text-brand);">{{ confirmedTitle }}</h1>
+        <span style="font-size: 13px; line-height: 19px; color: var(--color-text-primary);">A confirmation email is on its way. Every booked date now appears under My account, where you can report absences or cancel eligible sessions.</span>
+        <sc-for list="{{ confirmedCards }}" as="cc" hint-placeholder-count="1">
+          <div style="border-radius: 14px; background: var(--color-bg-surface); box-shadow: inset 0 0 0 1px var(--color-border-default); padding: 14px; display: flex; flex-direction: column; gap: 6px;">
+            <span style="font-family: Poppins, sans-serif; font-weight: 600; font-size: 15px; color: var(--color-brand-secondary);">{{ cc.cls }}</span>
+            <span style="font-weight: 600; font-size: 12px; color: var(--color-text-primary);">{{ cc.meta }}</span>
+            <span style="font-size: 11px; color: var(--color-text-muted);">{{ cc.datesLine }}</span>
+          </div>
+        </sc-for>
+        <div style="display: flex; gap: 10px; flex-wrap: wrap;">
+          <div onClick="{{ goAccount }}" style="cursor: pointer;" style-hover="opacity: 0.88;">
+            <x-import component-from-global-scope="SJPTheatreArtsDesignSystem_175e54.Button" from="_ds/sjp-theatre-arts-design-system-175e544c-62db-4215-acdb-7b1da4bfaa75/_ds_bundle.js" size="mobile" style2="primary" state="default" label="View bookings" hint-size="140px,48px"></x-import>
+          </div>
+          <div onClick="{{ goDiscover }}" style="cursor: pointer;" style-hover="opacity: 0.88;">
+            <x-import component-from-global-scope="SJPTheatreArtsDesignSystem_175e54.Button" from="_ds/sjp-theatre-arts-design-system-175e544c-62db-4215-acdb-7b1da4bfaa75/_ds_bundle.js" size="mobile" style2="outline" state="default" label="{{ bookAnotherLabel }}" hint-size="170px,48px"></x-import>
+          </div>
+        </div>
+      </div>
+    </sc-if>
+
+    <!-- MY ACCOUNT -->
+    <sc-if value="{{ isAccount }}" hint-placeholder-val="{{ false }}">
+      <div data-screen-label="My account" style="display: flex; flex-direction: column; gap: 14px;">
+        <span style="font-size: 11px; font-weight: 600; line-height: 16px; letter-spacing: 0.06em; color: var(--color-text-muted);">MY ACCOUNT</span>
+        <h1 style="margin: 0; font-family: Poppins, sans-serif; font-weight: 700; font-size: 25px; line-height: 32px; color: var(--color-text-brand);">Hello, Becky</h1>
+        <div style="display: grid; grid-template-columns: {{ acctCols }}; gap: {{ acctGap }}; align-items: start;">
+        <div style="display: flex; flex-direction: {{ acctTabDir }}; gap: 8px; position: sticky; top: 20px;">
+          <sc-for list="{{ acctTabs }}" as="tab" hint-placeholder-count="3">
+            <span onClick="{{ tab.set }}" style="cursor: pointer; min-height: 44px; box-sizing: border-box; border-radius: 999px; padding: 12px 16px; font-size: 12px; font-weight: 600; display: inline-flex; align-items: center; background: {{ tab.bg }}; color: {{ tab.fg }}; box-shadow: {{ tab.ring }};">{{ tab.label }}</span>
+          </sc-for>
+        </div>
+        <div style="display: flex; flex-direction: column; gap: 14px; min-width: 0;">
+
+        <sc-if value="{{ isTabBookings }}" hint-placeholder-val="{{ true }}">
+          <sc-for list="{{ upcoming }}" as="u" hint-placeholder-count="2">
+            <div style="border-radius: 14px; background: var(--color-bg-surface); box-shadow: inset 0 0 0 1px var(--color-border-default); border-left: 4px solid {{ u.color }}; padding: 14px; display: flex; flex-direction: column; gap: 8px;">
+              <div style="display: flex; justify-content: space-between; align-items: center; gap: 12px;">
+                <span style="font-family: Poppins, sans-serif; font-weight: 600; font-size: 15px; line-height: 20px; color: var(--color-brand-secondary);">{{ u.cls }}</span>
+                <span style="font-family: Poppins, sans-serif; font-weight: 700; font-size: 15px; color: var(--color-brand-secondary);">{{ u.total }}</span>
+              </div>
+              <span style="font-weight: 600; font-size: 12px; line-height: 18px; color: var(--color-text-primary);">{{ u.meta }}</span>
+              <span style="font-weight: 600; font-size: 12px; line-height: 18px; color: var(--color-status-success-fg);">✓ Confirmed · {{ u.next }}</span>
+              <span onClick="{{ u.toggle }}" style="cursor: pointer; font-weight: 600; font-size: 11px; color: var(--color-brand-primary); min-height: 24px; display: inline-flex; align-items: center;">{{ u.datesToggle }}</span>
+              <sc-if value="{{ u.open }}" hint-placeholder-val="{{ false }}">
+                <div style="display: flex; flex-direction: column; gap: 6px;">
+                  <sc-for list="{{ u.dateRows }}" as="dr" hint-placeholder-count="3">
+                    <div style="display: flex; justify-content: space-between; align-items: center; gap: 10px; padding: 6px 0; border-top: 1px solid var(--color-border-default);">
+                      <span style="font-size: 12px; color: var(--color-text-primary);">{{ dr.label }}</span>
+                      <span style="font-weight: 600; font-size: 11px; color: {{ dr.actionColor }}; cursor: pointer;">{{ dr.action }}</span>
+                    </div>
+                  </sc-for>
+                </div>
+              </sc-if>
+              <span style="font-size: 11px; line-height: 16px; color: var(--color-text-muted);">{{ u.policy }}</span>
+            </div>
+          </sc-for>
+          <span style="font-weight: 600; font-size: 13px; color: var(--color-text-brand); margin-top: 6px;">Previous</span>
+          <sc-for list="{{ previous }}" as="p" hint-placeholder-count="2">
+            <div style="display: flex; justify-content: space-between; align-items: center; gap: 10px; padding: 10px 0; border-bottom: 1px solid var(--color-border-default);">
+              <span style="flex: 1; font-size: 12px; color: var(--color-text-primary);">{{ p.label }}</span>
+              <span style="font-weight: 600; font-size: 11px; color: {{ p.statusColor }};">{{ p.status }}</span>
+              <span style="font-weight: 600; font-size: 12px; color: var(--color-text-primary); font-variant-numeric: tabular-nums;">{{ p.amount }}</span>
+            </div>
+          </sc-for>
+        </sc-if>
+
+        <sc-if value="{{ isTabCredit }}" hint-placeholder-val="{{ false }}">
+          <div style="border-radius: 14px; background: var(--color-status-success-bg); padding: 16px; display: flex; flex-direction: column; gap: 4px;">
+            <span style="font-weight: 600; font-size: 11px; letter-spacing: 0.06em; color: var(--color-status-success-fg);">AVAILABLE BOOKING CREDIT</span>
+            <span style="font-family: Poppins, sans-serif; font-weight: 700; font-size: 28px; line-height: 36px; color: var(--color-status-success-fg);">£25.00</span>
+            <span style="font-size: 11px; line-height: 16px; color: var(--color-status-success-fg);">{{ creditExplainer }}</span>
+          </div>
+          <sc-for list="{{ creditLots }}" as="lot" hint-placeholder-count="2">
+            <div style="border-radius: 12px; background: var(--color-bg-surface); box-shadow: inset 0 0 0 1px var(--color-border-default); padding: 12px; display: flex; flex-direction: column; gap: 4px;">
+              <div style="display: flex; justify-content: space-between; gap: 10px;">
+                <span style="font-weight: 600; font-size: 12px; color: var(--color-text-primary);">{{ lot.reason }}</span>
+                <span style="font-family: Poppins, sans-serif; font-weight: 700; font-size: 14px; color: var(--color-brand-secondary);">{{ lot.remaining }}</span>
+              </div>
+              <span style="font-size: 11px; color: var(--color-text-muted);">{{ lot.meta }}</span>
+            </div>
+          </sc-for>
+        </sc-if>
+
+        <sc-if value="{{ isTabKids }}" hint-placeholder-val="{{ false }}">
+          <sc-for list="{{ students }}" as="kid" hint-placeholder-count="2">
+            <div style="border-radius: 14px; background: var(--color-bg-surface); box-shadow: inset 0 0 0 1px var(--color-border-default); padding: 14px; display: flex; align-items: center; gap: 12px;">
+              <span style="width: 44px; height: 44px; border-radius: 999px; background: var(--color-bg-brand-subtle); color: var(--color-brand-secondary); font-weight: 700; font-size: 15px; display: flex; align-items: center; justify-content: center; flex-shrink: 0;">{{ kid.initials }}</span>
+              <span style="flex: 1; display: flex; flex-direction: column; gap: 2px;">
+                <span style="font-weight: 600; font-size: 14px; color: var(--color-brand-secondary);">{{ kid.title }}</span>
+                <span style="font-size: 11px; line-height: 16px; color: var(--color-text-muted);">{{ kid.next }}</span>
+              </span>
+              <span onClick="{{ kid.choose }}" style="cursor: pointer; font-weight: 600; font-size: 12px; color: var(--color-brand-primary); white-space: nowrap;">{{ kid.bookCta }}</span>
+            </div>
+          </sc-for>
+          <div style="cursor: pointer; align-self: flex-start;" style-hover="opacity: 0.88;">
+            <x-import component-from-global-scope="SJPTheatreArtsDesignSystem_175e54.Button" from="_ds/sjp-theatre-arts-design-system-175e544c-62db-4215-acdb-7b1da4bfaa75/_ds_bundle.js" size="compact" style2="outline" state="default" label="{{ addChildLabel }}" hint-size="120px,44px"></x-import>
+          </div>
+        </sc-if>
+        </div>
+        </div>
+      </div>
+    </sc-if>
+
+    <!-- Loading shimmer -->
+    <sc-if value="{{ loading }}" hint-placeholder-val="{{ false }}">
+      <div style="position: absolute; inset: 0; background: var(--color-bg-subtle); padding: 16px 20px; display: flex; flex-direction: column; gap: 14px; z-index: 20;">
+        <div style="height: 16px; width: 40%; border-radius: 8px; background: var(--color-border-default); animation: dsbPulse 1s ease infinite;"></div>
+        <div style="height: 32px; width: 75%; border-radius: 8px; background: var(--color-border-default); animation: dsbPulse 1s ease 0.1s infinite;"></div>
+        <div style="height: 72px; border-radius: 14px; background: var(--color-border-default); animation: dsbPulse 1s ease 0.2s infinite;"></div>
+        <div style="height: 150px; border-radius: 14px; background: var(--color-border-default); animation: dsbPulse 1s ease 0.3s infinite;"></div>
+        <div style="height: 150px; border-radius: 14px; background: var(--color-border-default); animation: dsbPulse 1s ease 0.4s infinite;"></div>
+      </div>
+    </sc-if>
+    </div>
+
+    <!-- Desktop context rail -->
+    <sc-if value="{{ railVisible }}" hint-placeholder-val="{{ false }}">
+      <div style="display: flex; flex-direction: column; gap: 14px; position: sticky; top: 20px;">
+        <sc-if value="{{ railShowCtx }}" hint-placeholder-val="{{ false }}">
+          <div style="border-radius: 14px; background: var(--color-bg-brand-subtle); display: flex; gap: 9px; padding: 14px; align-items: center;">
+            <span style="width: 44px; height: 44px; border-radius: 999px; background: var(--color-bg-surface); color: var(--color-brand-secondary); font-weight: 700; font-size: 15px; display: flex; align-items: center; justify-content: center; flex-shrink: 0;">{{ selInitials }}</span>
+            <span style="flex: 1; display: flex; flex-direction: column; gap: 2px;">
+              <span style="font-size: 11px; line-height: 16px; color: var(--color-text-muted);">Booking for</span>
+              <span style="font-weight: 600; font-size: 13px; line-height: 18px; color: var(--color-brand-secondary);">{{ selTitle }}</span>
+            </span>
+            <span onClick="{{ goStudent }}" style="cursor: pointer; font-weight: 600; font-size: 11px; color: var(--color-brand-primary);">Change</span>
+          </div>
+        </sc-if>
+        <sc-if value="{{ railShowSteps }}" hint-placeholder-val="{{ false }}">
+          <div style="border-radius: 14px; background: var(--color-bg-surface); box-shadow: inset 0 0 0 1px var(--color-border-default); padding: 16px; display: flex; flex-direction: column; gap: 14px;">
+            <span style="font-weight: 600; font-size: 11px; letter-spacing: 0.06em; color: var(--color-text-muted);">YOUR BOOKING JOURNEY</span>
+            <sc-for list="{{ railSteps }}" as="st" hint-placeholder-count="3">
+              <div style="display: flex; align-items: center; gap: 12px;">
+                <span style="width: 44px; height: 44px; border-radius: 999px; flex-shrink: 0; display: flex; align-items: center; justify-content: center; font-family: Poppins, sans-serif; font-weight: 700; font-size: 17px; background: {{ st.bg }}; color: {{ st.fg }}; box-shadow: {{ st.ring }};">{{ st.glyph }}</span>
+                <span style="display: flex; flex-direction: column; gap: 1px;">
+                  <span style="font-weight: 600; font-size: 12px; line-height: 17px; color: {{ st.labelColor }};">{{ st.label }}</span>
+                  <span style="font-size: 10px; line-height: 14px; color: var(--color-text-muted);">{{ st.sub }}</span>
+                </span>
+              </div>
+            </sc-for>
+          </div>
+        </sc-if>
+        <sc-if value="{{ railShowPay }}" hint-placeholder-val="{{ false }}">
+          <div style="border-radius: 12px; background: var(--color-bg-subtle); box-shadow: inset 0 0 0 1px var(--color-border-default); padding: 14px; display: flex; flex-direction: column; gap: 8px;">
+            <span style="font-weight: 600; font-size: 11px; letter-spacing: 0.06em; color: var(--color-text-muted);">PAYMENT — WOOCOMMERCE CHECKOUT BLOCK</span>
+            <div style="height: 40px; border-radius: 8px; background: var(--color-bg-surface); box-shadow: inset 0 0 0 1px var(--color-border-default); display: flex; align-items: center; padding: 0 12px; font-size: 12px; color: var(--color-text-muted);">Card number</div>
+            <div style="display: flex; gap: 8px;">
+              <div style="flex: 1; height: 40px; border-radius: 8px; background: var(--color-bg-surface); box-shadow: inset 0 0 0 1px var(--color-border-default); display: flex; align-items: center; padding: 0 12px; font-size: 12px; color: var(--color-text-muted);">MM / YY</div>
+              <div style="flex: 1; height: 40px; border-radius: 8px; background: var(--color-bg-surface); box-shadow: inset 0 0 0 1px var(--color-border-default); display: flex; align-items: center; padding: 0 12px; font-size: 12px; color: var(--color-text-muted);">CVC</div>
+            </div>
+            <span style="font-size: 10px; line-height: 14px; color: var(--color-text-muted);">The payment form is WooCommerce's Checkout Block (Stripe today). The plugin supplies the booking panel, hold countdown and credit.</span>
+          </div>
+        </sc-if>
+        <sc-if value="{{ railShowAction }}" hint-placeholder-val="{{ false }}">
+          <div style="border-radius: 14px; background: var(--color-bg-surface); box-shadow: inset 0 0 0 1px var(--color-border-default); padding: 16px; display: flex; flex-direction: column; gap: 10px;">
+            <sc-if value="{{ stickyHasTotal }}" hint-placeholder-val="{{ false }}">
+              <div style="display: flex; justify-content: space-between; align-items: center; gap: 12px;">
+                <span style="font-weight: 600; font-size: 12px; color: var(--color-text-primary);">{{ stickyLabel }}</span>
+                <span style="font-family: Poppins, sans-serif; font-weight: 700; font-size: 17px; color: var(--color-brand-secondary);">{{ stickyTotal }}</span>
+              </div>
+            </sc-if>
+            <sc-if value="{{ stickyHasSummary }}" hint-placeholder-val="{{ false }}">
+              <span style="font-weight: 600; font-size: 12px; line-height: 18px; color: var(--color-text-primary);">{{ stickySummary }}</span>
+            </sc-if>
+            <sc-if value="{{ stickyHasBtn }}" hint-placeholder-val="{{ false }}">
+              <div onClick="{{ stickyAction }}" style="cursor: {{ stickyCursor }}; display: flex;" style-hover="opacity: 0.92;">
+                <div style="flex: 1; min-height: 48px; box-sizing: border-box; border-radius: 12px; padding: 12px 20px; display: flex; align-items: center; justify-content: center; background: {{ stickyBtnBg }}; color: {{ stickyBtnFg }}; font-weight: 600; font-size: 13px; font-family: Montserrat, sans-serif; box-shadow: {{ stickyBtnRing }};">{{ stickyCta }}</div>
+              </div>
+            </sc-if>
+            <sc-if value="{{ stickyHasNote }}" hint-placeholder-val="{{ false }}">
+              <span style="font-size: 10px; line-height: 14px; color: var(--color-text-muted);">{{ stickyNote }}</span>
+            </sc-if>
+          </div>
+        </sc-if>
+      </div>
+    </sc-if>
+  </div>
+
+  <!-- Sticky bottom action bar -->
+  <sc-if value="{{ stickyVisible }}" hint-placeholder-val="{{ false }}">
+    <div style="position: fixed; bottom: 0; left: 0; right: 0; background: var(--color-bg-surface); border-top: 1px solid var(--color-border-default); z-index: 30;">
+      <div style="max-width: 560px; margin: 0 auto; padding: 13px 20px 16px; display: flex; flex-direction: column; gap: 8px;">
+        <sc-if value="{{ stickyHasTotal }}" hint-placeholder-val="{{ false }}">
+          <div style="display: flex; justify-content: space-between; align-items: center; gap: 12px;">
+            <span style="font-weight: 600; font-size: 12px; color: var(--color-text-primary);">{{ stickyLabel }}</span>
+            <span style="font-family: Poppins, sans-serif; font-weight: 700; font-size: 17px; color: var(--color-brand-secondary);">{{ stickyTotal }}</span>
+          </div>
+        </sc-if>
+        <sc-if value="{{ stickyHasSummary }}" hint-placeholder-val="{{ false }}">
+          <span style="font-weight: 600; font-size: 12px; color: var(--color-text-primary);">{{ stickySummary }}</span>
+        </sc-if>
+        <sc-if value="{{ stickyHasBtn }}" hint-placeholder-val="{{ false }}">
+          <div onClick="{{ stickyAction }}" style="cursor: {{ stickyCursor }}; align-self: stretch; display: flex;" style-hover="opacity: 0.92;">
+            <div style="flex: 1; min-height: 48px; box-sizing: border-box; border-radius: 12px; padding: 12px 20px; display: flex; align-items: center; justify-content: center; background: {{ stickyBtnBg }}; color: {{ stickyBtnFg }}; font-weight: 600; font-size: 13px; font-family: Montserrat, sans-serif; box-shadow: {{ stickyBtnRing }};">{{ stickyCta }}</div>
+          </div>
+        </sc-if>
+        <sc-if value="{{ stickyHasNote }}" hint-placeholder-val="{{ false }}">
+          <span style="font-size: 10px; line-height: 14px; color: var(--color-text-muted);">{{ stickyNote }}</span>
+        </sc-if>
+      </div>
+    </div>
+  </sc-if>
+
+  <!-- Added-to-checkout slide-in sheet -->
+  <div style="position: fixed; bottom: 0; left: 0; right: 0; z-index: 40; transform: {{ sheetTransform }}; transition: transform 0.32s ease; pointer-events: {{ sheetPointer }};">
+    <div style="max-width: 560px; margin: 0 auto; background: var(--color-bg-surface); border-radius: 16px 16px 0 0; box-shadow: var(--shadow-raised); padding: 18px 20px 22px; display: flex; flex-direction: column; gap: 10px;">
+      <div style="display: flex; justify-content: space-between; align-items: center; gap: 12px;">
+        <x-import component-from-global-scope="SJPTheatreArtsDesignSystem_175e54.StatusBadge" from="_ds/sjp-theatre-arts-design-system-175e544c-62db-4215-acdb-7b1da4bfaa75/_ds_bundle.js" severity="success" text1="✓" text2="Places held" hint-size="130px,32px"></x-import>
+        <span onClick="{{ closeSheet }}" style="cursor: pointer; font-size: 16px; color: var(--color-text-muted); padding: 8px;">×</span>
+      </div>
+      <span style="font-family: Poppins, sans-serif; font-weight: 600; font-size: 16px; line-height: 22px; color: var(--color-brand-secondary);">{{ sheetTitle }}</span>
+      <span style="font-weight: 600; font-size: 12px; line-height: 18px; color: var(--color-text-primary);">{{ sheetMeta }}</span>
+      <span style="font-size: 11px; line-height: 16px; color: var(--color-text-muted);">{{ sheetHoldNote }}</span>
+      <div style="display: flex; gap: 10px; flex-wrap: wrap;">
+        <div onClick="{{ goCheckout }}" style="cursor: pointer;" style-hover="opacity: 0.88;">
+          <x-import component-from-global-scope="SJPTheatreArtsDesignSystem_175e54.Button" from="_ds/sjp-theatre-arts-design-system-175e544c-62db-4215-acdb-7b1da4bfaa75/_ds_bundle.js" size="mobile" style2="primary" state="default" label="Go to checkout" hint-size="150px,48px"></x-import>
+        </div>
+        <div onClick="{{ addAnother }}" style="cursor: pointer;" style-hover="opacity: 0.88;">
+          <x-import component-from-global-scope="SJPTheatreArtsDesignSystem_175e54.Button" from="_ds/sjp-theatre-arts-design-system-175e544c-62db-4215-acdb-7b1da4bfaa75/_ds_bundle.js" size="mobile" style2="outline" state="default" label="{{ addAnotherLabel }}" hint-size="170px,48px"></x-import>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props="{
+  &quot;vocabulary&quot;: {&quot;editor&quot;: &quot;enum&quot;, &quot;options&quot;: [&quot;Student / class / teacher (SJP)&quot;, &quot;Participant / lesson / instructor (demo)&quot;], &quot;default&quot;: &quot;Student / class / teacher (SJP)&quot;, &quot;tsType&quot;: &quot;string&quot;, &quot;section&quot;: &quot;Tenant configuration&quot;},
+  &quot;brandColors&quot;: {&quot;editor&quot;: &quot;color&quot;, &quot;default&quot;: [&quot;#FF7300&quot;, &quot;#330164&quot;], &quot;options&quot;: [[&quot;#FF7300&quot;, &quot;#330164&quot;], [&quot;#0E7C6B&quot;, &quot;#0F2B46&quot;], [&quot;#C5299B&quot;, &quot;#3D0A54&quot;]], &quot;tsType&quot;: &quot;string[]&quot;, &quot;section&quot;: &quot;Tenant configuration&quot;},
+  &quot;holdMinutes&quot;: {&quot;editor&quot;: &quot;int&quot;, &quot;default&quot;: 30, &quot;min&quot;: 5, &quot;max&quot;: 60, &quot;tsType&quot;: &quot;number&quot;, &quot;section&quot;: &quot;Tenant configuration&quot;},
+  &quot;accountType&quot;: {&quot;editor&quot;: &quot;enum&quot;, &quot;options&quot;: [&quot;Parent / guardian (books for children)&quot;, &quot;Adult student (books for self)&quot;], &quot;default&quot;: &quot;Parent / guardian (books for children)&quot;, &quot;tsType&quot;: &quot;string&quot;, &quot;section&quot;: &quot;Prototype&quot;},
+  &quot;showThemeChrome&quot;: {&quot;editor&quot;: &quot;boolean&quot;, &quot;default&quot;: true, &quot;tsType&quot;: &quot;boolean&quot;, &quot;section&quot;: &quot;Prototype&quot;}
+}">
+class Component extends DCLogic {
+  state = {
+    screen: "student", loading: false, selStudent: null,
+    dayF: "All days", typeF: "All types", mode: "list",
+    selClass: null, selPkg: null, selSingle: null,
+    showFullDates: false, showRevDates: false, overlapAck: false,
+    basket: [], sheet: false, creditOn: true, creditCustom: null, creditEditing: false, creditDraft: "", now: Date.now(),
+    acctTab: "bookings", confirmed: [], openUpcoming: {},
+    vw: typeof window !== "undefined" ? window.innerWidth : 1200,
+  };
+
+  componentDidMount() {
+    this.ensureTick();
+    this.applyBrand();
+    this._onRes = () => this.setState({ vw: window.innerWidth });
+    window.addEventListener("resize", this._onRes);
+  }
+  ensureTick() {
+    if (this._tick) return;
+    this._tick = setInterval(() => this.setState({ now: Date.now() }), 1000);
+  }
+  componentDidUpdate() { this.applyBrand(); }
+  componentWillUnmount() { clearInterval(this._tick); clearTimeout(this._nav); window.removeEventListener("resize", this._onRes); }
+
+  applyBrand() {
+    const pal = Array.isArray(this.props.brandColors) ? this.props.brandColors : ["#FF7300", "#330164"];
+    const key = pal.join(",");
+    if (this._brandKey === key) return;
+    this._brandKey = key;
+    const r = document.documentElement.style;
+    r.setProperty("--color-brand-primary", pal[0]);
+    r.setProperty("--color-brand-focus", pal[0]);
+    r.setProperty("--color-brand-secondary", pal[1] || "#330164");
+    r.setProperty("--color-text-brand", pal[1] || "#330164");
+    r.setProperty("--color-bg-brand-subtle", "color-mix(in srgb, " + pal[0] + " 9%, white)");
+  }
+
+  vocab() {
+    const alt = (this.props.vocabulary || "").indexOf("Participant") === 0;
+    return alt
+      ? { cls: "lesson", clsPl: "lessons", stu: "participant", stuPl: "participants", tch: "instructor" }
+      : { cls: "class", clsPl: "classes", stu: "student", stuPl: "students", tch: "teacher" };
+  }
+
+  holdMins() { return Number(this.props.holdMinutes) || 30; }
+  isAdult() { return (this.props.accountType || "").indexOf("Adult") === 0; }
+
+  go(screen, extra) {
+    clearTimeout(this._nav);
+    this.setState({ loading: true, sheet: false, ...(extra || {}) });
+    this._nav = setTimeout(() => {
+      this.setState({ loading: false, screen });
+      window.scrollTo(0, 0);
+    }, 380);
+  }
+
+  static DATES = {
+    Mon: ["Mon 7 Sep", "Mon 14 Sep", "Mon 21 Sep", "Mon 28 Sep", "Mon 5 Oct", "Mon 12 Oct", "Mon 19 Oct", "Mon 2 Nov", "Mon 9 Nov", "Mon 16 Nov", "Mon 23 Nov"],
+    Fri: ["Fri 11 Sep", "Fri 18 Sep", "Fri 25 Sep", "Fri 2 Oct", "Fri 9 Oct", "Fri 16 Oct", "Fri 23 Oct", "Fri 6 Nov", "Fri 13 Nov", "Fri 20 Nov", "Fri 27 Nov"],
+    Sat: ["Sat 12 Sep", "Sat 19 Sep", "Sat 26 Sep", "Sat 3 Oct", "Sat 10 Oct", "Sat 17 Oct", "Sat 24 Oct", "Sat 7 Nov", "Sat 14 Nov", "Sat 21 Nov", "Sat 28 Nov"],
+    Tue: ["Tue 8 Sep", "Tue 15 Sep", "Tue 22 Sep", "Tue 29 Sep", "Tue 6 Oct", "Tue 13 Oct", "Tue 20 Oct", "Tue 3 Nov", "Tue 10 Nov", "Tue 17 Nov", "Tue 24 Nov"],
+    Thu: ["Thu 10 Sep", "Thu 17 Sep", "Thu 24 Sep", "Thu 1 Oct", "Thu 8 Oct", "Thu 15 Oct", "Thu 22 Oct", "Thu 5 Nov", "Thu 12 Nov", "Thu 19 Nov", "Thu 26 Nov"],
+  };
+
+  static TYPE_COLORS = { "Ballet": "#7A54A8", "Musical theatre": "#2F6FA8", "Acro": "#0E7C6B", "Jazz": "#C5299B", "Street dance": "#8A5A00" };
+
+  static CLASSES = [
+    { id: 1, name: "1st Steps", type: "Ballet", day: "Sat", time: "9:15–9:45am", studio: "Studio 1", teacher: "Miss Sophie", ages: "Ages 2–4", spaces: 5, single: 7, pkg: 6.5 },
+    { id: 2, name: "Reception – Yr1", type: "Musical theatre", day: "Sat", time: "9:45–10:45am", studio: "Studio 1", teacher: "Miss Sophie, Mr Daniel", ages: "Reception–Yr 1", spaces: 3, single: 11, pkg: 10 },
+    { id: 3, name: "Yr2 – Yr3", type: "Musical theatre", day: "Sat", time: "10:45–11:45am", studio: "Studio 2", teacher: "Miss Ruby", ages: "Years 2–3", spaces: 8, single: 11, pkg: 10, suit: true },
+    { id: 4, name: "Yr4 – Yr6", type: "Musical theatre", day: "Sat", time: "11:45am–1:00pm", studio: "Studio 1", teacher: "Mr Daniel", ages: "Years 4–6", spaces: 0, single: 12.5, pkg: 11.5 },
+    { id: 5, name: "Ballet Fundamentals", type: "Ballet", day: "Tue", time: "4:15–5:00pm", studio: "Studio 1", teacher: "Miss Ruby", ages: "Years 2–4", spaces: 5, single: 13, pkg: 12, suit: true },
+    { id: 6, name: "Acro Skills", type: "Acro", day: "Thu", time: "5:00–5:45pm", studio: "Studio 2", teacher: "Mr Daniel", ages: "Years 3–6", spaces: 6, single: 12, pkg: 11, overlap: "Junior Jazz (Thu 5:15–6:00pm)" },
+    { id: 7, name: "Street Crew", type: "Street dance", day: "Mon", time: "5:30–6:15pm", studio: "Studio 2", teacher: "Mr Daniel", ages: "Years 4–6", spaces: 7, single: 11, pkg: 10 },
+    { id: 8, name: "Mini Movers", type: "Ballet", day: "Fri", time: "4:00–4:30pm", studio: "Studio 1", teacher: "Miss Sophie", ages: "Ages 3–5", spaces: 4, single: 7, pkg: 6.5 },
+  ].map((c) => ({ ...c, color: Component.TYPE_COLORS[c.type] || "#6B7280" }));
+
+  money(n) { return "£" + (n % 1 === 0 ? String(n) : n.toFixed(2)); }
+  clockFor(expires) {
+    const left = Math.max(0, Math.floor((expires - this.state.now) / 1000));
+    const m = Math.floor(left / 60), s = left % 60;
+    return { text: m + ":" + (s < 10 ? "0" : "") + s, warn: left < 300, dead: left <= 0 };
+  }
+
+  addToBasket() {
+    const { selClass: c, selPkg, selSingle } = this.state;
+    const v = this.vocab();
+    const stu = this.isAdult()
+      ? { first: "Becky", name: "Becky Smith" }
+      : (this.state.selStudent || { first: "Ava", name: "Ava Williams" });
+    const dates = Component.DATES[c.day];
+    let count, total, label, dlist;
+    if (selPkg === "full") { count = 11; total = c.pkg * 11; label = "Full term"; dlist = dates; }
+    else if (selPkg === "half") { count = 6; total = c.pkg * 6; label = "First half of term"; dlist = dates.slice(0, 6); }
+    else { count = 1; total = c.single; label = "Single " + v.cls; dlist = [dates[selSingle]]; }
+    const item = {
+      id: Date.now(), cls: c.name, color: c.color, student: stu.name, first: stu.first,
+      pkgLabel: label, count, total, saving: selPkg && selPkg !== "single" ? (c.single - c.pkg) * count : 0,
+      when: c.day + " " + c.time + " · " + c.studio, dates: dlist,
+      expires: Date.now() + this.holdMins() * 60 * 1000,
+    };
+    this.ensureTick();
+    this.setState({ basket: [...this.state.basket, item], sheet: true, now: Date.now() });
+  }
+
+  renderVals() {
+    const S = this.state, v = this.vocab(), M = this.money.bind(this);
+    const adult = this.isAdult();
+    const cap = (w) => w.charAt(0).toUpperCase() + w.slice(1);
+    const stu = adult
+      ? { first: "Becky", name: "Becky Smith", age: 34, initials: "BS" }
+      : (S.selStudent || { first: "Ava", name: "Ava Williams", age: 8, initials: "AW" });
+    const first = stu.first;
+
+    const studentsBase = [
+      { name: "Ava Williams", first: "Ava", age: 8, initials: "AW", nextBooking: "Next: Junior Jazz — Thu 5:15pm" },
+      { name: "Jack Williams", first: "Jack", age: 6, initials: "JW", nextBooking: "No upcoming bookings yet" },
+    ];
+    const students = studentsBase.map((k) => ({
+      ...k, title: k.name + " · age " + k.age, next: k.nextBooking,
+      cta: "Choose " + k.first, bookCta: "Book for " + k.first,
+      choose: () => this.go("discover", { selStudent: k }),
+    }));
+
+    const WEEK = ["Mon", "Tue", "Wed", "Thu", "Fri", "Sat", "Sun"];
+    const days = ["All days", ...WEEK.filter((d) => Component.CLASSES.some((x) => x.day === d))];
+    const types = ["All types", ...Array.from(new Set(Component.CLASSES.map((x) => x.type)))];
+    const chip = (label, active, set) => ({
+      label, set,
+      bg: active ? "var(--color-brand-secondary)" : "var(--color-bg-surface)",
+      fg: active ? "var(--color-text-inverse)" : "var(--color-text-primary)",
+      ring: active ? "none" : "inset 0 0 0 1px var(--color-border-default)",
+    });
+    const dayChips = days.map((d) => chip(d, S.dayF === d, () => this.setState({ dayF: d })));
+    const typeOptions = types.map((t) => ({ value: t, label: t === "All types" ? "All types" : t }));
+
+    const decorate = (c) => {
+      let statusLine, statusColor = "var(--color-status-success-fg)";
+      if (c.spaces === 0) { statusLine = "× Full this term"; statusColor = "var(--color-status-danger-fg)"; }
+      else if (c.overlap) { statusLine = "! Overlaps with " + c.overlap; statusColor = "var(--color-status-warning-fg)"; }
+      else if (c.suit && !adult) { statusLine = "✓ " + c.spaces + " spaces · Great for " + first + "'s age"; }
+      else { statusLine = "✓ " + c.spaces + " spaces"; }
+      return {
+        ...c, statusLine, statusColor,
+        typeBg: "color-mix(in srgb, " + c.color + " 11%, white)", typeFg: c.color,
+        when: c.day + " · " + c.time + " · " + c.studio,
+        teacherLine: cap(v.tch) + ": " + c.teacher,
+        priceLine: "from " + M(Math.min(c.pkg, c.single)),
+        timeShort: c.time, spacesShort: c.spaces === 0 ? "× Full" : "✓ " + c.spaces + " spaces",
+        open: c.spaces > 0, full: c.spaces === 0,
+        view: () => this.go("options", { selClass: c, selPkg: null, selSingle: null, showFullDates: false, overlapAck: false }),
+      };
+    };
+    const all = Component.CLASSES.map(decorate);
+    const filteredClasses = all.filter((c) => (S.dayF === "All days" || c.day === S.dayF) && (S.typeF === "All types" || c.type === S.typeF));
+    const weekCols = WEEK.map((d) => {
+      const items = all.filter((c) => c.day === d && (S.typeF === "All types" || c.type === S.typeF));
+      return { day: d.toUpperCase(), items, none: items.length === 0 };
+    });
+
+    // Package screen
+    const c = S.selClass || Component.CLASSES[4];
+    const dates = Component.DATES[c.day];
+    const dayName = { Mon: "Monday", Tue: "Tuesday", Wed: "Wednesday", Thu: "Thursday", Fri: "Friday", Sat: "Saturday", Sun: "Sunday" }[c.day] || c.day;
+    const singlesAll = dates.map((d, i) => {
+      const st = i === 1 ? "full" : i === 2 ? "booked" : "open";
+      const n = i === 0 ? 3 : i === 3 ? 2 : 5;
+      return {
+        label: d + ", " + c.time.split("–")[0] + (c.time.indexOf("pm") > -1 ? "pm" : "am"),
+        dshort: d,
+        dateColor: st === "open" ? "var(--color-text-primary)" : "var(--color-text-muted)",
+        open: st === "open", fullDate: st === "full", booked: st === "booked",
+        places: n + " places left", placesShort: n + " left",
+        book: () => this.go("review", { selPkg: "single", selSingle: i, showRevDates: false, overlapAck: false }),
+      };
+    });
+    const singles = singlesAll.slice(0, 6);
+
+    // Review
+    const pkg = S.selPkg || "full";
+    const revCount = pkg === "full" ? 11 : pkg === "half" ? 6 : 1;
+    const revIsPkg = pkg !== "single";
+    const revTotalN = revIsPkg ? c.pkg * revCount : c.single;
+    const revSavingN = revIsPkg ? (c.single - c.pkg) * revCount : 0;
+    const revDatesArr = pkg === "single" ? [dates[S.selSingle || 0]] : dates.slice(0, revCount);
+
+    // Basket / checkout
+    const basketItems = S.basket.map((b) => {
+      const ck = this.clockFor(b.expires);
+      return {
+        ...b, total: M(b.total),
+        meta: b.student + " · " + b.pkgLabel + " · " + b.count + (b.count === 1 ? " session" : " sessions"),
+        datesLine: b.when + " · " + b.dates[0] + (b.count > 1 ? " – " + b.dates[b.dates.length - 1] : ""),
+        holdLine: ck.dead ? "× Hold expired — places released" : "Held for " + ck.text,
+        clockColor: ck.dead ? "var(--color-status-danger-fg)" : ck.warn ? "var(--color-status-warning-fg)" : "var(--color-status-info-fg)",
+        ring: ck.dead ? "var(--color-status-danger-fg)" : "var(--color-border-default)",
+        remove: () => this.setState({ basket: S.basket.filter((x) => x.id !== b.id) }),
+      };
+    });
+    const liveItems = S.basket.filter((b) => !this.clockFor(b.expires).dead);
+    const subtotalN = liveItems.reduce((t, b) => t + b.total, 0);
+    const creditMax = Math.min(25, subtotalN);
+    const creditAmt = S.creditCustom == null ? creditMax : Math.min(creditMax, S.creditCustom);
+    const toPayN = Math.max(0, subtotalN - (S.creditOn ? creditAmt : 0));
+    const soonest = liveItems.length ? Math.min(...liveItems.map((b) => b.expires)) : 0;
+    const soonCk = soonest ? this.clockFor(soonest) : { text: "0:00", warn: false };
+
+    // Sticky bar per screen
+    let stickyVisible = false, stickyHasTotal = false, stickyHasSummary = false, stickyHasNote = false, stickyHasBtn = true;
+    let stickyLabel = "", stickyTotal = "", stickySummary = "", stickyCta = "", stickyNote = "", stickyAction = () => {};
+    let stickyBtnBg = "var(--color-brand-primary)", stickyBtnFg = "var(--color-text-inverse)", stickyBtnRing = "none", stickyCursor = "pointer";
+    if (S.screen === "discover" && !S.loading) {
+      stickyVisible = true; stickyHasSummary = true;
+      stickySummary = S.basket.length
+        ? S.basket.length + (S.basket.length === 1 ? " booking held" : " bookings held") + " · " + soonCk.text + " remaining"
+        : "Showing " + filteredClasses.length + " " + (filteredClasses.length === 1 ? v.cls : v.clsPl) + (adult ? " for you" : " suitable for " + first) + " — tap one to see booking options";
+      stickyCta = "Go to checkout";
+      if (S.basket.length) { stickyAction = () => this.go("checkout"); }
+      else { stickyHasBtn = false; }
+    } else if (S.screen === "review" && !S.loading) {
+      stickyVisible = true; stickyHasTotal = true; stickyHasNote = true;
+      stickyLabel = "Due today"; stickyTotal = M(revTotalN);
+      const blocked = (c.overlap && !S.overlapAck);
+      stickyCta = blocked ? "Tick the overlap box to continue" : "Add to checkout — hold places";
+      stickyNote = "Adding this booking holds the places for " + this.holdMins() + " minutes while you check out. Nothing is charged yet.";
+      if (blocked) { stickyBtnBg = "var(--color-bg-subtle)"; stickyBtnFg = "var(--color-text-muted)"; stickyBtnRing = "inset 0 0 0 1px var(--color-border-default)"; stickyCursor = "default"; }
+      else { stickyAction = () => this.addToBasket(); }
+    } else if (S.screen === "checkout" && !S.loading) {
+      stickyVisible = true; stickyHasTotal = true; stickyHasNote = true;
+      stickyLabel = "To pay today"; stickyTotal = M(toPayN);
+      stickyCta = liveItems.length ? "Pay " + M(toPayN) + " securely" : "All holds expired — start again";
+      stickyNote = "Hold expiry is enforced by the server — the countdown is a courtesy display.";
+      stickyAction = liveItems.length
+        ? () => { const done = liveItems; this.go("confirmed", { basket: [], confirmed: [...S.confirmed, ...done] }); }
+        : () => this.go("discover");
+    }
+
+    // Confirmed + account
+    const confirmedCards = (S.confirmed.length ? S.confirmed : []).map((b) => ({
+      cls: b.cls, meta: b.student + " · " + b.pkgLabel + " · " + M(b.total),
+      datesLine: b.count + (b.count === 1 ? " date · " : " dates · ") + b.when,
+    }));
+    const lastConfirmed = S.confirmed[S.confirmed.length - 1];
+
+    const upcomingBase = [
+      ...S.confirmed.map((b, i) => ({
+        key: "c" + i, cls: b.cls, color: b.color, total: M(b.total),
+        meta: b.student + " · " + b.pkgLabel + " · " + b.count + (b.count === 1 ? " session" : " sessions"),
+        next: "Next: " + b.dates[0] + ", " + b.when.split(" ").slice(1).join(" "),
+        dates: b.dates, isPkg: b.count > 1,
+      })),
+      {
+        key: "static1", cls: "Junior Jazz", color: Component.TYPE_COLORS.Jazz, total: "£120",
+        meta: (adult ? "Becky Smith" : "Ava Williams") + " · Full term · 11 sessions",
+        next: "Next: Thu 24 Sep, 5:15–6:00pm · Studio 2", dates: Component.DATES.Thu, isPkg: true,
+      },
+    ];
+    const upcoming = upcomingBase.map((u) => ({
+      ...u,
+      open: !!S.openUpcoming[u.key],
+      toggle: () => this.setState({ openUpcoming: { ...S.openUpcoming, [u.key]: !S.openUpcoming[u.key] } }),
+      datesToggle: (S.openUpcoming[u.key] ? "Hide " : "Show ") + u.dates.length + (u.dates.length === 1 ? " date" : " dates"),
+      dateRows: u.dates.map((d, i) => ({
+        label: d, action: i === 2 ? "Absence reported · Undo" : "Report absence",
+        actionColor: i === 2 ? "var(--color-status-neutral-fg)" : "var(--color-brand-primary)",
+      })),
+      policy: u.isPkg
+        ? "Package dates can't be cancelled individually online — contact the school about exceptional circumstances."
+        : "This session can be cancelled online up to 24 hours before the " + v.cls + " — the amount paid is returned as booking credit.",
+    }));
+
+    const previous = [
+      { label: "1st Steps — Sat 18 Jul, 9:15am", status: "✓ Present", statusColor: "var(--color-status-success-fg)", amount: "£7.00" },
+      { label: "1st Steps — Sat 11 Jul, 9:15am", status: "× School cancelled", statusColor: "var(--color-status-danger-fg)", amount: "£7.00" },
+      { label: "Junior Jazz — Thu 9 Jul, 5:15pm", status: "• Absent (expected)", statusColor: "var(--color-status-neutral-fg)", amount: "£10.00" },
+    ];
+    const creditLots = [
+      { reason: "Cancelled session — Junior Jazz (Ava)", remaining: "£12.00", meta: "Issued 2 Jul 2026 · expires 2 Jul 2027 · £0 used" },
+      { reason: "Goodwill adjustment", remaining: "£13.00", meta: "Issued 14 Jun 2026 · expires 14 Jun 2027 · £0 used" },
+    ];
+    const acctTabs = [
+      { key: "bookings", label: "Bookings" },
+      { key: "credit", label: "Credit" },
+      ...(adult ? [] : [{ key: "kids", label: cap(v.stuPl) }]),
+    ].map((t) => ({
+      ...chip(t.label, S.acctTab === t.key, () => this.setState({ acctTab: t.key })),
+    }));
+
+    const sheetItem = S.basket[S.basket.length - 1];
+    const sheetCk = sheetItem ? this.clockFor(sheetItem.expires) : { text: "" };
+
+    // Desktop (option 1a — context rail)
+    const desk = S.vw >= 1000;
+    const railShowCtx = !adult && desk && !S.loading && (S.screen === "discover" || S.screen === "options" || S.screen === "review");
+    const railShowAction = desk && stickyVisible;
+    const stepBase = ({ discover: 0, options: 1, review: 2 })[S.screen];
+    const stepIdx = stepBase == null ? null : (adult ? stepBase : stepBase + 1);
+    const railShowSteps = desk && !S.loading && stepIdx != null;
+    const railSteps = [
+      ...(adult ? [] : [{ label: "Choose a " + v.stu, sub: "Switch " + v.stuPl + " at any time" }]),
+      { label: "Choose a " + v.cls, sub: "Filter by day or type" },
+      { label: "Choose a package", sub: "Full term, half term or single dates" },
+      { label: "Review & pay", sub: "Check dates and total before checkout" },
+    ].map((s2, i) => {
+      const done = i < stepIdx, cur = i === stepIdx;
+      return {
+        ...s2, glyph: done ? "✓" : String(i + 1),
+        bg: cur ? "var(--color-brand-primary)" : done ? "var(--color-bg-brand-subtle)" : "var(--color-bg-surface)",
+        fg: cur ? "var(--color-text-inverse)" : done ? "var(--color-brand-secondary)" : "var(--color-text-muted)",
+        ring: cur || done ? "none" : "inset 0 0 0 1px var(--color-border-default)",
+        labelColor: cur ? "var(--color-text-brand)" : done ? "var(--color-brand-secondary)" : "var(--color-text-muted)",
+      };
+    });
+    const railShowPay = desk && !S.loading && S.screen === "checkout";
+    const railVisible = railShowCtx || railShowAction || railShowSteps || railShowPay;
+
+    return {
+      // chrome + nav
+      showChrome: this.props.showThemeChrome ?? true,
+      hasBasket: S.basket.length > 0,
+      basketPill: S.basket.length + " held · " + soonCk.text,
+      navBookLabel: "Book " + v.clsPl,
+      goStudent: () => this.go("student"),
+      goDiscover: () => this.go("discover"),
+      goOptions: () => this.go("options"),
+      goCheckout: () => this.go("checkout"),
+      goAccount: () => this.go("account"),
+      loading: S.loading,
+
+      // screens
+      isParent: !adult,
+      isStudent: S.screen === "student" && !S.loading && !adult,
+      isDiscover: (S.screen === "discover" || (adult && S.screen === "student")) && !S.loading,
+      isOptions: S.screen === "options" && !S.loading,
+      isReview: S.screen === "review" && !S.loading,
+      isCheckout: S.screen === "checkout" && !S.loading,
+      isConfirmed: S.screen === "confirmed" && !S.loading,
+      isAccount: S.screen === "account" && !S.loading,
+
+      // step 1
+      eyebrowStudent: "STEP 1 OF 4  •  CHOOSE A " + v.stu.toUpperCase(),
+      students,
+      switchNote: "You can switch " + v.stuPl + " at any point — the whole journey always shows who you're booking for.",
+
+      // step 2
+      backStudentLabel: "Change " + v.stu,
+      eyebrowClass: (adult ? "STEP 1 OF 3" : "STEP 2 OF 4") + "  •  CHOOSE A " + v.cls.toUpperCase(),
+      discoverTitle: adult ? "Find your next " + v.cls : "Find the right " + v.cls + " for " + first,
+      selInitials: stu.initials, selTitle: stu.name + " · age " + stu.age,
+      dayChips, typeOptions, filteredClasses, weekCols,
+      typeValue: S.typeF,
+      typeSelect: (e) => this.setState({ typeF: e.target.value }),
+      isList: S.mode === "list", isWeek: S.mode === "week",
+      setList: () => this.setState({ mode: "list" }), setWeek: () => this.setState({ mode: "week" }),
+      listBg: S.mode === "list" ? "var(--color-brand-secondary)" : "var(--color-bg-surface)",
+      listFg: S.mode === "list" ? "var(--color-text-inverse)" : "var(--color-text-primary)",
+      weekBg: S.mode === "week" ? "var(--color-brand-secondary)" : "var(--color-bg-surface)",
+      weekFg: S.mode === "week" ? "var(--color-text-inverse)" : "var(--color-text-primary)",
+
+      // step 3
+      backClassesLabel: "All " + v.clsPl,
+      eyebrowPkg: (adult ? "STEP 2 OF 3" : "STEP 3 OF 4") + "  •  CHOOSE A PACKAGE",
+      eyebrowReview: (adult ? "STEP 3 OF 3" : "STEP 4 OF 4") + "  •  REVIEW BOOKING",
+      pkgTitle: adult ? "Choose how you'll attend" : "Choose how " + first + " will attend",
+      optClassLine: c.name + " · " + c.day + " " + c.time + " · " + c.studio + " · " + c.teacher,
+      bookingForLine: "Booking for " + stu.name,
+      fullPrice: M(c.pkg * 11), fullMeta: "11 " + dayName + "s · 12 Sep–28 Nov · " + M(c.pkg) + " per session",
+      fullSaving: "✓ Save " + M((c.single - c.pkg) * 11) + " vs single sessions",
+      fullDates: dates.map((d) => ({ label: d })),
+      showFullDates: S.showFullDates,
+      toggleFullDates: () => this.setState({ showFullDates: !S.showFullDates }),
+      fullDatesToggle: (S.showFullDates ? "Hide" : "Show") + " all 11 dates",
+      chooseFull: () => this.go("review", { selPkg: "full", showRevDates: false, overlapAck: false }),
+      halfPrice: M(c.pkg * 6), halfMeta: "6 " + dayName + "s · 12 Sep–17 Oct · " + M(c.pkg) + " per session",
+      chooseHalf: () => this.go("review", { selPkg: "half", showRevDates: false, overlapAck: false }),
+      singleHeading: "Single " + v.clsPl, singleRate: M(c.single),
+      singles,
+
+      // step 4
+      reviewTitle: adult ? "Review your booking" : "Review " + first + "'s booking",
+      revClass: c.name, revColor: c.color,
+      revWhen: dayName + "s · " + c.time + " · " + c.studio + " · " + c.teacher,
+      revAvailability: "✓ " + revCount + (revCount === 1 ? " date available" : " dates available") + (c.overlap ? "" : " · No overlaps"),
+      revOptionLabel: pkg === "full" ? "Full term" : pkg === "half" ? "First half of term" : "Single " + v.cls,
+      revDates: revDatesArr.map((d) => ({ label: d })),
+      showRevDates: S.showRevDates,
+      toggleRevDates: () => this.setState({ showRevDates: !S.showRevDates }),
+      revDatesToggle: (S.showRevDates ? "Hide " : "Show ") + revCount + (revCount === 1 ? " date" : " dates"),
+      revStandard: M(c.single) + " per session",
+      revHasSaving: revSavingN > 0,
+      revPkgRate: M(c.pkg) + " per session",
+      revSaving: M(revSavingN), revTotal: M(revTotalN),
+      revOverlap: !!c.overlap,
+      overlapLine: "! This clashes with an existing booking: " + (c.overlap || ""),
+      overlapAck: S.overlapAck, toggleAck: () => this.setState({ overlapAck: !S.overlapAck }),
+      reviewGuidance: "Check the dates and total before checkout. You can go back without losing your place.",
+      cancellationCopy: revIsPkg
+        ? "Package bookings include every listed date — individual dates can't be removed or cancelled online. Contact the school about exceptional circumstances."
+        : "Single sessions can be cancelled online up to 24 hours before the " + v.cls + " — the amount paid is returned as booking credit.",
+
+      // checkout
+      addAnotherLabel: "Add another " + v.cls,
+      checkoutTitle: "Ready to book",
+      soonClock: soonCk.text,
+      basketItems,
+      creditOn: S.creditOn,
+      toggleCredit: () => this.setState({ creditOn: !S.creditOn, creditEditing: false }),
+      creditBg: S.creditOn ? "var(--color-status-success-bg)" : "var(--color-bg-subtle)",
+      creditLabel: (S.creditOn ? "✓ Using " : "Use ") + M(creditAmt) + " account credit",
+      creditKnobBg: S.creditOn ? "var(--color-status-success-fg)" : "var(--color-border-strong)",
+      creditKnobLeft: S.creditOn ? "20px" : "2px",
+      creditNote: S.creditOn ? M(creditAmt) + " will be deducted before payment · £" + (25 - creditAmt).toFixed(2) + " credit left after this order" : "You have £25.00 booking credit available",
+      creditShowEditLink: S.creditOn && !S.creditEditing,
+      creditEditing: S.creditOn && S.creditEditing,
+      creditDraft: S.creditDraft,
+      creditEditMax: "up to " + M(creditMax),
+      editCredit: (e) => { e.stopPropagation(); this.setState({ creditEditing: true, creditDraft: String(creditAmt) }); },
+      creditStop: (e) => e.stopPropagation(),
+      creditDraftChange: (e) => this.setState({ creditDraft: e.target.value }),
+      applyCredit: (e) => {
+        e.stopPropagation();
+        const n = parseFloat(S.creditDraft);
+        this.setState({ creditCustom: isNaN(n) ? null : Math.max(0, Math.min(creditMax, n)), creditEditing: false });
+      },
+      subtotal: M(subtotalN),
+      creditRowLabel: "Booking credit applied",
+      creditRowValue: "−" + M(creditAmt),
+      toPay: M(toPayN),
+
+      // confirmed
+      confirmedTitle: lastConfirmed ? (adult ? "Your place is booked" : lastConfirmed.first + "'s place is booked") : "Booking confirmed",
+      confirmedCards,
+      bookAnotherLabel: "Book another " + v.cls,
+
+      // account
+      acctTabs,
+      isTabBookings: S.acctTab === "bookings",
+      isTabCredit: S.acctTab === "credit",
+      isTabKids: S.acctTab === "kids" && !adult,
+      upcoming, previous, creditLots,
+      creditExplainer: "Applied at checkout against " + v.cls + " bookings, usable for any linked " + v.stu + ", soonest-expiring first.",
+      addChildLabel: "Add a " + v.stu,
+
+      // layout (mobile / desktop 1a)
+      showCtxInline: !adult && !desk,
+      shellMax: desk ? "1140px" : "560px",
+      shellPad: desk ? "28px 32px 60px" : "16px 20px 140px",
+      shellCols: railVisible ? "1fr 320px" : "1fr",
+      mainMax: desk && !railVisible ? (S.screen === "account" ? "920px" : "720px") : "none",
+      chromeMax: desk ? "1140px" : "560px",
+      logoH: desk ? "46px" : "34px",
+      cardCols: desk ? "1fr 1fr" : "1fr",
+      pkgCols: desk ? "1fr 1fr 1fr" : "1fr",
+      acctCols: desk ? "200px 1fr" : "1fr",
+      acctTabDir: desk ? "column" : "row",
+      acctGap: desk ? "28px" : "14px",
+      showSinglesInline: !desk, showSinglesAside: desk,
+      railVisible, railShowCtx, railShowAction, railShowSteps, railSteps, railShowPay,
+      showDatesMain: desk, showPayInline: !desk,
+      colNoneLabel: v.clsPl, vocabCls: v.cls,
+      weekHint: "Drag sideways to see the whole week.",
+      weekRef: (el) => { this._weekEl = el; },
+      weekDragStart: (e) => {
+        if (e.pointerType !== "mouse") return;
+        const el = this._weekEl; if (!el) return;
+        el.setPointerCapture(e.pointerId);
+        this._wd = { x: e.clientX, sl: el.scrollLeft };
+        this._wdMoved = false;
+        el.style.cursor = "grabbing";
+      },
+      weekDragMove: (e) => {
+        if (!this._wd) return;
+        const el = this._weekEl; if (!el) return;
+        const dx = e.clientX - this._wd.x;
+        if (Math.abs(dx) > 5) this._wdMoved = true;
+        el.scrollLeft = this._wd.sl - dx;
+      },
+      weekDragEnd: () => {
+        if (!this._wd) return;
+        this._wd = null;
+        if (this._weekEl) this._weekEl.style.cursor = "grab";
+      },
+      weekClickCapture: (e) => {
+        if (this._wdMoved) { e.preventDefault(); e.stopPropagation(); this._wdMoved = false; }
+      },
+      railDates: singlesAll,
+      railDatesTitle: "TERM DATES — SINGLE " + v.clsPl.toUpperCase(),
+      railDatesSub: M(c.single) + " per session · pick any date with spaces",
+
+      // sticky
+      stickyVisible: stickyVisible && !desk, stickyHasTotal, stickyHasSummary, stickyHasNote, stickyHasBtn,
+      stickyLabel, stickyTotal, stickySummary, stickyCta, stickyNote, stickyAction,
+      stickyBtnBg, stickyBtnFg, stickyBtnRing, stickyCursor,
+
+      // sheet
+      sheetTransform: S.sheet ? "translateY(0)" : "translateY(110%)",
+      sheetPointer: S.sheet ? "auto" : "none",
+      closeSheet: () => this.setState({ sheet: false }),
+      sheetTitle: sheetItem ? sheetItem.cls + " — places held for " + sheetItem.first : "",
+      sheetMeta: sheetItem ? sheetItem.pkgLabel + " · " + sheetItem.count + (sheetItem.count === 1 ? " date" : " dates") + " · " + M(sheetItem.total) : "",
+      sheetHoldNote: sheetItem ? "Held for " + sheetCk.text + " while you check out — the timer never restarts, and nothing is charged yet." : "",
+      addAnother: () => this.go("discover"),
+    };
+  }
+}
+</script>
+</body>
+</html>

@@ -1,0 +1,332 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+  <meta name="design_doc_mode" content="canvas">
+  <style>
+    body { margin: 0; background: #e8eaed; font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif; color: #1d2327; }
+    a { color: #2271b1; }
+    a:hover { color: #135e96; }
+  </style>
+</helmet>
+<section style="padding: 40px; display: flex; flex-direction: column; gap: 24px;">
+  <div style="max-width: 900px; display: flex; flex-direction: column; gap: 6px;">
+    <div style="display: flex; align-items: center; gap: 10px;">
+      <span style="background: #2271b1; color: #fff; font-weight: 700; font-size: 13px; padding: 4px 10px; border-radius: 4px;">1a</span>
+      <h1 style="margin: 0; font-size: 22px;">Current plugin frontend — as shipped today</h1>
+    </div>
+    <p style="margin: 0; font-size: 14px; color: #50575e;">Faithful recreation from <code>assets/css/public.css</code> + <code>templates/</code>. Deliberately minimal — "the theme is expected to refine visual presentation". Reference baseline for the redesign.</p>
+  </div>
+
+  <div style="display: flex; gap: 28px; align-items: flex-start; flex-wrap: wrap;">
+
+    <!-- Step 1: Student -->
+    <div data-screen-label="Current — Step 1 Student" style="width: 560px; flex-shrink: 0; display: flex; flex-direction: column; gap: 8px;">
+      <span style="font-size: 12px; font-weight: 700; color: #50575e; text-transform: uppercase; letter-spacing: 0.04em;">Booking flow · step 1 — student</span>
+      <div style="background: #fff; border: 1px solid #c3c4c7; padding: 24px;">
+        <ol style="list-style: none; display: flex; flex-wrap: wrap; gap: 6px; margin: 0 0 18px; padding: 0; font-size: 0.85rem;">
+          <li style="padding: 6px 12px; border-radius: 999px; background: #2271b1; color: #fff; font-weight: 600;">Student</li>
+          <li style="padding: 6px 12px; border-radius: 999px; background: #f0f0f1; color: #50575e;">Class</li>
+          <li style="padding: 6px 12px; border-radius: 999px; background: #f0f0f1; color: #50575e;">Booking option</li>
+          <li style="padding: 6px 12px; border-radius: 999px; background: #f0f0f1; color: #50575e;">Review</li>
+        </ol>
+        <h2 style="margin: 0 0 12px; font-size: 1.35rem;">Who is this booking for?</h2>
+        <p style="margin: 0 0 12px; font-size: 0.95rem;">Choose which child you would like to book or manage for:</p>
+        <ul style="list-style: none; margin: 0; padding: 0; display: flex; flex-direction: column; gap: 10px; max-width: 480px;">
+          <li style="display: flex; align-items: center; gap: 12px; padding: 12px; border: 1px solid #d0d0d0; border-radius: 8px; background: #fff;">
+            <span style="width: 56px; height: 56px; border-radius: 50%; background: #e7eef5; color: #2c3338; font-weight: 700; display: inline-flex; align-items: center; justify-content: center; font-size: 18px; flex-shrink: 0;">AW</span>
+            <span style="flex: 1; font-weight: 600; font-size: 1rem;">Ava Williams</span>
+            <button style="padding: 10px 16px; min-height: 44px; border: 1px solid #2271b1; border-radius: 6px; background: #2271b1; color: #fff; font-size: 0.95rem; cursor: pointer;">Choose Ava</button>
+          </li>
+          <li style="display: flex; align-items: center; gap: 12px; padding: 12px; border: 1px solid #d0d0d0; border-radius: 8px; background: #fff;">
+            <span style="width: 56px; height: 56px; border-radius: 50%; background: #e7eef5; color: #2c3338; font-weight: 700; display: inline-flex; align-items: center; justify-content: center; font-size: 18px; flex-shrink: 0;">JW</span>
+            <span style="flex: 1; font-weight: 600; font-size: 1rem;">Jack Williams</span>
+            <button style="padding: 10px 16px; min-height: 44px; border: 1px solid #2271b1; border-radius: 6px; background: #2271b1; color: #fff; font-size: 0.95rem; cursor: pointer;">Choose Jack</button>
+          </li>
+        </ul>
+      </div>
+    </div>
+
+    <!-- Step 2: Classes -->
+    <div data-screen-label="Current — Step 2 Classes" style="width: 560px; flex-shrink: 0; display: flex; flex-direction: column; gap: 8px;">
+      <span style="font-size: 12px; font-weight: 700; color: #50575e; text-transform: uppercase; letter-spacing: 0.04em;">Booking flow · step 2 — class list</span>
+      <div style="background: #fff; border: 1px solid #c3c4c7; padding: 24px;">
+        <ol style="list-style: none; display: flex; flex-wrap: wrap; gap: 6px; margin: 0 0 18px; padding: 0; font-size: 0.85rem;">
+          <li style="padding: 6px 12px; border-radius: 999px; background: #e7eef5; color: #2271b1;">Student</li>
+          <li style="padding: 6px 12px; border-radius: 999px; background: #2271b1; color: #fff; font-weight: 600;">Class</li>
+          <li style="padding: 6px 12px; border-radius: 999px; background: #f0f0f1; color: #50575e;">Booking option</li>
+          <li style="padding: 6px 12px; border-radius: 999px; background: #f0f0f1; color: #50575e;">Review</li>
+        </ol>
+        <div style="display: flex; align-items: center; gap: 10px; padding: 10px 14px; margin: 0 0 14px; border: 1px solid #2271b1; border-radius: 8px; background: #f0f6fb; font-size: 0.95rem;">
+          <span style="width: 40px; height: 40px; border-radius: 50%; background: #e7eef5; color: #2c3338; font-weight: 700; display: inline-flex; align-items: center; justify-content: center; font-size: 14px; flex-shrink: 0;">AW</span>
+          <span>Booking for: <strong>Ava Williams</strong></span>
+        </div>
+        <h2 style="margin: 0 0 14px; font-size: 1.35rem;">Classes — Autumn Term 2026</h2>
+        <form style="display: flex; flex-wrap: wrap; align-items: flex-end; gap: 12px; margin: 0 0 18px;">
+          <label><span style="display: block; font-size: 0.85rem; font-weight: 600; margin-bottom: 4px;">Term</span><select style="min-height: 36px; padding: 4px 8px; border: 1px solid #8c8f94; border-radius: 4px;"><option>Autumn Term 2026</option></select></label>
+          <label><span style="display: block; font-size: 0.85rem; font-weight: 600; margin-bottom: 4px;">Class type</span><select style="min-height: 36px; padding: 4px 8px; border: 1px solid #8c8f94; border-radius: 4px;"><option>All types</option><option>Ballet</option><option>Tap</option><option>Musical theatre</option></select></label>
+          <button style="padding: 10px 16px; min-height: 44px; border: 1px solid #2271b1; border-radius: 6px; background: #fff; color: #2271b1; font-size: 0.95rem; cursor: pointer;">Show classes</button>
+        </form>
+        <ul style="list-style: none; margin: 0; padding: 0; display: flex; flex-direction: column; gap: 14px;">
+          <li style="display: flex; flex-wrap: wrap; gap: 14px; padding: 14px; border: 1px solid #d0d0d0; border-left: 5px solid #eba236; border-radius: 8px; background: #fff;">
+            <div style="flex: 1; min-width: 200px;">
+              <h3 style="margin: 0 0 4px; font-size: 1.1rem;">1st Steps</h3>
+              <p style="margin: 0 0 4px; font-size: 0.9rem; color: #50575e;">Pre-school · Ages 2–4</p>
+              <p style="margin: 0 0 4px; font-weight: 600;">Saturday, 09:15–09:45 · Studio 1</p>
+              <p style="margin: 0 0 4px; font-size: 0.9rem; color: #50575e;">Teacher: Miss Sophie</p>
+              <p style="margin: 0 0 4px; font-size: 0.9rem; color: #50575e;">11 sessions remaining this term</p>
+            </div>
+            <div style="display: flex; flex-direction: column; align-items: flex-start; justify-content: center; gap: 8px;">
+              <span style="font-weight: 700;">from £6.50 <small style="display: block; font-weight: 400; color: #50575e;">per session</small></span>
+              <a href="#1a" style="padding: 10px 16px; min-height: 44px; box-sizing: border-box; border: 1px solid #2271b1; border-radius: 6px; background: #2271b1; color: #fff; font-size: 0.95rem; text-decoration: none; display: inline-block;">View booking options</a>
+            </div>
+          </li>
+          <li style="display: flex; flex-wrap: wrap; gap: 14px; padding: 14px; border: 1px solid #d0d0d0; border-left: 5px solid #4b9cd3; border-radius: 8px; background: #fff;">
+            <div style="flex: 1; min-width: 200px;">
+              <h3 style="margin: 0 0 4px; font-size: 1.1rem;">Reception – Yr1</h3>
+              <p style="margin: 0 0 4px; font-size: 0.9rem; color: #50575e;">Musical theatre · Reception–Year 1</p>
+              <p style="margin: 0 0 4px; font-weight: 600;">Saturday, 09:45–10:45 · Studio 1</p>
+              <p style="margin: 0 0 4px; font-size: 0.9rem; color: #50575e;">Teacher: Miss Sophie, Mr Daniel</p>
+              <p style="margin: 0 0 4px; font-size: 0.9rem; color: #50575e;">11 sessions remaining this term</p>
+            </div>
+            <div style="display: flex; flex-direction: column; align-items: flex-start; justify-content: center; gap: 8px;">
+              <span style="font-weight: 700;">from £11.00 <small style="display: block; font-weight: 400; color: #50575e;">per session</small></span>
+              <a href="#1a" style="padding: 10px 16px; min-height: 44px; box-sizing: border-box; border: 1px solid #2271b1; border-radius: 6px; background: #2271b1; color: #fff; font-size: 0.95rem; text-decoration: none; display: inline-block;">View booking options</a>
+            </div>
+          </li>
+          <li style="display: flex; flex-wrap: wrap; gap: 14px; padding: 14px; border: 1px solid #d0d0d0; border-left: 5px solid #58ad69; border-radius: 8px; background: #fff;">
+            <div style="flex: 1; min-width: 200px;">
+              <h3 style="margin: 0 0 4px; font-size: 1.1rem;">Yr4 – Yr6</h3>
+              <p style="margin: 0 0 4px; font-size: 0.9rem; color: #50575e;">Musical theatre · Years 4–6</p>
+              <p style="margin: 0 0 4px; font-weight: 600;">Saturday, 11:45–13:00 · Studio 1</p>
+              <p style="margin: 0 0 4px; font-size: 0.9rem; color: #50575e;">Teacher: Mr Daniel</p>
+              <p style="margin: 0 0 4px; font-size: 0.9rem; color: #50575e;">11 sessions remaining this term</p>
+            </div>
+            <div style="display: flex; flex-direction: column; align-items: flex-start; justify-content: center; gap: 8px;">
+              <span style="display: inline-block; padding: 2px 10px; border-radius: 999px; font-size: 0.8rem; font-weight: 700; background: #f0f0f1; color: #50575e;">Online booking unavailable</span>
+            </div>
+          </li>
+        </ul>
+      </div>
+    </div>
+
+    <!-- Step 3: Options -->
+    <div data-screen-label="Current — Step 3 Options" style="width: 560px; flex-shrink: 0; display: flex; flex-direction: column; gap: 8px;">
+      <span style="font-size: 12px; font-weight: 700; color: #50575e; text-transform: uppercase; letter-spacing: 0.04em;">Booking flow · step 3 — booking options</span>
+      <div style="background: #fff; border: 1px solid #c3c4c7; padding: 24px;">
+        <ol style="list-style: none; display: flex; flex-wrap: wrap; gap: 6px; margin: 0 0 18px; padding: 0; font-size: 0.85rem;">
+          <li style="padding: 6px 12px; border-radius: 999px; background: #e7eef5; color: #2271b1;">Student</li>
+          <li style="padding: 6px 12px; border-radius: 999px; background: #e7eef5; color: #2271b1;">Class</li>
+          <li style="padding: 6px 12px; border-radius: 999px; background: #2271b1; color: #fff; font-weight: 600;">Booking option</li>
+          <li style="padding: 6px 12px; border-radius: 999px; background: #f0f0f1; color: #50575e;">Review</li>
+        </ol>
+        <div style="display: flex; align-items: center; gap: 10px; padding: 10px 14px; margin: 0 0 14px; border: 1px solid #2271b1; border-radius: 8px; background: #f0f6fb; font-size: 0.95rem;">
+          <span style="width: 40px; height: 40px; border-radius: 50%; background: #e7eef5; color: #2c3338; font-weight: 700; display: inline-flex; align-items: center; justify-content: center; font-size: 14px; flex-shrink: 0;">AW</span>
+          <span>Booking for: <strong>Ava Williams</strong></span>
+        </div>
+        <p style="margin: 0 0 8px;"><a href="#1a" style="font-size: 0.9rem; text-decoration: none;">&#8592; All classes</a></p>
+        <h2 style="margin: 0 0 4px; font-size: 1.35rem;">1st Steps</h2>
+        <p style="margin: 0 0 16px; color: #50575e;">Saturday at 09:15 · Studio 1 · Miss Sophie</p>
+        <div style="display: flex; flex-direction: column; gap: 14px; margin: 0 0 22px;">
+          <div style="padding: 16px; border: 1px solid #d0d0d0; border-radius: 8px; background: #fff;">
+            <h3 style="margin: 0 0 8px; font-size: 1.05rem;">Full term</h3>
+            <p style="margin: 0 0 6px;"><strong style="font-size: 1.3rem; margin-right: 8px;">£71.50</strong>11 sessions × £6.50</p>
+            <p style="margin: 0 0 8px; color: #00723e; font-weight: 600;">Save £5.50 compared with single sessions</p>
+            <details style="margin: 0 0 12px; font-size: 0.9rem;"><summary style="cursor: pointer; color: #2271b1; min-height: 44px; display: flex; align-items: center;">Show 11 included dates</summary></details>
+            <a href="#1a" style="padding: 10px 16px; min-height: 44px; box-sizing: border-box; border: 1px solid #2271b1; border-radius: 6px; background: #2271b1; color: #fff; font-size: 0.95rem; text-decoration: none; display: inline-block;">Review this package</a>
+          </div>
+          <div style="padding: 16px; border: 1px solid #d0d0d0; border-radius: 8px; background: #f6f7f7;">
+            <h3 style="margin: 0 0 8px; font-size: 1.05rem;">First half-term</h3>
+            <p style="margin: 0 0 6px;"><strong style="font-size: 1.3rem; margin-right: 8px;">£39.00</strong>6 sessions × £6.50</p>
+            <details style="margin: 0 0 12px; font-size: 0.9rem;"><summary style="cursor: pointer; color: #2271b1; min-height: 44px; display: flex; align-items: center;">Show 6 included dates</summary></details>
+            <p style="padding: 10px 14px; margin: 0; border: 1px solid #dba617; border-radius: 6px; background: #fcf9e8; font-size: 0.9rem;">This package is unavailable because these included dates are full: 12 September 2026, 19 September 2026</p>
+          </div>
+        </div>
+        <h3 style="margin: 0 0 4px; font-size: 1.05rem;">Individual sessions</h3>
+        <p style="margin: 0 0 12px;">£7.00 per session</p>
+        <ul style="list-style: none; margin: 0; padding: 0; display: flex; flex-direction: column; gap: 8px;">
+          <li style="display: flex; flex-wrap: wrap; align-items: center; gap: 10px; padding: 10px 12px; border: 1px solid #e0e0e0; border-radius: 6px; background: #fff;">
+            <span style="flex: 1; min-width: 160px; font-weight: 600;">26 September 2026, 09:15</span>
+            <span style="font-size: 0.85rem; color: #00723e;">3 places left</span>
+            <a href="#1a" style="padding: 10px 16px; min-height: 44px; box-sizing: border-box; border: 1px solid #2271b1; border-radius: 6px; background: #fff; color: #2271b1; font-size: 0.95rem; text-decoration: none; display: inline-block;">Book this date</a>
+          </li>
+          <li style="display: flex; flex-wrap: wrap; align-items: center; gap: 10px; padding: 10px 12px; border: 1px solid #e0e0e0; border-radius: 6px; background: #f6f7f7; color: #787c82;">
+            <span style="flex: 1; min-width: 160px; font-weight: 600;">3 October 2026, 09:15</span>
+            <span style="display: inline-block; padding: 2px 10px; border-radius: 999px; font-size: 0.8rem; font-weight: 700; background: #fcf0f1; color: #b32d2e;">Full</span>
+          </li>
+          <li style="display: flex; flex-wrap: wrap; align-items: center; gap: 10px; padding: 10px 12px; border: 1px solid #e0e0e0; border-radius: 6px; background: #f6f7f7; color: #787c82;">
+            <span style="flex: 1; min-width: 160px; font-weight: 600;">10 October 2026, 09:15</span>
+            <span style="display: inline-block; padding: 2px 10px; border-radius: 999px; font-size: 0.8rem; font-weight: 700; background: #f0f0f1; color: #50575e;">Already booked</span>
+          </li>
+        </ul>
+      </div>
+    </div>
+
+    <!-- Step 4: Review -->
+    <div data-screen-label="Current — Step 4 Review" style="width: 560px; flex-shrink: 0; display: flex; flex-direction: column; gap: 8px;">
+      <span style="font-size: 12px; font-weight: 700; color: #50575e; text-transform: uppercase; letter-spacing: 0.04em;">Booking flow · step 4 — review</span>
+      <div style="background: #fff; border: 1px solid #c3c4c7; padding: 24px;">
+        <ol style="list-style: none; display: flex; flex-wrap: wrap; gap: 6px; margin: 0 0 18px; padding: 0; font-size: 0.85rem;">
+          <li style="padding: 6px 12px; border-radius: 999px; background: #e7eef5; color: #2271b1;">Student</li>
+          <li style="padding: 6px 12px; border-radius: 999px; background: #e7eef5; color: #2271b1;">Class</li>
+          <li style="padding: 6px 12px; border-radius: 999px; background: #e7eef5; color: #2271b1;">Booking option</li>
+          <li style="padding: 6px 12px; border-radius: 999px; background: #2271b1; color: #fff; font-weight: 600;">Review</li>
+        </ol>
+        <p style="margin: 0 0 8px;"><a href="#1a" style="font-size: 0.9rem; text-decoration: none;">&#8592; Back to booking options</a></p>
+        <h2 style="margin: 0 0 14px; font-size: 1.35rem;">Review your booking</h2>
+        <table style="width: 100%; border-collapse: collapse; margin: 0 0 18px;">
+          <tbody>
+            <tr><th style="text-align: left; padding: 8px 10px; border-bottom: 1px solid #e0e0e0; width: 40%; color: #50575e; font-weight: 600;">Student</th><td style="text-align: left; padding: 8px 10px; border-bottom: 1px solid #e0e0e0;">Ava Williams</td></tr>
+            <tr><th style="text-align: left; padding: 8px 10px; border-bottom: 1px solid #e0e0e0; width: 40%; color: #50575e; font-weight: 600;">Class</th><td style="text-align: left; padding: 8px 10px; border-bottom: 1px solid #e0e0e0;">1st Steps</td></tr>
+            <tr><th style="text-align: left; padding: 8px 10px; border-bottom: 1px solid #e0e0e0; width: 40%; color: #50575e; font-weight: 600;">Booking option</th><td style="text-align: left; padding: 8px 10px; border-bottom: 1px solid #e0e0e0;">Full term</td></tr>
+            <tr><th style="text-align: left; padding: 8px 10px; border-bottom: 1px solid #e0e0e0; width: 40%; color: #50575e; font-weight: 600;">Location</th><td style="text-align: left; padding: 8px 10px; border-bottom: 1px solid #e0e0e0;">Studio 1</td></tr>
+            <tr><th style="text-align: left; padding: 8px 10px; border-bottom: 1px solid #e0e0e0; width: 40%; color: #50575e; font-weight: 600;">Teacher</th><td style="text-align: left; padding: 8px 10px; border-bottom: 1px solid #e0e0e0;">Miss Sophie</td></tr>
+            <tr><th style="text-align: left; padding: 8px 10px; border-bottom: 1px solid #e0e0e0; width: 40%; color: #50575e; font-weight: 600;">Sessions</th><td style="text-align: left; padding: 8px 10px; border-bottom: 1px solid #e0e0e0;">11</td></tr>
+            <tr><th style="text-align: left; padding: 8px 10px; border-bottom: 1px solid #e0e0e0; width: 40%; color: #50575e; font-weight: 600;">Standard rate</th><td style="text-align: left; padding: 8px 10px; border-bottom: 1px solid #e0e0e0;">£7.00 per session</td></tr>
+            <tr><th style="text-align: left; padding: 8px 10px; border-bottom: 1px solid #e0e0e0; width: 40%; color: #50575e; font-weight: 600;">Package rate</th><td style="text-align: left; padding: 8px 10px; border-bottom: 1px solid #e0e0e0;">£6.50 per session</td></tr>
+            <tr><th style="text-align: left; padding: 8px 10px; border-bottom: 1px solid #e0e0e0; width: 40%; color: #50575e; font-weight: 600;">Saving</th><td style="text-align: left; padding: 8px 10px; border-bottom: 1px solid #e0e0e0; color: #00723e; font-weight: 700;">£5.50</td></tr>
+            <tr><th style="text-align: left; padding: 8px 10px; border-bottom: 1px solid #e0e0e0; width: 40%; color: #50575e; font-weight: 600;">Total</th><td style="text-align: left; padding: 8px 10px; border-bottom: 1px solid #e0e0e0;"><strong style="font-size: 1.2rem;">£71.50</strong></td></tr>
+          </tbody>
+        </table>
+        <h3 style="margin: 0 0 8px; font-size: 1.05rem;">Included dates (11)</h3>
+        <ul style="margin: 0 0 16px 18px; padding: 0; font-size: 0.95rem;">
+          <li>12 September 2026, 09:15–09:45</li>
+          <li>19 September 2026, 09:15–09:45</li>
+          <li>26 September 2026, 09:15–09:45</li>
+          <li style="list-style: none; color: #50575e;">… 8 more dates</li>
+        </ul>
+        <p style="margin: 0 0 12px; font-size: 0.95rem;">Package bookings include every date listed above — individual dates can't be removed. If you only want selected dates, book them as individual sessions where available.</p>
+        <div style="padding: 10px 14px; margin: 0 0 18px; border: 1px solid #dba617; border-radius: 6px; background: #fcf9e8;">
+          <p style="margin: 0 0 6px;"><strong>Heads up — this clashes with an existing booking:</strong></p>
+          <ul style="margin: 0 0 8px 18px; padding: 0; font-size: 0.95rem;"><li>Junior Tap on 12 September 2026, 09:30–10:00</li></ul>
+          <label style="display: flex; align-items: center; gap: 8px; margin-top: 8px; font-weight: 600; font-size: 0.95rem;"><input type="checkbox"> I understand these times overlap and want to book anyway.</label>
+        </div>
+        <div style="margin: 18px 0; padding: 12px 14px; border: 1px solid #e0e0e0; border-radius: 6px; background: #f9f9f9; font-size: 0.9rem;">
+          <h3 style="margin: 0 0 6px; font-size: 0.95rem;">Cancellation conditions</h3>
+          <p style="margin: 0;">Single sessions can be cancelled online up to 24 hours before the class — the amount paid is returned as booking credit. Package dates can't be cancelled individually.</p>
+        </div>
+        <div style="margin-top: 18px;">
+          <button style="padding: 10px 16px; min-height: 44px; border: 1px solid #2271b1; border-radius: 6px; background: #2271b1; color: #fff; font-size: 0.95rem; cursor: pointer;">Add to checkout</button>
+          <p style="margin: 12px 0 0; font-size: 0.95rem;">Adding this booking holds the places for 30 minutes while you check out. Nothing is charged yet.</p>
+        </div>
+      </div>
+    </div>
+
+    <!-- Checkout panel -->
+    <div data-screen-label="Current — Checkout panel" style="width: 560px; flex-shrink: 0; display: flex; flex-direction: column; gap: 8px;">
+      <span style="font-size: 12px; font-weight: 700; color: #50575e; text-transform: uppercase; letter-spacing: 0.04em;">Checkout — "Your bookings" panel (above the Checkout Block)</span>
+      <div style="background: #fff; border: 1px solid #c3c4c7; padding: 24px;">
+        <div style="display: flex; align-items: baseline; justify-content: space-between; gap: 12px; margin: 0 0 12px;">
+          <h2 style="margin: 0; font-size: 1.25rem;">Your bookings</h2>
+          <a href="#1a" style="font-size: 0.95rem;">+ Add another class</a>
+        </div>
+        <div style="padding: 14px 16px; margin: 0 0 10px; border: 1px solid #d0d0d0; border-radius: 8px; background: #fff;">
+          <div style="display: flex; justify-content: space-between; align-items: baseline; gap: 12px;">
+            <span style="font-weight: 700; font-size: 1.05rem;">1st Steps</span>
+            <span style="font-weight: 700;">£71.50</span>
+          </div>
+          <p style="margin: 4px 0; color: #50575e;">Ava Williams · Full term</p>
+          <p style="margin: 0 0 8px; font-size: 0.9rem;">11 sessions <span style="display: block; color: #00723e;">£6.50 per session (standard £7.00) — saving £5.50</span></p>
+          <details style="margin: 0 0 12px; font-size: 0.9rem;"><summary style="cursor: pointer; color: #2271b1; min-height: 44px; display: flex; align-items: center;">Show 11 included dates</summary></details>
+          <p style="display: inline-block; margin: 6px 0 0; padding: 4px 12px; border-radius: 999px; background: #e7eef5; color: #2271b1; font-weight: 600; font-size: 0.9rem; font-variant-numeric: tabular-nums;">27:14 remaining</p>
+        </div>
+        <div style="padding: 14px 16px; margin: 0 0 10px; border: 1px solid #d0d0d0; border-radius: 8px; background: #fff;">
+          <div style="display: flex; justify-content: space-between; align-items: baseline; gap: 12px;">
+            <span style="font-weight: 700; font-size: 1.05rem;">Reception – Yr1</span>
+            <span style="font-weight: 700;">£11.00</span>
+          </div>
+          <p style="margin: 4px 0; color: #50575e;">Jack Williams · Single session</p>
+          <p style="margin: 0 0 8px; font-size: 0.9rem;">1 session</p>
+          <details style="margin: 0 0 12px; font-size: 0.9rem;"><summary style="cursor: pointer; color: #2271b1; min-height: 44px; display: flex; align-items: center;">Show 1 included date</summary></details>
+          <p style="display: inline-block; margin: 6px 0 0; padding: 4px 12px; border-radius: 999px; background: #fcf9e8; color: #996800; font-weight: 600; font-size: 0.9rem; font-variant-numeric: tabular-nums;">03:41 remaining</p>
+        </div>
+        <div style="padding: 14px 16px; margin: 12px 0 0; border: 1px solid #2271b1; border-radius: 8px; background: #f0f6fb;">
+          <h3 style="margin: 0 0 6px; font-size: 1rem;">Booking credit</h3>
+          <p style="margin: 0;">Available: £25.00 · Applying £25.00 — £57.50 left to pay, £0.00 credit remaining after this order.</p>
+          <div style="display: flex; flex-wrap: wrap; align-items: flex-end; gap: 10px; margin-top: 8px;">
+            <label><span style="display: block; font-size: 0.85rem; font-weight: 600; margin-bottom: 4px;">Amount to apply</span><input type="number" value="25.00" style="width: 110px; min-height: 36px; padding: 4px 8px; border: 1px solid #8c8f94; border-radius: 4px;"></label>
+            <button style="padding: 10px 16px; min-height: 44px; border: 1px solid #2271b1; border-radius: 6px; background: #fff; color: #2271b1; font-size: 0.95rem; cursor: pointer;">Apply credit</button>
+            <button style="padding: 10px 16px; min-height: 44px; border: 1px solid #2271b1; border-radius: 6px; background: #fff; color: #2271b1; font-size: 0.95rem; cursor: pointer;">Remove</button>
+          </div>
+        </div>
+        <p style="margin: 10px 0 0; font-size: 0.85rem; color: #50575e;">Package pricing is offered in return for committing to all included dates — individual dates can't be removed from a package. Items can be removed below before payment.</p>
+      </div>
+    </div>
+
+    <!-- My Account -->
+    <div data-screen-label="Current — My Account" style="width: 560px; flex-shrink: 0; display: flex; flex-direction: column; gap: 8px;">
+      <span style="font-size: 12px; font-weight: 700; color: #50575e; text-transform: uppercase; letter-spacing: 0.04em;">My Account — dashboard panel + class bookings</span>
+      <div style="background: #fff; border: 1px solid #c3c4c7; padding: 24px;">
+        <div style="margin: 0 0 20px; padding: 16px; border: 1px solid #d0d0d0; border-radius: 8px; background: #fff;">
+          <h3 style="margin: 0 0 12px; font-size: 1.05rem;">SJP Theatre Arts</h3>
+          <ul style="list-style: none; margin: 0; padding: 0; display: flex; flex-direction: column; gap: 10px; max-width: 480px;">
+            <li style="display: flex; align-items: center; flex-wrap: wrap; gap: 12px; padding: 12px; border: 1px solid #2271b1; box-shadow: 0 0 0 1px #2271b1; border-radius: 8px; background: #fff;">
+              <span style="width: 48px; height: 48px; border-radius: 50%; background: #e7eef5; color: #2c3338; font-weight: 700; display: inline-flex; align-items: center; justify-content: center; font-size: 16px; flex-shrink: 0;">AW</span>
+              <span style="flex: 1; font-weight: 600; font-size: 1rem;">Ava Williams<small style="display: block; font-weight: 400; color: #50575e;">Next: 1st Steps — Sat 12 Sep, 09:15</small></span>
+              <button style="padding: 10px 16px; min-height: 44px; border: 1px solid #2271b1; border-radius: 6px; background: #fff; color: #2271b1; font-size: 0.95rem; cursor: pointer;">Selected</button>
+            </li>
+            <li style="display: flex; align-items: center; flex-wrap: wrap; gap: 12px; padding: 12px; border: 1px solid #d0d0d0; border-radius: 8px; background: #fff;">
+              <span style="width: 48px; height: 48px; border-radius: 50%; background: #e7eef5; color: #2c3338; font-weight: 700; display: inline-flex; align-items: center; justify-content: center; font-size: 16px; flex-shrink: 0;">JW</span>
+              <span style="flex: 1; font-weight: 600; font-size: 1rem;">Jack Williams<small style="display: block; font-weight: 400; color: #50575e;">No upcoming bookings.</small></span>
+              <button style="padding: 10px 16px; min-height: 44px; border: 1px solid #2271b1; border-radius: 6px; background: #fff; color: #2271b1; font-size: 0.95rem; cursor: pointer;">Choose</button>
+            </li>
+          </ul>
+          <p style="margin: 12px 0; font-weight: 600;">Booking credit available: £25.00</p>
+          <p style="display: flex; flex-wrap: wrap; gap: 10px; margin: 0;">
+            <a href="#1a" style="padding: 10px 16px; min-height: 44px; box-sizing: border-box; border: 1px solid #2271b1; border-radius: 6px; background: #2271b1; color: #fff; font-size: 0.95rem; text-decoration: none; display: inline-block;">View class bookings</a>
+            <a href="#1a" style="padding: 10px 16px; min-height: 44px; box-sizing: border-box; border: 1px solid #2271b1; border-radius: 6px; background: #fff; color: #2271b1; font-size: 0.95rem; text-decoration: none; display: inline-block;">Book a class</a>
+          </p>
+        </div>
+        <h3 style="margin: 0 0 12px; font-size: 1.05rem;">Upcoming bookings</h3>
+        <div style="padding: 14px 16px; margin: 0 0 12px; border: 1px solid #d0d0d0; border-left: 5px solid #eba236; border-radius: 8px; background: #fff;">
+          <div style="display: flex; justify-content: space-between; align-items: baseline; gap: 12px;">
+            <span style="font-weight: 700; font-size: 1.05rem;">1st Steps</span>
+            <span style="font-weight: 700;">£71.50</span>
+          </div>
+          <p style="margin: 4px 0; font-size: 0.9rem; color: #50575e;">Full term · 11 sessions · <span style="color: #00723e; font-weight: 600;">Confirmed</span> · <a href="#1a">Order #1482</a> <span style="display: inline-block; padding: 2px 10px; border-radius: 999px; font-size: 0.8rem; font-weight: 700; background: #f0f0f1; color: #50575e;">Processing</span></p>
+          <p style="margin: 4px 0 8px; font-weight: 600;">Next session: Sat 12 Sep 2026, 09:15–09:45 · Studio 1 · Miss Sophie</p>
+          <details style="margin: 0 0 12px; font-size: 0.9rem;"><summary style="cursor: pointer; color: #2271b1; min-height: 44px; display: flex; align-items: center;">Show 11 dates</summary></details>
+          <p style="margin: 8px 0 0; font-size: 0.85rem; color: #50575e;">Package dates can't be cancelled individually or online — please contact the school about exceptional circumstances.</p>
+        </div>
+        <h3 style="margin: 20px 0 12px; font-size: 1.05rem;">Previous bookings</h3>
+        <table style="width: 100%; border-collapse: collapse; font-size: 0.95rem;">
+          <thead>
+            <tr>
+              <th style="text-align: left; padding: 8px 10px; border-bottom: 1px solid #e0e0e0;">Class and date</th>
+              <th style="text-align: left; padding: 8px 10px; border-bottom: 1px solid #e0e0e0;">Type</th>
+              <th style="text-align: left; padding: 8px 10px; border-bottom: 1px solid #e0e0e0;">Attendance</th>
+              <th style="text-align: left; padding: 8px 10px; border-bottom: 1px solid #e0e0e0;">Amount</th>
+              <th style="text-align: left; padding: 8px 10px; border-bottom: 1px solid #e0e0e0;">Order</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td style="padding: 8px 10px; border-bottom: 1px solid #e0e0e0;">1st Steps — Sat 18 Jul 2026</td>
+              <td style="padding: 8px 10px; border-bottom: 1px solid #e0e0e0;">Single session</td>
+              <td style="padding: 8px 10px; border-bottom: 1px solid #e0e0e0;">Present</td>
+              <td style="padding: 8px 10px; border-bottom: 1px solid #e0e0e0;">£7.00</td>
+              <td style="padding: 8px 10px; border-bottom: 1px solid #e0e0e0;"><a href="#1a">#1391</a></td>
+            </tr>
+            <tr>
+              <td style="padding: 8px 10px; border-bottom: 1px solid #e0e0e0;">1st Steps — Sat 11 Jul 2026 <span style="display: inline-block; padding: 2px 10px; border-radius: 999px; font-size: 0.8rem; font-weight: 700; background: #fcf0f1; color: #b32d2e;">School cancelled</span></td>
+              <td style="padding: 8px 10px; border-bottom: 1px solid #e0e0e0;">Single session</td>
+              <td style="padding: 8px 10px; border-bottom: 1px solid #e0e0e0;">&mdash;</td>
+              <td style="padding: 8px 10px; border-bottom: 1px solid #e0e0e0;">£7.00</td>
+              <td style="padding: 8px 10px; border-bottom: 1px solid #e0e0e0;"><a href="#1a">#1355</a></td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+
+  </div>
+</section>
+</x-dc>
+</body>
+</html>
