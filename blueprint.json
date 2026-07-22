@@ -1,0 +1,35 @@
+{
+	"$schema": "https://playground.wordpress.net/blueprint-schema.json",
+	"meta": {
+		"title": "SJP Theatre Arts theme preview",
+		"author": "sjp-theatre-arts",
+		"description": "Previews the theme chrome (header, portal strip, footer, login) with WooCommerce but without the Tempo Studio Manager plugin. A demo mu-plugin stubs the plugin's basket pill and window.dsbBooking API."
+	},
+	"landingPage": "/",
+	"preferredVersions": { "php": "8.3", "wp": "latest" },
+	"steps": [
+		{ "step": "login" },
+		{
+			"step": "installPlugin",
+			"pluginData": { "resource": "wordpress.org/plugins", "slug": "woocommerce" },
+			"options": { "activate": true },
+			"progress": { "weight": 3, "caption": "Installing WooCommerce" }
+		},
+		{
+			"step": "activateTheme",
+			"themeFolderName": "sjp-theatre-arts",
+			"progress": { "caption": "Activating SJP Theatre Arts" }
+		},
+		{
+			"step": "writeFile",
+			"path": "/wordpress/wp-content/mu-plugins/sjp-dsb-demo-stub.php",
+			"data": "<?php\n/**\n * Plugin Name: SJP demo stub (Playground only)\n * Description: Fakes the Tempo Studio Manager integration surface — dsb_basket_pill() and window.dsbBooking — so the theme chrome can be previewed without the plugin. Never use in production.\n */\n\nif ( ! function_exists( 'dsb_basket_pill' ) ) {\n\tfunction dsb_basket_pill() {\n\t\tif ( ! is_user_logged_in() ) {\n\t\t\treturn;\n\t\t}\n\t\techo '<a class=\"dsb-basket-pill\" data-dsb-basket href=\"#\" hidden><span data-dsb-basket-count>0</span> held · <span data-dsb-basket-clock></span></a>';\n\t}\n}\n\nadd_action( 'wp_head', function () {\n\techo '<style>.dsb-basket-pill{background:#FF7300;color:#fff;border-radius:999px;padding:7px 12px;font-size:11px;font-weight:600;line-height:1;text-decoration:none;white-space:nowrap;font-variant-numeric:tabular-nums}.dsb-basket-pill:hover{opacity:.9}</style>';\n} );\n\nadd_action( 'wp_footer', function () {\n\tif ( ! is_user_logged_in() ) {\n\t\treturn;\n\t}\n\t?>\n\t<script>\n\t( function () {\n\t\tvar expires = Date.now() + 10 * 60 * 1000;\n\t\tvar state = { basketCount: 2, soonestExpires: expires, student: 'Demo Student' };\n\t\tvar listeners = [];\n\t\twindow.dsbBooking = {\n\t\t\tgetState: function () { return state; },\n\t\t\trefresh: function () {},\n\t\t\ton: function ( cb ) { listeners.push( cb ); }\n\t\t};\n\t\tvar pill = document.querySelector( '[data-dsb-basket]' );\n\t\tif ( ! pill ) { return; }\n\t\tvar count = pill.querySelector( '[data-dsb-basket-count]' );\n\t\tvar clock = pill.querySelector( '[data-dsb-basket-clock]' );\n\t\tpill.hidden = false;\n\t\tif ( count ) { count.textContent = state.basketCount; }\n\t\tfunction tick() {\n\t\t\tvar left = Math.max( 0, Math.round( ( expires - Date.now() ) / 1000 ) );\n\t\t\tif ( clock ) { clock.textContent = Math.floor( left / 60 ) + ':' + String( left % 60 ).padStart( 2, '0' ); }\n\t\t\tif ( left <= 0 ) { pill.hidden = true; clearInterval( timer ); }\n\t\t}\n\t\tvar timer = setInterval( tick, 1000 );\n\t\ttick();\n\t} )();\n\t</script>\n\t<?php\n} );\n",
+			"progress": { "caption": "Adding demo integration stub" }
+		},
+		{
+			"step": "runPHP",
+			"code": "<?php\nrequire '/wordpress/wp-load.php';\n\n$front_id = wp_insert_post( array( 'post_type' => 'page', 'post_status' => 'publish', 'post_title' => 'Welcome', 'post_name' => 'welcome', 'post_content' => '' ) );\n\nwp_insert_post( array( 'post_type' => 'page', 'post_status' => 'publish', 'post_title' => 'Book classes', 'post_name' => 'book-classes', 'post_content' => \"<!-- wp:paragraph --><p>The Tempo Studio Manager plugin renders the guided booking flow here.</p><!-- /wp:paragraph --><!-- wp:shortcode -->[dsb_booking]<!-- /wp:shortcode -->\" ) );\n\nwp_insert_post( array( 'post_type' => 'page', 'post_status' => 'publish', 'post_title' => 'My classes', 'post_name' => 'my-classes', 'post_content' => \"<!-- wp:paragraph --><p>The Tempo Studio Manager plugin renders the teacher register here.</p><!-- /wp:paragraph --><!-- wp:shortcode -->[dsb_register]<!-- /wp:shortcode -->\" ) );\n\nupdate_option( 'show_on_front', 'page' );\nupdate_option( 'page_on_front', $front_id );\n\nif ( ! get_role( 'teacher' ) ) {\n\tadd_role( 'teacher', 'Teacher', array( 'read' => true ) );\n}\nif ( ! username_exists( 'teacher' ) ) {\n\twp_insert_user( array( 'user_login' => 'teacher', 'user_pass' => 'password', 'user_email' => 'teacher@example.com', 'display_name' => 'Miss Sophie', 'role' => 'teacher' ) );\n}\n\nglobal $wp_rewrite;\n$wp_rewrite->set_permalink_structure( '/%postname%/' );\nflush_rewrite_rules();\n",
+			"progress": { "caption": "Creating demo pages and teacher user" }
+		}
+	]
+}

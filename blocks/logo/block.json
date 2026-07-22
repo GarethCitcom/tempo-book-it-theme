@@ -1,0 +1,15 @@
+{
+	"$schema": "https://schemas.wp.org/trunk/block.json",
+	"apiVersion": 3,
+	"name": "sjp/logo",
+	"title": "Portal logo",
+	"category": "theme",
+	"description": "The header logo, linked home. Uses the tenant logo from Tempo Studio Manager settings when set, otherwise the bundled SJP asset.",
+	"textdomain": "sjp-theatre-arts",
+	"supports": {
+		"html": false,
+		"multiple": false,
+		"reusable": false
+	},
+	"render": "file:./render.php"
+}

@@ -1,0 +1,122 @@
+/**
+ * SJP Theatre Arts — wp-login.php branding.
+ *
+ * The whole site is members-only, so the stock login screen is the front
+ * door. Composed from the SJP design-system tokens (no approved design
+ * exists for this screen — keep it clean and neutral).
+ *
+ * The logo background-image is injected inline from functions.php so the
+ * tenant logo (Tempo Studio Manager setting) wins when present.
+ */
+
+@font-face {
+	font-family: "Montserrat";
+	font-style: normal;
+	font-weight: 400 700;
+	font-display: swap;
+	src: url(../fonts/montserrat-variable.woff2) format("woff2");
+}
+
+body.login {
+	background: #f1f3f5;
+	font-family: Montserrat, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+}
+
+/* Logo — image set inline from functions.php */
+#login h1 a {
+	background-position: center;
+	background-repeat: no-repeat;
+	background-size: contain;
+	height: 46px;
+	width: 100%;
+	max-width: 260px;
+	margin: 0 auto 20px;
+}
+
+/* Card */
+#login form {
+	background: #ffffff;
+	border: none;
+	border-radius: 16px;
+	box-shadow: 0 2px 8px rgba(16, 33, 47, 0.08);
+	padding: 26px 24px;
+}
+
+#login form .forgetmenot {
+	font-size: 13px;
+}
+
+.login label {
+	color: #3f3f46;
+	font-size: 14px;
+	font-weight: 600;
+}
+
+.login input[type="text"],
+.login input[type="password"] {
+	border: 1px solid #e5e7eb;
+	border-radius: 8px;
+	font-size: 16px;
+	padding: 8px 12px;
+}
+
+.login input[type="text"]:focus,
+.login input[type="password"]:focus {
+	border-color: #ff7300;
+	box-shadow: 0 0 0 1px #ff7300;
+	outline: none;
+}
+
+.login .button-primary {
+	background: #ff7300;
+	border: none;
+	border-radius: 12px;
+	box-shadow: none;
+	font-family: inherit;
+	font-size: 14px;
+	font-weight: 600;
+	min-height: 40px;
+	padding: 4px 18px;
+	text-shadow: none;
+	transition: background-color 0.15s ease;
+}
+
+.login .button-primary:hover,
+.login .button-primary:focus {
+	background: #330164;
+	box-shadow: none;
+}
+
+.login .button-primary:focus {
+	outline: 2px solid #330164;
+	outline-offset: 2px;
+}
+
+/* Links below the form */
+.login #nav,
+.login #backtoblog {
+	font-size: 13px;
+	text-align: center;
+}
+
+.login #nav a,
+.login #backtoblog a {
+	color: #330164;
+}
+
+.login #nav a:hover,
+.login #backtoblog a:hover {
+	color: #ff7300;
+}
+
+/* Notices */
+.login .notice,
+.login .message,
+.login #login_error {
+	border-left-color: #ff7300;
+	border-radius: 8px;
+}
+
+.login #login_error {
+	border-left-color: #b42318;
+}
