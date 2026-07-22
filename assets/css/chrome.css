@@ -172,3 +172,21 @@ header.wp-block-template-part,
 footer.wp-block-template-part {
 	margin-block-start: 0;
 }
+
+/*
+ * Sticky footer: on short pages the footer must sit at the bottom of the
+ * viewport, not float directly under a short amount of content. Every
+ * block-theme template renders header/main/footer as direct children of
+ * .wp-site-blocks (body's only child), so making that the flex column and
+ * letting main absorb the leftover space is enough — no page template
+ * needs to know about this.
+ */
+.wp-site-blocks {
+	display: flex;
+	flex-direction: column;
+	min-height: 100vh;
+}
+
+.wp-site-blocks > main {
+	flex: 1 0 auto;
+}
