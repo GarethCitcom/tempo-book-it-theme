@@ -50,6 +50,11 @@ chrome, or `teacher` / `password` for the teacher chrome.
   `[data-dsb-basket-clock]` — the theme ships **no basket JS of its own**.
 - **Roles**: the plugin registers `teacher`; teachers get "Teacher portal" +
   a collapsed nav (My classes · My account).
+- **WooCommerce account pages**: the plugin keeps ownership of its custom
+  Bookings / Credit / Students tabs and account settings. The theme only
+  presents WooCommerce's required Account details, Payment methods, Orders
+  and single-order screens, using Woo's forms, endpoint hooks, gateway actions
+  and order templates rather than replacing their behaviour.
 - **Template overrides**: `dsb/` is the plugin's override location — see
   `dsb/README.md`. Last resort only; never restyle `.dsb-*` internals.
 
@@ -87,6 +92,11 @@ set-password email only after the complete operation succeeds.
   `tempo/portal-strip`. `assets/js/editor-stub.js` gives them Site Editor
   placeholders.
 - `parts/`, `templates/`, `patterns/` — chrome parts and page templates.
+- `inc/woocommerce-account.php`, `assets/css/woocommerce-account.css`,
+  `assets/css/woocommerce-order-received.css` and
+  `woocommerce/myaccount/view-order.php` — scoped presentation for Woo's
+  native account and order-confirmation endpoints; no payment, account or
+  order logic.
 - `assets/fonts/` — Poppins 600/700 + Montserrat variable, bundled locally
   (no Google Fonts requests).
 - `design/` — design sources (prototypes, tokens); not shipped to production.

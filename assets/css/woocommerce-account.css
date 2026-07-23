@@ -1,0 +1,1011 @@
+/**
+ * Tempo Studio Manager — WooCommerce account presentation.
+ *
+ * Every selector is scoped to the theme's account body class. WooCommerce
+ * remains responsible for forms, endpoints, gateways and order behaviour.
+ * Values resolve from Tempo's --dsb-* design tokens, with theme.json fallbacks
+ * so the companion theme remains usable when the plugin is unavailable.
+ */
+
+.tempo-woo-account {
+	--tempo-woo-surface: var(--dsb-color-bg-surface, var(--wp--preset--color--base, #fff));
+	--tempo-woo-subtle: var(--dsb-color-bg-subtle, var(--wp--preset--color--page, #f1f3f5));
+	--tempo-woo-brand-subtle: var(--dsb-color-bg-brand-subtle, var(--wp--preset--color--brand-tint-primary, #fff4eb));
+	--tempo-woo-border: var(--dsb-color-border-default, var(--wp--preset--color--border, #e5e7eb));
+	--tempo-woo-primary: var(--dsb-color-brand-primary, var(--wp--preset--color--brand-primary, #ff7300));
+	--tempo-woo-secondary: var(--dsb-color-brand-secondary, var(--wp--preset--color--brand-secondary, #330164));
+	--tempo-woo-on-primary: var(--dsb-color-on-brand-primary, var(--wp--preset--color--brand-primary-contrast, #fff));
+	--tempo-woo-on-secondary: var(--dsb-color-on-brand-secondary, var(--wp--preset--color--brand-secondary-contrast, #fff));
+	--tempo-woo-text: var(--dsb-color-text-primary, var(--wp--preset--color--body, #3f3f46));
+	--tempo-woo-muted: var(--dsb-color-text-muted, var(--wp--preset--color--muted, #6b7280));
+	--tempo-woo-success-bg: var(--dsb-color-status-success-bg, var(--wp--preset--color--status-success-bg, #e8f7ef));
+	--tempo-woo-success-fg: var(--dsb-color-status-success-fg, var(--wp--preset--color--status-success-fg, #16794f));
+	--tempo-woo-info-bg: var(--dsb-color-status-info-bg, var(--wp--preset--color--status-info-bg, #eaf2ff));
+	--tempo-woo-info-fg: var(--dsb-color-status-info-fg, var(--wp--preset--color--status-info-fg, #1d4ed8));
+	--tempo-woo-warning-bg: var(--dsb-color-status-warning-bg, var(--wp--preset--color--status-warning-bg, #fff5d6));
+	--tempo-woo-warning-fg: var(--dsb-color-status-warning-fg, var(--wp--preset--color--status-warning-fg, #8a5a00));
+	--tempo-woo-danger-bg: var(--dsb-color-status-danger-bg, var(--wp--preset--color--status-danger-bg, #feeceb));
+	--tempo-woo-danger-fg: var(--dsb-color-status-danger-fg, var(--wp--preset--color--status-danger-fg, #b42318));
+	--tempo-woo-radius: 14px;
+}
+
+.tempo-woo-account main .woocommerce {
+	width: 100%;
+	max-width: 1140px;
+	margin-inline: auto;
+	font-family: var(--dsb-font-body, var(--wp--preset--font-family--body, Montserrat, sans-serif));
+	color: var(--tempo-woo-text);
+	font-size: var(--dsb-type-supporting-size, 13px);
+	line-height: var(--dsb-type-supporting-line, 19px);
+}
+
+.tempo-woo-account .tempo-woo-account__page-title {
+	margin: 0 0 22px;
+	font-family: var(--dsb-font-heading, var(--wp--preset--font-family--heading, Poppins, sans-serif));
+	font-size: var(--dsb-type-page-size, 28px);
+	font-weight: 700;
+	line-height: 1.15;
+	color: var(--dsb-color-text-brand, var(--tempo-woo-secondary));
+}
+
+.tempo-woo-account .woocommerce-MyAccount-content {
+	min-width: 0;
+}
+
+.tempo-woo-account .woocommerce-MyAccount-content > :first-child {
+	margin-top: 0;
+}
+
+.tempo-woo-account .woocommerce-MyAccount-content > :last-child {
+	margin-bottom: 0;
+}
+
+/* Remove Woo's generic table frame; individual account views add their own surfaces. */
+.tempo-woo-account .woocommerce table.shop_table {
+	border: 0;
+}
+
+.tempo-woo-account .woocommerce table.shop_table td {
+	border-top: 0;
+}
+
+/* Native navigation fallback when the plugin setting is "Stick to theme". */
+.tempo-woo-account:not(.dsb-plugin-account) .woocommerce-MyAccount-navigation ul {
+	display: flex;
+	flex-wrap: wrap;
+	gap: 8px;
+	margin: 0 0 16px;
+	padding: 0;
+	list-style: none;
+}
+
+.tempo-woo-account:not(.dsb-plugin-account) .woocommerce-MyAccount-navigation a {
+	display: inline-flex;
+	align-items: center;
+	justify-content: center;
+	min-height: var(--dsb-size-control-min, 44px);
+	padding: 12px 18px;
+	border-radius: var(--dsb-radius-full, 999px);
+	background: var(--tempo-woo-surface);
+	box-shadow: inset 0 0 0 1px var(--tempo-woo-border);
+	color: var(--tempo-woo-text);
+	font-size: var(--dsb-type-small-size, 12px);
+	font-weight: 600;
+	text-decoration: none;
+}
+
+.tempo-woo-account:not(.dsb-plugin-account) .woocommerce-MyAccount-navigation .is-active a {
+	background: var(--tempo-woo-secondary);
+	box-shadow: none;
+	color: var(--tempo-woo-on-secondary);
+}
+
+/* Shared controls and Woo notices. */
+.tempo-woo-account .woocommerce-MyAccount-content label {
+	display: block;
+	margin-bottom: 7px;
+	color: var(--tempo-woo-text);
+	font-size: var(--dsb-type-small-size, 12px);
+	font-weight: 600;
+	line-height: var(--dsb-type-small-line, 16px);
+}
+
+.tempo-woo-account .woocommerce-MyAccount-content .required {
+	color: var(--tempo-woo-primary);
+}
+
+.tempo-woo-account .woocommerce-MyAccount-content input[type="text"],
+.tempo-woo-account .woocommerce-MyAccount-content input[type="email"],
+.tempo-woo-account .woocommerce-MyAccount-content input[type="password"],
+.tempo-woo-account .woocommerce-MyAccount-content input[type="tel"],
+.tempo-woo-account .woocommerce-MyAccount-content select,
+.tempo-woo-account .woocommerce-MyAccount-content textarea {
+	width: 100%;
+	min-height: var(--dsb-size-control-min, 44px);
+	margin: 0;
+	padding: 10px 14px;
+	border: 0;
+	border-radius: var(--dsb-radius-medium, 12px);
+	outline: 0;
+	background: var(--tempo-woo-surface);
+	box-shadow: inset 0 0 0 1px var(--tempo-woo-border);
+	color: var(--tempo-woo-text);
+	font: 400 var(--dsb-type-label-size, 14px) / var(--dsb-type-label-line, 20px) var(--dsb-font-body, Montserrat, sans-serif);
+}
+
+.tempo-woo-account .woocommerce-MyAccount-content input:focus,
+.tempo-woo-account .woocommerce-MyAccount-content select:focus,
+.tempo-woo-account .woocommerce-MyAccount-content textarea:focus {
+	box-shadow: inset 0 0 0 2px var(--dsb-color-brand-focus, var(--tempo-woo-primary));
+}
+
+.tempo-woo-account .woocommerce-MyAccount-content input[type="checkbox"],
+.tempo-woo-account .woocommerce-MyAccount-content input[type="radio"] {
+	accent-color: var(--tempo-woo-primary);
+}
+
+.tempo-woo-account .woocommerce-MyAccount-content .button,
+.tempo-woo-account .woocommerce-MyAccount-content button.button {
+	display: inline-flex;
+	align-items: center;
+	justify-content: center;
+	min-height: var(--dsb-size-control-primary, 48px);
+	padding: 12px 20px;
+	border: 0;
+	border-radius: var(--dsb-radius-medium, 12px);
+	background: var(--tempo-woo-primary);
+	box-shadow: none;
+	color: var(--tempo-woo-on-primary);
+	font-family: var(--dsb-font-body, Montserrat, sans-serif);
+	font-size: var(--dsb-type-label-size, 14px);
+	font-weight: 600;
+	line-height: var(--dsb-type-label-line, 20px);
+	text-decoration: none;
+}
+
+.tempo-woo-account .woocommerce-MyAccount-content .button:hover,
+.tempo-woo-account .woocommerce-MyAccount-content .button:focus-visible,
+.tempo-woo-account .woocommerce-MyAccount-content button.button:hover,
+.tempo-woo-account .woocommerce-MyAccount-content button.button:focus-visible {
+	background: var(--tempo-woo-secondary);
+	color: var(--tempo-woo-on-secondary);
+}
+
+.tempo-woo-account .woocommerce-error,
+.tempo-woo-account .woocommerce-info,
+.tempo-woo-account .woocommerce-message {
+	margin: 0 0 18px;
+	padding: 14px 16px;
+	border: 0;
+	border-radius: var(--dsb-radius-medium, 12px);
+	list-style: none;
+	font-size: var(--dsb-type-supporting-size, 13px);
+}
+
+.tempo-woo-account .woocommerce-message {
+	background: var(--tempo-woo-success-bg);
+	color: var(--tempo-woo-success-fg);
+}
+
+.tempo-woo-account .woocommerce-info {
+	background: var(--tempo-woo-info-bg);
+	color: var(--tempo-woo-info-fg);
+}
+
+.tempo-woo-account .woocommerce-error {
+	background: var(--tempo-woo-danger-bg);
+	color: var(--tempo-woo-danger-fg);
+}
+
+/* Account details. */
+.tempo-woo-account form.edit-account {
+	display: grid;
+	grid-template-columns: minmax(0, 1fr);
+	gap: 18px 16px;
+}
+
+.tempo-woo-account form.edit-account .form-row,
+.tempo-woo-account form.edit-account > p,
+.tempo-woo-account form.edit-account fieldset {
+	margin: 0;
+}
+
+.tempo-woo-account form.edit-account fieldset {
+	margin: 0 !important;
+}
+
+.tempo-woo-account form.edit-account .clear {
+	display: none;
+}
+
+.tempo-woo-account form.edit-account #account_display_name_description {
+	display: block;
+	margin-top: 7px;
+	color: var(--tempo-woo-muted);
+	font-size: 11px;
+	line-height: 16px;
+}
+
+.tempo-woo-account form.edit-account #account_display_name_description em {
+	font-style: normal;
+}
+
+.tempo-woo-account form.edit-account fieldset {
+	display: flex;
+	flex-direction: column;
+	gap: 16px;
+	min-width: 0;
+	padding: 18px;
+	border: 0;
+	border-radius: var(--tempo-woo-radius);
+	background: var(--tempo-woo-surface);
+	box-shadow: inset 0 0 0 1px var(--tempo-woo-border);
+}
+
+.tempo-woo-account form.edit-account fieldset legend {
+	float: left;
+	width: 100%;
+	margin: 0 0 16px;
+	padding: 0;
+	font-family: var(--dsb-font-heading, Poppins, sans-serif);
+	font-size: 15px;
+	font-weight: 600;
+	line-height: 22px;
+	color: var(--tempo-woo-secondary);
+}
+
+.tempo-woo-account form.edit-account fieldset legend + * {
+	clear: both;
+}
+
+.tempo-woo-account form.edit-account fieldset input[type="password"] {
+	background: var(--tempo-woo-subtle);
+}
+
+.tempo-woo-account form.edit-account fieldset label:has(input[type="checkbox"]) {
+	display: flex;
+	align-items: center;
+	gap: 10px;
+	margin: 0;
+	font-size: var(--dsb-type-supporting-size, 13px);
+	font-weight: 400;
+	cursor: pointer;
+}
+
+.tempo-woo-account form.edit-account fieldset input[type="checkbox"] {
+	width: 18px;
+	height: 18px;
+	margin: 0;
+	flex: 0 0 auto;
+}
+
+.tempo-woo-account form.edit-account fieldset small {
+	color: var(--tempo-woo-muted);
+	font-size: 11px;
+	line-height: 16px;
+}
+
+/* Order and payment-method lists: semantic tables, visual cards. */
+.tempo-woo-account .woocommerce-orders-table,
+.tempo-woo-account .woocommerce-MyAccount-paymentMethods {
+	display: block;
+	margin: 0;
+	border: 0;
+	border-collapse: separate;
+	background: transparent;
+}
+
+.tempo-woo-account .woocommerce-orders-table thead,
+.tempo-woo-account .woocommerce-MyAccount-paymentMethods thead {
+	position: absolute;
+	width: 1px;
+	height: 1px;
+	margin: -1px;
+	padding: 0;
+	overflow: hidden;
+	clip: rect(0 0 0 0);
+	white-space: nowrap;
+	border: 0;
+}
+
+.tempo-woo-account .woocommerce-orders-table tbody,
+.tempo-woo-account .woocommerce-MyAccount-paymentMethods tbody {
+	display: flex;
+	flex-direction: column;
+	gap: 12px;
+}
+
+.tempo-woo-account .woocommerce-orders-table tr,
+.tempo-woo-account .woocommerce-MyAccount-paymentMethods tr {
+	display: grid;
+	align-items: center;
+	gap: 12px 14px;
+	padding: 16px;
+	border: 0;
+	border-radius: var(--tempo-woo-radius);
+	background: var(--tempo-woo-surface);
+	box-shadow: inset 0 0 0 1px var(--tempo-woo-border);
+}
+
+.tempo-woo-account .woocommerce-orders-table th,
+.tempo-woo-account .woocommerce-orders-table td,
+.tempo-woo-account .woocommerce-MyAccount-paymentMethods td {
+	display: block;
+	width: auto;
+	padding: 0;
+	border: 0;
+	background: transparent;
+	text-align: left;
+}
+
+.tempo-woo-account .woocommerce-orders-table td::before,
+.tempo-woo-account .woocommerce-MyAccount-paymentMethods td::before {
+	display: none;
+	content: none;
+}
+
+.tempo-woo-account .woocommerce-orders-table__cell-order-number a {
+	font-family: var(--dsb-font-heading, Poppins, sans-serif);
+	font-size: 15px;
+	font-weight: 600;
+	color: var(--tempo-woo-secondary);
+	text-decoration: none;
+}
+
+.tempo-woo-account .woocommerce-orders-table__cell-order-summary {
+	color: var(--tempo-woo-muted);
+	font-size: 11px;
+	line-height: 16px;
+}
+
+.tempo-woo-account .woocommerce-orders-table__cell-order-total {
+	font-family: var(--dsb-font-heading, Poppins, sans-serif);
+	font-size: 15px;
+	font-weight: 700;
+	font-variant-numeric: tabular-nums;
+	color: var(--tempo-woo-secondary);
+}
+
+.tempo-woo-account .woocommerce-orders-table__cell-order-actions {
+	display: flex;
+	flex-wrap: wrap;
+	gap: 8px;
+}
+
+.tempo-woo-account .woocommerce-orders-table__cell-order-actions .button {
+	min-height: 40px;
+	padding: 9px 18px;
+	border-radius: var(--dsb-radius-full, 999px);
+	background: var(--tempo-woo-brand-subtle);
+	color: var(--tempo-woo-primary);
+	font-size: var(--dsb-type-small-size, 12px);
+}
+
+.tempo-woo-account .woocommerce-pagination {
+	display: flex;
+	justify-content: space-between;
+	gap: 12px;
+	margin-top: 16px;
+}
+
+/* Reusable status badges. */
+.tempo-woo-account .tempo-woo-status {
+	display: inline-flex;
+	align-items: center;
+	gap: 3px;
+	width: fit-content;
+	padding: 4px 12px;
+	border-radius: var(--dsb-radius-full, 999px);
+	background: var(--tempo-woo-info-bg);
+	color: var(--tempo-woo-info-fg);
+	font-size: 10px;
+	font-weight: 600;
+	line-height: 16px;
+	letter-spacing: 0.04em;
+	white-space: nowrap;
+}
+
+.tempo-woo-account .tempo-woo-status--completed,
+.tempo-woo-account .tempo-woo-status--refunded,
+.tempo-woo-account .tempo-woo-status--default {
+	background: var(--tempo-woo-success-bg);
+	color: var(--tempo-woo-success-fg);
+}
+
+.tempo-woo-account .tempo-woo-status--pending,
+.tempo-woo-account .tempo-woo-status--on-hold {
+	background: var(--tempo-woo-warning-bg);
+	color: var(--tempo-woo-warning-fg);
+}
+
+.tempo-woo-account .tempo-woo-status--failed,
+.tempo-woo-account .tempo-woo-status--cancelled {
+	background: var(--tempo-woo-danger-bg);
+	color: var(--tempo-woo-danger-fg);
+}
+
+/* Payment methods. */
+.tempo-woo-account .tempo-woo-payment-intro {
+	margin: 0 0 14px;
+	color: var(--tempo-woo-text);
+}
+
+.tempo-woo-account .woocommerce-MyAccount-paymentMethods {
+	margin-bottom: 14px;
+}
+
+.tempo-woo-account .woocommerce-MyAccount-paymentMethods tr {
+	grid-template-columns: minmax(0, 1fr);
+}
+
+.tempo-woo-account .tempo-woo-payment-method {
+	display: flex;
+	align-items: center;
+	gap: 14px;
+	flex-wrap: wrap;
+}
+
+.tempo-woo-account .tempo-woo-payment-method__brand {
+	display: inline-flex;
+	align-items: center;
+	justify-content: center;
+	width: 52px;
+	height: 34px;
+	flex: 0 0 auto;
+	border-radius: var(--dsb-radius-small, 8px);
+	background: var(--tempo-woo-brand-subtle);
+	color: var(--tempo-woo-secondary);
+	font-family: var(--dsb-font-heading, Poppins, sans-serif);
+	font-size: 10px;
+	font-weight: 700;
+	letter-spacing: 0.03em;
+}
+
+.tempo-woo-account .tempo-woo-payment-method__number {
+	min-width: 120px;
+	flex: 1 1 auto;
+	color: var(--tempo-woo-secondary);
+	font-size: var(--dsb-type-label-size, 14px);
+	font-weight: 600;
+}
+
+.tempo-woo-account .tempo-woo-payment-method__expires {
+	color: var(--tempo-woo-muted);
+	font-size: 11px;
+	white-space: nowrap;
+}
+
+.tempo-woo-account .payment-method-actions {
+	display: flex;
+	align-items: center;
+	justify-content: flex-end;
+	gap: 14px;
+}
+
+.tempo-woo-account .tempo-woo-payment-action {
+	display: inline-flex;
+	align-items: center;
+	min-height: 24px;
+	color: var(--tempo-woo-primary);
+	font-size: var(--dsb-type-small-size, 12px);
+	font-weight: 600;
+	text-decoration: none;
+}
+
+.tempo-woo-account .tempo-woo-payment-action--delete {
+	color: var(--tempo-woo-danger-fg);
+}
+
+.tempo-woo-account .tempo-woo-payment-intro + .woocommerce-info,
+.tempo-woo-account .woocommerce-MyAccount-content > .woocommerce-info:only-child {
+	padding: 22px;
+	background: var(--tempo-woo-surface);
+	box-shadow: inset 0 0 0 1px var(--tempo-woo-border);
+	color: var(--tempo-woo-muted);
+	text-align: center;
+}
+
+/*
+ * Add payment method.
+ *
+ * WooCommerce owns the form and each gateway owns its payment fields. These
+ * rules only replace Woo's legacy lavender payment shell with Tempo surfaces.
+ * The Stripe and WooPayments selectors style their host elements, not the
+ * secure provider-controlled fields rendered inside them.
+ */
+.tempo-woo-account form#add_payment_method {
+	margin: 0;
+	overflow: hidden;
+	border-radius: var(--tempo-woo-radius);
+	background: var(--tempo-woo-surface);
+	box-shadow: inset 0 0 0 1px var(--tempo-woo-border);
+}
+
+.tempo-woo-account #add_payment_method #payment {
+	border-radius: 0;
+	background: transparent;
+}
+
+.tempo-woo-account #add_payment_method #payment ul.payment_methods {
+	margin: 0;
+	padding: 0;
+	border: 0;
+	list-style: none;
+}
+
+.tempo-woo-account #add_payment_method #payment ul.payment_methods > li {
+	position: relative;
+	margin: 0;
+	padding: 0;
+	border: 0;
+	border-bottom: 1px solid var(--tempo-woo-border);
+	line-height: normal;
+}
+
+.tempo-woo-account #add_payment_method #payment ul.payment_methods > li > input.input-radio {
+	position: absolute;
+	z-index: 1;
+	top: 19px;
+	left: 18px;
+	width: 18px;
+	height: 18px;
+	margin: 0;
+	accent-color: var(--tempo-woo-primary);
+	cursor: pointer;
+}
+
+.tempo-woo-account #add_payment_method #payment ul.payment_methods > li > label {
+	display: flex;
+	align-items: center;
+	gap: 10px;
+	min-height: 56px;
+	margin: 0;
+	padding: 14px 18px 14px 48px;
+	color: var(--tempo-woo-secondary);
+	font-size: var(--dsb-type-label-size, 14px);
+	font-weight: 600;
+	line-height: var(--dsb-type-label-line, 20px);
+	cursor: pointer;
+}
+
+.tempo-woo-account #add_payment_method #payment ul.payment_methods > li > label img {
+	width: auto;
+	max-width: 96px;
+	max-height: 28px;
+	margin: 0 0 0 auto;
+	object-fit: contain;
+}
+
+.tempo-woo-account #add_payment_method #payment div.payment_box {
+	width: auto;
+	margin: 0;
+	padding: 0 18px 18px;
+	border: 0;
+	border-radius: 0;
+	background: transparent;
+	color: var(--tempo-woo-text);
+	font-size: var(--dsb-type-supporting-size, 13px);
+	line-height: var(--dsb-type-supporting-line, 19px);
+}
+
+.tempo-woo-account #add_payment_method #payment div.payment_box::before {
+	display: none;
+	content: none;
+}
+
+.tempo-woo-account #add_payment_method #payment div.payment_box > p {
+	margin: 0 0 12px;
+}
+
+.tempo-woo-account #add_payment_method #payment div.payment_box > p:last-child {
+	margin-bottom: 0;
+}
+
+.tempo-woo-account #add_payment_method #payment .testmode-info {
+	margin: 0 0 14px;
+	padding: 11px 13px;
+	border-radius: var(--dsb-radius-small, 8px);
+	background: var(--tempo-woo-warning-bg);
+	color: var(--tempo-woo-warning-fg);
+	font-size: var(--dsb-type-small-size, 12px);
+	line-height: var(--dsb-type-small-line, 16px);
+}
+
+.tempo-woo-account #add_payment_method #payment .testmode-info a {
+	color: inherit;
+	font-weight: 600;
+	text-decoration: underline;
+	text-underline-offset: 2px;
+}
+
+.tempo-woo-account #add_payment_method #payment fieldset.wc-payment-form,
+.tempo-woo-account #add_payment_method #payment fieldset.wc-upe-form {
+	min-width: 0;
+	margin: 0;
+	padding: 0;
+	border: 0;
+}
+
+.tempo-woo-account #add_payment_method #payment .wc-stripe-upe-element,
+.tempo-woo-account #add_payment_method #payment #wcpay-upe-element,
+.tempo-woo-account #add_payment_method #payment .wcpay-upe-element,
+.tempo-woo-account #add_payment_method #payment .wcpay-payment-element-wrapper {
+	min-width: 0;
+	margin: 0;
+	padding: 13px;
+	border-radius: var(--dsb-radius-medium, 12px);
+	background: var(--tempo-woo-subtle);
+	box-shadow: inset 0 0 0 1px var(--tempo-woo-border);
+}
+
+.tempo-woo-account #add_payment_method #payment .wc-stripe-upe-element iframe,
+.tempo-woo-account #add_payment_method #payment #wcpay-upe-element iframe,
+.tempo-woo-account #add_payment_method #payment .wcpay-upe-element iframe,
+.tempo-woo-account #add_payment_method #payment .wcpay-payment-element iframe {
+	width: 100%;
+	max-width: none;
+}
+
+.tempo-woo-account #add_payment_method #payment .woocommerce-SavedPaymentMethods-saveNew,
+.tempo-woo-account #add_payment_method #payment .wc-stripe-save-source {
+	display: flex;
+	align-items: flex-start;
+	gap: 9px;
+	margin: 12px 0 0;
+	color: var(--tempo-woo-text);
+	font-size: var(--dsb-type-small-size, 12px);
+	font-weight: 400;
+	line-height: var(--dsb-type-small-line, 16px);
+}
+
+.tempo-woo-account #add_payment_method #payment .woocommerce-SavedPaymentMethods-saveNew input,
+.tempo-woo-account #add_payment_method #payment .wc-stripe-save-source input {
+	width: 18px;
+	height: 18px;
+	margin: 0;
+	flex: 0 0 auto;
+}
+
+.tempo-woo-account #add_payment_method #payment .stripe-source-errors,
+.tempo-woo-account #add_payment_method #payment .woocommerce_error {
+	margin: 12px 0 0;
+	padding: 11px 13px;
+	border: 0;
+	border-radius: var(--dsb-radius-small, 8px);
+	background: var(--tempo-woo-danger-bg);
+	color: var(--tempo-woo-danger-fg);
+	font-size: var(--dsb-type-small-size, 12px);
+	line-height: var(--dsb-type-small-line, 16px);
+}
+
+.tempo-woo-account #add_payment_method #payment > .form-row {
+	display: flex;
+	justify-content: flex-end;
+	margin: 0;
+	padding: 16px 18px 18px;
+	border: 0;
+	background: var(--tempo-woo-surface);
+}
+
+.tempo-woo-account #add_payment_method #payment > .form-row::before,
+.tempo-woo-account #add_payment_method #payment > .form-row::after {
+	display: none;
+	content: none;
+}
+
+.tempo-woo-account #add_payment_method #payment #place_order {
+	float: none;
+	margin: 0;
+}
+
+/* Single order view / confirmation. */
+.tempo-woo-account .tempo-woo-order-view {
+	display: flex;
+	flex-direction: column;
+	gap: 20px;
+}
+
+.tempo-woo-account .tempo-woo-order-view__back {
+	align-self: flex-start;
+	color: var(--tempo-woo-primary);
+	font-size: var(--dsb-type-small-size, 12px);
+	font-weight: 600;
+	text-decoration: none;
+}
+
+.tempo-woo-account .tempo-woo-order-view__back:hover,
+.tempo-woo-account .tempo-woo-order-view__back:focus-visible {
+	color: var(--tempo-woo-secondary);
+}
+
+.tempo-woo-account .tempo-woo-order-view__summary {
+	display: flex;
+	align-items: center;
+	gap: 12px;
+	flex-wrap: wrap;
+	padding: 16px;
+	border-radius: var(--tempo-woo-radius);
+	background: var(--tempo-woo-info-bg);
+}
+
+.tempo-woo-account .tempo-woo-order-view__summary--success {
+	background: var(--tempo-woo-success-bg);
+}
+
+.tempo-woo-account .tempo-woo-order-view__summary--warning {
+	background: var(--tempo-woo-warning-bg);
+}
+
+.tempo-woo-account .tempo-woo-order-view__summary--danger {
+	background: var(--tempo-woo-danger-bg);
+}
+
+.tempo-woo-account .tempo-woo-order-view__summary p {
+	min-width: 220px;
+	flex: 1;
+	margin: 0;
+	color: var(--tempo-woo-text);
+	font-size: var(--dsb-type-supporting-size, 13px);
+	line-height: var(--dsb-type-supporting-line, 19px);
+}
+
+.tempo-woo-account .tempo-woo-order-view__summary strong {
+	color: var(--tempo-woo-secondary);
+}
+
+.tempo-woo-account .tempo-woo-order-view h2 {
+	margin: 0 0 12px;
+	font-family: var(--dsb-font-heading, Poppins, sans-serif);
+	font-size: 18px;
+	font-weight: 700;
+	line-height: 25px;
+	color: var(--dsb-color-text-brand, var(--tempo-woo-secondary));
+}
+
+.tempo-woo-account .woocommerce-order-details,
+.tempo-woo-account .woocommerce-customer-details,
+.tempo-woo-account .tempo-woo-order-view__updates {
+	margin: 0;
+}
+
+.tempo-woo-account .woocommerce-table--order-details {
+	width: 100%;
+	margin: 0;
+	border: 0;
+	border-spacing: 0;
+	border-radius: var(--tempo-woo-radius);
+	overflow: hidden;
+	background: var(--tempo-woo-surface);
+	box-shadow: inset 0 0 0 1px var(--tempo-woo-border);
+}
+
+.tempo-woo-account .woocommerce-table--order-details th,
+.tempo-woo-account .woocommerce-table--order-details td {
+	padding: 12px 16px;
+	border: 0;
+	border-bottom: 1px solid var(--tempo-woo-border);
+	background: transparent;
+	font-size: var(--dsb-type-supporting-size, 13px);
+	text-align: left;
+	vertical-align: top;
+}
+
+.tempo-woo-account .woocommerce-table--order-details thead th {
+	background: var(--tempo-woo-subtle);
+	font-size: var(--dsb-type-small-size, 12px);
+	font-weight: 700;
+}
+
+.tempo-woo-account .woocommerce-table--order-details .product-total,
+.tempo-woo-account .woocommerce-table--order-details tfoot td {
+	text-align: right;
+	font-variant-numeric: tabular-nums;
+	white-space: nowrap;
+}
+
+.tempo-woo-account .woocommerce-table--order-details .product-name > a,
+.tempo-woo-account .woocommerce-table--order-details .product-name {
+	color: var(--tempo-woo-secondary);
+	font-size: var(--dsb-type-label-size, 14px);
+	font-weight: 600;
+}
+
+.tempo-woo-account .woocommerce-table--order-details .wc-item-meta {
+	margin: 8px 0 0;
+	padding: 0;
+	list-style: none;
+	color: var(--tempo-woo-muted);
+	font-size: var(--dsb-type-small-size, 12px);
+	font-weight: 400;
+	line-height: 17px;
+}
+
+.tempo-woo-account .woocommerce-table--order-details .wc-item-meta li {
+	display: flex;
+	gap: 4px;
+}
+
+.tempo-woo-account .woocommerce-table--order-details .wc-item-meta p {
+	margin: 0;
+}
+
+.tempo-woo-account .woocommerce-table--order-details tfoot tr:last-child:not(:has(.order-actions--heading)) th,
+.tempo-woo-account .woocommerce-table--order-details tfoot tr:last-child:not(:has(.order-actions--heading)) td,
+.tempo-woo-account .woocommerce-table--order-details tfoot tr:has(+ tr .order-actions--heading) th,
+.tempo-woo-account .woocommerce-table--order-details tfoot tr:has(+ tr .order-actions--heading) td {
+	color: var(--tempo-woo-secondary);
+	font-family: var(--dsb-font-heading, Poppins, sans-serif);
+	font-size: 17px;
+	font-weight: 700;
+}
+
+.tempo-woo-account .woocommerce-table--order-details tfoot tr:last-child:not(:has(.order-actions--heading)) th,
+.tempo-woo-account .woocommerce-table--order-details tfoot tr:last-child:not(:has(.order-actions--heading)) td {
+	border-bottom: 0;
+}
+
+.tempo-woo-account .woocommerce-customer-details address {
+	margin: 0;
+	padding: 18px;
+	border: 0;
+	border-radius: var(--tempo-woo-radius);
+	background: var(--tempo-woo-surface);
+	box-shadow: inset 0 0 0 1px var(--tempo-woo-border);
+	color: var(--tempo-woo-text);
+	font-size: var(--dsb-type-supporting-size, 13px);
+	font-style: normal;
+	line-height: 20px;
+}
+
+.tempo-woo-account .woocommerce-customer-details address p {
+	margin: 4px 0 0;
+}
+
+.tempo-woo-account .woocommerce-OrderUpdates {
+	display: flex;
+	flex-direction: column;
+	gap: 10px;
+	margin: 0;
+	padding: 0;
+	list-style: none;
+}
+
+.tempo-woo-account .woocommerce-OrderUpdate {
+	padding: 14px 16px;
+	border-radius: var(--dsb-radius-medium, 12px);
+	background: var(--tempo-woo-surface);
+	box-shadow: inset 0 0 0 1px var(--tempo-woo-border);
+}
+
+.tempo-woo-account .woocommerce-OrderUpdate p {
+	margin: 0;
+}
+
+.tempo-woo-account .woocommerce-OrderUpdate-meta {
+	margin-bottom: 6px !important;
+	color: var(--tempo-woo-muted);
+	font-size: 11px;
+}
+
+@media (min-width: 700px) {
+	.tempo-woo-account form.edit-account {
+		grid-template-columns: repeat(2, minmax(0, 1fr));
+	}
+
+	.tempo-woo-account form.edit-account .form-row-wide,
+	.tempo-woo-account form.edit-account fieldset,
+	.tempo-woo-account form.edit-account > p:last-child {
+		grid-column: 1 / -1;
+	}
+
+	.tempo-woo-account .woocommerce-orders-table tr {
+		grid-template-columns: minmax(120px, auto) minmax(150px, 1fr) auto auto auto;
+	}
+
+	.tempo-woo-account .woocommerce-MyAccount-paymentMethods tr {
+		grid-template-columns: minmax(260px, 1fr) auto auto;
+	}
+}
+
+@media (min-width: 1000px) {
+	.tempo-woo-account:not(.dsb-plugin-account) .woocommerce {
+		display: grid;
+		grid-template-columns: 200px minmax(0, 1fr);
+		gap: 0 32px;
+		align-items: start;
+	}
+
+	.tempo-woo-account:not(.dsb-plugin-account) .tempo-woo-account__page-title {
+		grid-column: 1 / -1;
+	}
+
+	.tempo-woo-account:not(.dsb-plugin-account) .woocommerce-MyAccount-navigation {
+		position: sticky;
+		top: 20px;
+		grid-column: 1;
+	}
+
+	.tempo-woo-account:not(.dsb-plugin-account) .woocommerce-MyAccount-navigation ul {
+		flex-direction: column;
+		margin: 0;
+	}
+
+	.tempo-woo-account:not(.dsb-plugin-account) .woocommerce-MyAccount-navigation a {
+		justify-content: flex-start;
+	}
+
+	.tempo-woo-account:not(.dsb-plugin-account) .woocommerce-MyAccount-content {
+		float: none;
+		width: 100%;
+		grid-column: 2;
+	}
+}
+
+@media (max-width: 699px) {
+	.tempo-woo-account .woocommerce-orders-table tr {
+		grid-template-columns: minmax(0, 1fr) auto;
+	}
+
+	.tempo-woo-account .woocommerce-orders-table__cell-order-number,
+	.tempo-woo-account .woocommerce-orders-table__cell-order-summary {
+		grid-column: 1;
+	}
+
+	.tempo-woo-account .woocommerce-orders-table__cell-order-status,
+	.tempo-woo-account .woocommerce-orders-table__cell-order-total {
+		grid-column: 2;
+		justify-self: end;
+	}
+
+	.tempo-woo-account .woocommerce-orders-table__cell-order-actions {
+		grid-column: 1 / -1;
+	}
+
+	.tempo-woo-account .woocommerce-orders-table__cell-order-actions .button {
+		flex: 1 1 auto;
+	}
+
+	.tempo-woo-account .payment-method-actions {
+		justify-content: flex-start;
+	}
+
+	.tempo-woo-account .woocommerce-table--order-details th,
+	.tempo-woo-account .woocommerce-table--order-details td {
+		padding-inline: 12px;
+	}
+
+	.tempo-woo-account #add_payment_method #payment ul.payment_methods > li > input.input-radio {
+		left: 14px;
+	}
+
+	.tempo-woo-account #add_payment_method #payment ul.payment_methods > li > label {
+		padding-inline: 44px 14px;
+	}
+
+	.tempo-woo-account #add_payment_method #payment div.payment_box {
+		padding-inline: 14px;
+	}
+
+	.tempo-woo-account #add_payment_method #payment .wc-stripe-upe-element,
+	.tempo-woo-account #add_payment_method #payment #wcpay-upe-element,
+	.tempo-woo-account #add_payment_method #payment .wcpay-upe-element,
+	.tempo-woo-account #add_payment_method #payment .wcpay-payment-element-wrapper {
+		padding: 10px;
+	}
+
+	.tempo-woo-account #add_payment_method #payment > .form-row {
+		padding: 14px;
+	}
+
+	.tempo-woo-account #add_payment_method #payment #place_order {
+		width: 100%;
+	}
+}
+
+@media (prefers-reduced-motion: no-preference) {
+	.tempo-woo-account .woocommerce-MyAccount-content .button,
+	.tempo-woo-account .tempo-woo-payment-action,
+	.tempo-woo-account .tempo-woo-order-view__back {
+		transition: color 150ms ease, background-color 150ms ease, opacity 150ms ease;
+	}
+}
