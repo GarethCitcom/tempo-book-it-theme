@@ -1469,3 +1469,9 @@
 		opacity: 0.7;
 	}
 }
+
+
+/* Extra unknowns */
+.wp-block-woocommerce-checkout-order-summary-block .checkout-order-summary-block-fill {
+	border: 0;
+}
