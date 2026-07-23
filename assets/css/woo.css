@@ -126,7 +126,7 @@
 .woocommerce-account .woocommerce-EditAccountForm {
 	display: flex;
 	flex-wrap: wrap;
-	gap: 0 16px;
+	gap: 18px 16px;
 	max-width: 620px;
 }
 
@@ -134,7 +134,7 @@
 	display: flex;
 	flex-direction: column;
 	gap: 7px;
-	margin: 0 0 12px;
+	margin: 0;
 	float: none;
 	flex: 1 1 100%;
 }
@@ -206,14 +206,49 @@
 /* Password change + Class reminders render as fieldsets — card them. */
 .woocommerce-account .woocommerce-EditAccountForm fieldset {
 	border: 0;
-	margin: 6px 0;
+	margin: 0;
 	padding: 18px;
 	border-radius: 14px;
 	background: var(--tw-surface);
 	box-shadow: inset 0 0 0 1px var(--tw-border);
 	display: flex;
 	flex-direction: column;
-	gap: 12px;
+	gap: 16px;
+}
+
+/* The reminders card is tighter than the password card in the design. */
+.woocommerce-account .woocommerce-EditAccountForm fieldset:has(input[type="checkbox"]) {
+	gap: 10px;
+}
+
+/* Checkboxes (Class reminders) in the tenant brand. */
+.woocommerce-account .woocommerce-EditAccountForm input[type="checkbox"] {
+	width: 18px;
+	height: 18px;
+	accent-color: var(--tw-primary);
+	cursor: pointer;
+}
+
+/* The reminders opt-in is a checkbox + inline text — a row, not the
+   label-over-input column the field rows use. */
+.woocommerce-account .woocommerce-EditAccountForm fieldset label:has(input[type="checkbox"]) {
+	display: flex;
+	flex-direction: row;
+	align-items: center;
+	gap: 10px;
+	font-size: 13px;
+	font-weight: 400;
+	cursor: pointer;
+}
+
+.woocommerce-account .woocommerce-EditAccountForm fieldset p {
+	margin: 0;
+}
+
+.woocommerce-account .woocommerce-EditAccountForm fieldset small {
+	font-size: 11px;
+	line-height: 16px;
+	color: var(--tw-muted);
 }
 
 .woocommerce-account .woocommerce-EditAccountForm fieldset legend {
@@ -451,7 +486,14 @@
 	align-items: center;
 }
 
-.tempo-woo-card-row__action--danger { color: var(--tw-danger-fg); }
+.tempo-woo-card-row__action--danger {
+	color: var(--tw-danger-fg);
+	text-decoration: none;
+}
+
+.tempo-woo-card-row__action:hover,
+.tempo-woo-card-row__action--danger:hover,
+.tempo-woo-order-card__action:hover { text-decoration: underline; }
 
 /* ── Single order view / confirmation ──────────────────────────────── */
 
