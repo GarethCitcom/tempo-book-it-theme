@@ -21,8 +21,11 @@ Add that repo to the session when building against it.
   [data-dsb-basket] / [data-dsb-basket-count] / [data-dsb-basket-clock].
 - JS: window.dsbBooking — getState() {basketCount, soonestExpires,
   student}, refresh(), on(cb) (dsb:state events).
-- PHP: dsb_logo_url(), dsb_brand_colour('primary'|'secondary'),
-  dsb_vocab('class'|'classes'|'student'|…), dsb_booking()/dsb_register()
+- PHP: dsb_logo_url(), dsb_login_panel_image_url(),
+  dsb_brand_colour('primary'|'secondary'),
+  dsb_vocab('class'|'classes'|'student'|…),
+  dsb_registration_available(), dsb_register_member(),
+  dsb_booking()/dsb_register()
   template functions.
 - CSS: --dsb-\* tokens printed on :root (brand colours included).
 

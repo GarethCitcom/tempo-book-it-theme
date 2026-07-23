@@ -1,12 +1,5 @@
 /**
- * Tempo Studio Manager theme — wp-login.php branding.
- *
- * The whole site is members-only, so the stock login screen is the front
- * door. Composed from the design-system tokens (no approved design
- * exists for this screen — keep it clean and neutral).
- *
- * The logo background-image is injected inline from functions.php so the
- * tenant logo (Tempo Studio Manager setting) wins when present.
+ * Tempo Studio Manager — custom authentication experience.
  */
 
 *,
@@ -23,112 +16,918 @@
 	src: url(../fonts/montserrat-variable.woff2) format("woff2");
 }
 
-body.login {
+@font-face {
+	font-family: "Poppins";
+	font-style: normal;
+	font-weight: 600;
+	font-display: swap;
+	src: url(../fonts/poppins-600.woff2) format("woff2");
+}
+
+@font-face {
+	font-family: "Poppins";
+	font-style: normal;
+	font-weight: 700;
+	font-display: swap;
+	src: url(../fonts/poppins-700.woff2) format("woff2");
+}
+
+body.tempo-login {
 	--tempo-brand-primary: #ff7300;
 	--tempo-brand-secondary: #330164;
 	--tempo-brand-on-primary: #ffffff;
 	--tempo-brand-on-secondary: #ffffff;
-	background: #f1f3f5;
-	font-family: Montserrat, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
-}
-
-/* Logo — image set inline from functions.php */
-#login h1 a {
-	background-position: center;
-	background-repeat: no-repeat;
-	background-size: contain;
-	height: 46px;
-	width: 100%;
-	max-width: 260px;
-	margin: 0 auto 20px;
-}
-
-/* Card */
-#login form {
-	background: #ffffff;
-	border: none;
-	border-radius: 16px;
-	box-shadow: 0 2px 8px rgba(16, 33, 47, 0.08);
-	padding: 26px 24px;
-}
-
-#login form .forgetmenot {
-	font-size: 13px;
-}
-
-.login label {
-	color: #3f3f46;
-	font-size: 14px;
-	font-weight: 600;
-}
-
-.login input[type="text"],
-.login input[type="password"] {
-	border: 1px solid #e5e7eb;
-	border-radius: 8px;
+	--tempo-ink: #25212b;
+	--tempo-muted: #6b6671;
+	--tempo-border: #dfdce3;
+	margin: 0;
+	min-width: 320px;
+	min-height: 100vh;
+	background: var(--tempo-brand-secondary);
+	color: var(--tempo-ink);
+	font-family: Montserrat, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
 	font-size: 16px;
-	padding: 8px 12px;
+	line-height: 1.5;
 }
 
-.login input[type="text"]:focus,
-.login input[type="password"]:focus {
+.tempo-login__skip {
+	position: fixed;
+	top: 12px;
+	left: 12px;
+	z-index: 20;
+	transform: translateY(-180%);
+	border-radius: 8px;
+	background: #fff;
+	color: var(--tempo-brand-secondary);
+	font-weight: 700;
+	padding: 10px 14px;
+}
+
+.tempo-login__skip:focus {
+	transform: translateY(0);
+}
+
+.tempo-login__shell {
+	display: grid;
+	grid-template-columns: minmax(480px, 46%) minmax(0, 54%);
+	min-height: 100vh;
+	background: #fff;
+}
+
+.tempo-login__form-panel {
+	display: flex;
+	align-items: center;
+	justify-content: center;
+	min-width: 0;
+	padding: 56px clamp(36px, 6vw, 92px);
+}
+
+.tempo-login__form-wrap {
+	width: min(100%, 430px);
+}
+
+.tempo-login__brand {
+	display: inline-flex;
+	align-items: center;
+	justify-content: flex-start;
+	width: min(220px, 100%);
+	min-height: 50px;
+	margin-bottom: clamp(48px, 8vh, 88px);
+}
+
+.tempo-login__brand img {
+	display: block;
+	width: 100%;
+	max-width: 100%;
+	height: 56px;
+	object-fit: contain;
+	object-position: left center;
+}
+
+.tempo-login__intro {
+	margin-bottom: 30px;
+}
+
+.tempo-login__eyebrow,
+.tempo-login__showcase-kicker {
+	margin: 0 0 10px;
+	color: var(--tempo-brand-primary);
+	font-size: 12px;
+	font-weight: 700;
+	letter-spacing: 0.14em;
+	line-height: 1.4;
+	text-transform: uppercase;
+}
+
+.tempo-login__intro h1 {
+	margin: 0 0 12px;
+	color: var(--tempo-brand-secondary);
+	font-family: Poppins, Montserrat, sans-serif;
+	font-size: clamp(32px, 3.2vw, 44px);
+	font-weight: 700;
+	letter-spacing: -0.045em;
+	line-height: 1.1;
+}
+
+.tempo-login__intro > p:last-child {
+	margin: 0;
+	max-width: 390px;
+	color: var(--tempo-muted);
+}
+
+.tempo-login__form {
+	display: grid;
+	gap: 20px;
+}
+
+.tempo-field {
+	display: grid;
+	gap: 8px;
+}
+
+.tempo-field label,
+.tempo-login__remember {
+	color: var(--tempo-ink);
+	font-size: 13px;
+	font-weight: 700;
+}
+
+.tempo-field__label-row {
+	display: flex;
+	align-items: center;
+	justify-content: space-between;
+	gap: 16px;
+}
+
+.tempo-field__label-row a,
+.tempo-login__back,
+.tempo-login__privacy a {
+	color: var(--tempo-brand-secondary);
+	font-size: 12px;
+	font-weight: 700;
+	text-decoration: none;
+}
+
+.tempo-field__label-row a:hover,
+.tempo-login__back:hover,
+.tempo-login__privacy a:hover {
+	color: var(--tempo-brand-primary);
+	text-decoration: underline;
+	text-underline-offset: 3px;
+}
+
+.tempo-field input[type="text"],
+.tempo-field input[type="email"],
+.tempo-field input[type="tel"],
+.tempo-field input[type="password"] {
+	width: 100%;
+	height: 52px;
+	margin: 0;
+	border: 1px solid var(--tempo-border);
+	border-radius: 12px;
+	background: #fff;
+	box-shadow: 0 1px 2px rgba(30, 20, 40, 0.03);
+	color: var(--tempo-ink);
+	font: inherit;
+	font-size: 15px;
+	padding: 0 15px;
+	transition: border-color 160ms ease, box-shadow 160ms ease;
+}
+
+.tempo-field input:hover {
+	border-color: #bdb7c3;
+}
+
+.tempo-field input:focus {
 	border-color: var(--tempo-brand-primary);
-	box-shadow: 0 0 0 1px var(--tempo-brand-primary);
+	box-shadow: 0 0 0 3px color-mix(in srgb, var(--tempo-brand-primary) 18%, transparent);
 	outline: none;
 }
 
-.login .button-primary {
-	background: var(--tempo-brand-primary);
-	color: var(--tempo-brand-on-primary);
-	border: none;
+.tempo-field__password {
+	position: relative;
+}
+
+.tempo-field__password input {
+	padding-right: 52px !important;
+}
+
+.tempo-password-toggle {
+	position: absolute;
+	top: 50%;
+	right: 8px;
+	display: grid;
+	place-items: center;
+	width: 38px;
+	height: 38px;
+	transform: translateY(-50%);
+	border: 0;
+	border-radius: 9px;
+	background: transparent;
+	cursor: pointer;
+}
+
+.tempo-password-toggle > span:last-child {
+	position: relative;
+	display: block;
+	width: 20px;
+	height: 13px;
+	border: 1.8px solid var(--tempo-muted);
+	border-radius: 50% / 60%;
+}
+
+.tempo-password-toggle > span:last-child::after {
+	position: absolute;
+	top: 50%;
+	left: 50%;
+	width: 5px;
+	height: 5px;
+	transform: translate(-50%, -50%);
+	border-radius: 50%;
+	background: var(--tempo-muted);
+	content: "";
+}
+
+.tempo-password-toggle:hover {
+	background: #f5f2f7;
+}
+
+.tempo-password-toggle:focus-visible,
+.tempo-login__submit:focus-visible,
+.tempo-login__back:focus-visible,
+.tempo-field__label-row a:focus-visible,
+.tempo-login__brand:focus-visible {
+	outline: 3px solid color-mix(in srgb, var(--tempo-brand-primary) 55%, #fff);
+	outline-offset: 3px;
+}
+
+.tempo-login__remember {
+	display: flex;
+	align-items: center;
+	gap: 10px;
+	width: fit-content;
+	cursor: pointer;
+}
+
+.tempo-login__remember input {
+	width: 18px;
+	height: 18px;
+	margin: 0;
+	accent-color: var(--tempo-brand-primary);
+}
+
+.tempo-login__submit {
+	display: flex;
+	align-items: center;
+	justify-content: space-between;
+	width: 100%;
+	min-height: 54px;
+	margin-top: 4px;
+	border: 0;
 	border-radius: 12px;
-	box-shadow: none;
-	font-family: inherit;
+	background: var(--tempo-brand-primary);
+	box-shadow: 0 10px 24px color-mix(in srgb, var(--tempo-brand-primary) 24%, transparent);
+	color: var(--tempo-brand-on-primary);
+	cursor: pointer;
+	font: inherit;
 	font-size: 14px;
-	font-weight: 600;
-	min-height: 40px;
-	padding: 4px 18px;
-	text-shadow: none;
-	transition: background-color 0.15s ease;
+	font-weight: 700;
+	padding: 0 18px 0 21px;
+	text-decoration: none;
+	transition: transform 160ms ease, box-shadow 160ms ease, background-color 160ms ease;
 }
 
-.login .button-primary:hover,
-.login .button-primary:focus {
-	background: var(--tempo-brand-secondary);
-	color: var(--tempo-brand-on-secondary);
-	box-shadow: none;
+.tempo-login__submit span {
+	font-size: 22px;
+	font-weight: 400;
+	line-height: 1;
+	transition: transform 160ms ease;
 }
 
-.login .button-primary:focus {
-	outline: 2px solid var(--tempo-brand-secondary);
-	outline-offset: 2px;
+.tempo-login__submit:hover {
+	transform: translateY(-1px);
+	box-shadow: 0 13px 30px color-mix(in srgb, var(--tempo-brand-primary) 32%, transparent);
 }
 
-/* Links below the form */
-.login #nav,
-.login #backtoblog {
+.tempo-login__submit:hover span {
+	transform: translateX(3px);
+}
+
+.tempo-login__submit:active {
+	transform: translateY(0);
+}
+
+.tempo-login__submit--link {
+	margin-top: 24px;
+}
+
+.tempo-login__back {
+	display: inline-flex;
+	margin-top: 24px;
+}
+
+.tempo-login__privacy {
+	margin: 38px 0 0;
+	color: #918b96;
+	font-size: 11px;
+}
+
+.tempo-login__privacy a {
+	margin-left: 4px;
+	font-size: inherit;
+}
+
+.tempo-login__notice {
+	display: grid;
+	grid-template-columns: 26px 1fr;
+	align-items: start;
+	gap: 10px;
+	margin: 0 0 22px;
+	border-radius: 12px;
+	font-size: 13px;
+	padding: 13px 14px;
+}
+
+.tempo-login__notice > span {
+	display: grid;
+	place-items: center;
+	width: 24px;
+	height: 24px;
+	border-radius: 50%;
+	font-weight: 700;
+}
+
+.tempo-login__notice p {
+	margin: 2px 0 0;
+}
+
+.tempo-login__notice--error {
+	background: #feeceb;
+	color: #8e211a;
+}
+
+.tempo-login__notice--error > span {
+	background: #fff;
+	color: #b42318;
+}
+
+.tempo-login__notice--success {
+	background: #e8f7ef;
+	color: #126841;
+}
+
+.tempo-login__notice--success > span {
+	background: #fff;
+	color: #16794f;
+}
+
+.tempo-field__hint {
+	margin: 0;
+	color: var(--tempo-muted);
+	font-size: 11px;
+}
+
+.tempo-login__register-prompt {
+	margin: 22px 0 0;
+	color: var(--tempo-muted);
 	font-size: 13px;
 	text-align: center;
 }
 
-.login #nav a,
-.login #backtoblog a {
+.tempo-login__register-prompt a {
 	color: var(--tempo-brand-secondary);
+	font-weight: 700;
+	text-decoration: none;
 }
 
-.login #nav a:hover,
-.login #backtoblog a:hover {
+.tempo-login__register-prompt a:hover {
 	color: var(--tempo-brand-primary);
+	text-decoration: underline;
+	text-underline-offset: 3px;
 }
 
-/* Notices */
-.login .notice,
-.login .message,
-.login #login_error {
-	border-left-color: var(--tempo-brand-primary);
+.tempo-login--register .tempo-login__shell {
+	grid-template-columns: minmax(590px, 52%) minmax(0, 48%);
+}
+
+.tempo-login--register .tempo-login__form-panel {
+	align-items: flex-start;
+	padding-block: 42px;
+}
+
+.tempo-login--register .tempo-login__form-wrap {
+	width: min(100%, 520px);
+}
+
+.tempo-login--register .tempo-login__brand {
+	margin-bottom: 34px;
+}
+
+.tempo-login--register .tempo-login__intro {
+	margin-bottom: 24px;
+}
+
+.tempo-registration {
+	gap: 22px;
+}
+
+.tempo-registration fieldset {
+	min-width: 0;
+	margin: 0;
+	border: 0;
+	padding: 0;
+}
+
+.tempo-registration legend {
+	width: 100%;
+	margin: 0 0 10px;
+	color: var(--tempo-ink);
+	font-size: 13px;
+	font-weight: 700;
+}
+
+.tempo-registration__choice-grid,
+.tempo-registration__row {
+	display: grid;
+	grid-template-columns: repeat(2, minmax(0, 1fr));
+	gap: 12px;
+}
+
+.tempo-registration__choice-card {
+	position: relative;
+	display: flex;
+	align-items: flex-start;
+	gap: 10px;
+	min-height: 88px;
+	border: 1px solid var(--tempo-border);
+	border-radius: 13px;
+	background: #fff;
+	cursor: pointer;
+	padding: 14px;
+	transition: border-color 160ms ease, box-shadow 160ms ease, background-color 160ms ease;
+}
+
+.tempo-registration__choice-card:hover {
+	border-color: color-mix(in srgb, var(--tempo-brand-primary) 55%, var(--tempo-border));
+}
+
+.tempo-registration__choice-card:has(input:checked) {
+	border-color: var(--tempo-brand-primary);
+	background: color-mix(in srgb, var(--tempo-brand-primary) 7%, #fff);
+	box-shadow: 0 0 0 2px color-mix(in srgb, var(--tempo-brand-primary) 13%, transparent);
+}
+
+.tempo-registration__choice-card:focus-within {
+	outline: 3px solid color-mix(in srgb, var(--tempo-brand-primary) 30%, transparent);
+	outline-offset: 2px;
+}
+
+.tempo-registration__choice-card input {
+	flex: 0 0 auto;
+	width: 17px;
+	height: 17px;
+	margin: 2px 0 0;
+	accent-color: var(--tempo-brand-primary);
+}
+
+.tempo-registration__choice-card span,
+.tempo-registration__choice-card strong,
+.tempo-registration__choice-card small {
+	display: block;
+}
+
+.tempo-registration__choice-card strong {
+	color: var(--tempo-ink);
+	font-size: 12px;
+	line-height: 1.35;
+}
+
+.tempo-registration__choice-card small {
+	margin-top: 4px;
+	color: var(--tempo-muted);
+	font-size: 10px;
+	line-height: 1.4;
+}
+
+.tempo-registration__section,
+.tempo-registration__details {
+	display: grid;
+	gap: 12px;
+}
+
+.tempo-registration__details--parent {
+	display: none;
+}
+
+.tempo-registration:has(input[name="account_type"][value="parent"]:checked) .tempo-registration__details--student {
+	display: none;
+}
+
+.tempo-registration:has(input[name="account_type"][value="parent"]:checked) .tempo-registration__details--parent {
+	display: grid;
+}
+
+.tempo-registration__honeypot {
+	position: absolute !important;
+	left: -10000px !important;
+	width: 1px !important;
+	height: 1px !important;
+	overflow: hidden !important;
+}
+
+.tempo-login__showcase {
+	position: relative;
+	display: grid;
+	min-height: 100vh;
+	overflow: hidden;
+	background:
+		radial-gradient(circle at 74% 18%, color-mix(in srgb, var(--tempo-brand-primary) 38%, transparent), transparent 21%),
+		linear-gradient(145deg, color-mix(in srgb, var(--tempo-brand-secondary) 88%, #130021), var(--tempo-brand-secondary));
+	color: var(--tempo-brand-on-secondary);
+	isolation: isolate;
+}
+
+.tempo-login__showcase--image {
+	background-color: var(--tempo-brand-secondary);
+	background-position: center;
+	background-repeat: no-repeat;
+	background-size: cover;
+}
+
+.tempo-login__showcase--image::after {
+	display: none;
+}
+
+.tempo-login__showcase-grid {
+	position: absolute;
+	inset: 0;
+	z-index: -3;
+	background-image:
+		linear-gradient(rgba(255,255,255,0.045) 1px, transparent 1px),
+		linear-gradient(90deg, rgba(255,255,255,0.045) 1px, transparent 1px);
+	background-size: 64px 64px;
+	mask-image: linear-gradient(to bottom right, #000, transparent 74%);
+}
+
+.tempo-login__showcase::after {
+	position: absolute;
+	right: -18%;
+	bottom: -18%;
+	z-index: -2;
+	width: 62vw;
+	height: 62vw;
+	border: 1px solid rgba(255,255,255,0.15);
+	border-radius: 50%;
+	box-shadow: 0 0 0 70px rgba(255,255,255,0.025), 0 0 0 140px rgba(255,255,255,0.02);
+	content: "";
+}
+
+.tempo-login__showcase-content {
+	display: flex;
+	flex-direction: column;
+	justify-content: center;
+	width: min(78%, 620px);
+	margin: auto;
+	padding: 72px 0;
+}
+
+.tempo-login__showcase-kicker {
+	color: color-mix(in srgb, var(--tempo-brand-primary) 88%, #fff);
+}
+
+.tempo-login__showcase h2 {
+	max-width: 560px;
+	margin: 0 0 18px;
+	color: inherit;
+	font-family: Poppins, Montserrat, sans-serif;
+	font-size: clamp(42px, 5vw, 76px);
+	font-weight: 700;
+	letter-spacing: -0.055em;
+	line-height: 0.98;
+}
+
+.tempo-login__showcase-content > p:not(.tempo-login__showcase-kicker) {
+	max-width: 470px;
+	margin: 0;
+	color: color-mix(in srgb, var(--tempo-brand-on-secondary) 72%, transparent);
+	font-size: 15px;
+}
+
+.tempo-portal-card {
+	position: relative;
+	width: min(100%, 490px);
+	margin: 54px 0 0 auto;
+	border: 1px solid rgba(255,255,255,0.55);
+	border-radius: 24px;
+	background: rgba(255,255,255,0.94);
+	box-shadow: 0 32px 70px rgba(14, 0, 30, 0.38);
+	color: var(--tempo-ink);
+	padding: 24px;
+	transform: rotate(-2deg);
+	backdrop-filter: blur(14px);
+}
+
+.tempo-portal-card__top {
+	display: grid;
+	grid-template-columns: 14px 1fr auto;
+	align-items: center;
+	gap: 10px;
+	font-size: 12px;
+	font-weight: 700;
+}
+
+.tempo-portal-card__top > span:first-child {
+	width: 10px;
+	height: 10px;
+	border-radius: 50%;
+	background: var(--tempo-brand-primary);
+	box-shadow: 0 0 0 5px color-mix(in srgb, var(--tempo-brand-primary) 15%, transparent);
+}
+
+.tempo-portal-card__top b {
+	color: #a09aa5;
+	font-size: 16px;
+	letter-spacing: 2px;
+}
+
+.tempo-portal-card__days {
+	display: grid;
+	grid-template-columns: repeat(7, 1fr);
+	gap: 7px;
+	margin: 20px 0;
+}
+
+.tempo-portal-card__days span {
+	display: grid;
+	place-items: center;
+	width: 31px;
+	height: 31px;
+	border-radius: 9px;
+	background: #f2eff4;
+	color: #7b747f;
+	font-size: 10px;
+	font-weight: 700;
+}
+
+.tempo-portal-card__days span:nth-child(3) {
+	background: var(--tempo-brand-primary);
+	color: var(--tempo-brand-on-primary);
+}
+
+.tempo-portal-card__line {
+	display: grid;
+	grid-template-columns: 8px 1fr auto;
+	align-items: center;
+	gap: 13px;
+	border-top: 1px solid #ece9ee;
+	padding: 15px 0 2px;
+}
+
+.tempo-portal-card__line--second {
+	margin-top: 13px;
+}
+
+.tempo-portal-card__line i {
+	width: 7px;
+	height: 38px;
 	border-radius: 8px;
+	background: var(--tempo-brand-primary);
 }
 
-.login #login_error {
-	border-left-color: #b42318;
+.tempo-portal-card__line--second i {
+	background: var(--tempo-brand-secondary);
+}
+
+.tempo-portal-card__line strong,
+.tempo-portal-card__line small {
+	display: block;
+}
+
+.tempo-portal-card__line strong {
+	font-family: Poppins, Montserrat, sans-serif;
+	font-size: 13px;
+}
+
+.tempo-portal-card__line small {
+	color: #817a86;
+	font-size: 10px;
+}
+
+.tempo-portal-card__line em {
+	color: var(--tempo-brand-primary);
+	font-size: 18px;
+	font-style: normal;
+}
+
+.tempo-login__pulse {
+	position: absolute;
+	right: 24px;
+	bottom: 80px;
+	display: flex;
+	align-items: center;
+	gap: 8px;
+	border: 1px solid rgba(255,255,255,0.22);
+	border-radius: 999px;
+	background: rgba(20,0,38,0.48);
+	box-shadow: 0 12px 28px rgba(15,0,26,0.28);
+	color: rgba(255,255,255,0.86);
+	font-size: 10px;
+	font-weight: 700;
+	letter-spacing: 0.04em;
+	padding: 9px 12px;
+	backdrop-filter: blur(8px);
+}
+
+.tempo-login__pulse span {
+	width: 7px;
+	height: 7px;
+	border-radius: 50%;
+	background: var(--tempo-brand-primary);
+	box-shadow: 0 0 0 5px color-mix(in srgb, var(--tempo-brand-primary) 18%, transparent);
+}
+
+.tempo-login__ribbon {
+	position: absolute;
+	z-index: -1;
+	border: clamp(18px, 2.2vw, 34px) solid color-mix(in srgb, var(--tempo-brand-primary) 88%, #ffb26f);
+	border-radius: 50%;
+	filter: drop-shadow(0 24px 28px rgba(22,0,36,0.28));
+	opacity: 0.86;
+}
+
+.tempo-login__ribbon--one {
+	top: -35%;
+	right: -20%;
+	width: 72vw;
+	height: 72vw;
+}
+
+.tempo-login__ribbon--two {
+	top: -20%;
+	right: -7%;
+	width: 46vw;
+	height: 46vw;
+	border-color: rgba(255,255,255,0.13);
+	opacity: 1;
+}
+
+.screen-reader-text {
+	position: absolute !important;
+	width: 1px;
+	height: 1px;
+	overflow: hidden;
+	clip: rect(1px,1px,1px,1px);
+	white-space: nowrap;
+}
+
+/* Retain a deliberately simple branded fallback for exceptional core flows. */
+body.login {
+	--tempo-brand-primary: #ff7300;
+	--tempo-brand-secondary: #330164;
+	--tempo-brand-on-primary: #fff;
+	background: #f1f3f5;
+	font-family: Montserrat, sans-serif;
+}
+
+#login h1 a {
+	width: 100%;
+	max-width: 240px;
+	height: 52px;
+	background-position: center;
+	background-size: contain;
+}
+
+body.login #loginform,
+body.login #lostpasswordform,
+body.login #resetpassform {
+	border: 0;
+	border-radius: 16px;
+	box-shadow: 0 8px 30px rgba(28,17,39,0.1);
+}
+
+body.login .button-primary {
+	border-color: var(--tempo-brand-primary);
+	border-radius: 10px;
+	background: var(--tempo-brand-primary);
+	color: var(--tempo-brand-on-primary);
+}
+
+@media (max-width: 980px) {
+	.tempo-login__shell {
+		grid-template-columns: minmax(400px, 56%) minmax(0, 44%);
+	}
+
+	.tempo-login__form-panel {
+		padding-inline: 42px;
+	}
+
+	.tempo-login__showcase-content {
+		width: 80%;
+	}
+
+	.tempo-login__showcase h2 {
+		font-size: clamp(38px, 5.5vw, 56px);
+	}
+
+	.tempo-portal-card {
+		margin-top: 42px;
+		padding: 18px;
+	}
+
+	.tempo-login__pulse {
+		display: none;
+	}
+
+	.tempo-login--register .tempo-login__shell {
+		grid-template-columns: minmax(520px, 62%) minmax(0, 38%);
+	}
+
+	.tempo-login--register .tempo-login__form-panel {
+		padding-inline: 34px;
+	}
+}
+
+@media (max-width: 760px) {
+	body.tempo-login {
+		background: #fff;
+	}
+
+	.tempo-login__shell {
+		display: flex;
+		flex-direction: column;
+	}
+
+	.tempo-login__showcase {
+		order: -1;
+		min-height: 190px;
+	}
+
+	.tempo-login__showcase-content {
+		justify-content: flex-end;
+		width: 100%;
+		padding: 42px 28px 30px;
+	}
+
+	.tempo-login__showcase h2 {
+		max-width: 430px;
+		margin-bottom: 0;
+		font-size: clamp(32px, 9vw, 48px);
+	}
+
+	.tempo-login__showcase-content > p:not(.tempo-login__showcase-kicker),
+	.tempo-portal-card {
+		display: none;
+	}
+
+	.tempo-login__ribbon--one {
+		top: -230%;
+		right: -25%;
+		width: 155vw;
+		height: 155vw;
+	}
+
+	.tempo-login__ribbon--two {
+		display: none;
+	}
+
+	.tempo-login__form-panel {
+		align-items: flex-start;
+		padding: 34px 24px 44px;
+	}
+
+	.tempo-login__brand {
+		width: min(180px, 100%);
+		min-height: 40px;
+		margin-bottom: 26px;
+	}
+
+	.tempo-login__brand img {
+		height: 46px;
+	}
+
+	.tempo-login__intro h1 {
+		font-size: 32px;
+	}
+
+	.tempo-login--register .tempo-login__form-panel {
+		padding: 34px 24px 44px;
+	}
+
+	.tempo-registration__choice-grid,
+	.tempo-registration__row {
+		grid-template-columns: 1fr;
+	}
+
+	.tempo-registration__choice-card {
+		min-height: 0;
+	}
+}
+
+@media (prefers-reduced-motion: reduce) {
+	*,
+	*::before,
+	*::after {
+		scroll-behavior: auto !important;
+		transition-duration: 0.01ms !important;
+	}
 }

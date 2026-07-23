@@ -25,6 +25,7 @@ function tempo_studio_manager_setup() {
 	// this — never hardcodes our theme's name — so a fork or rebrand of
 	// this theme keeps the setting simply by keeping this line.
 	add_theme_support( 'dsb-header-background' );
+	add_theme_support( 'dsb-login-panel-image' );
 }
 add_action( 'after_setup_theme', 'tempo_studio_manager_setup' );
 
@@ -134,6 +135,14 @@ function tempo_logo_url( $variant = 'default' ) {
 		}
 	}
 	return get_theme_file_uri( 'assets/images/logo.svg' );
+}
+
+/** Optional full-bleed login-panel image supplied by the companion plugin. */
+function tempo_login_panel_image_url() {
+	if ( function_exists( 'dsb_login_panel_image_url' ) ) {
+		return esc_url_raw( dsb_login_panel_image_url( '2048x2048' ) );
+	}
+	return '';
 }
 
 /**
@@ -488,48 +497,7 @@ function tempo_studio_manager_require_login() {
 add_action( 'template_redirect', 'tempo_studio_manager_require_login' );
 
 /* -------------------------------------------------------------------------
- * Login page branding (wp-login.php styled with the design-system tokens)
+ * Theme-owned sign-in experience.
  * ---------------------------------------------------------------------- */
 
-function tempo_studio_manager_login_styles() {
-	$version = wp_get_theme()->get( 'Version' );
-	wp_enqueue_style(
-		'tempo-studio-manager-login',
-		get_theme_file_uri( 'assets/css/login.css' ),
-		array(),
-		$version
-	);
-	$logo   = tempo_logo_url();
-	$inline = '#login h1 a { background-image: url(' . esc_url( $logo ) . '); }';
-
-	// Tenant brand colours from plugin settings (login.css falls back to the defaults).
-	if ( function_exists( 'dsb_brand_colour' ) ) {
-		$primary   = sanitize_hex_color( dsb_brand_colour( 'primary' ) );
-		$secondary = sanitize_hex_color( dsb_brand_colour( 'secondary' ) );
-		$vars      = '';
-		if ( $primary ) {
-			$vars .= '--tempo-brand-primary:' . $primary . ';';
-			$vars .= '--tempo-brand-on-primary:' . tempo_brand_colour_contrast( 'primary' ) . ';';
-		}
-		if ( $secondary ) {
-			$vars .= '--tempo-brand-secondary:' . $secondary . ';';
-			$vars .= '--tempo-brand-on-secondary:' . tempo_brand_colour_contrast( 'secondary' ) . ';';
-		}
-		if ( $vars ) {
-			$inline .= ' body.login {' . $vars . '}';
-		}
-	}
-
-	wp_add_inline_style( 'tempo-studio-manager-login', $inline );
-}
-add_action( 'login_enqueue_scripts', 'tempo_studio_manager_login_styles' );
-
-function tempo_studio_manager_login_headerurl() {
-	return home_url( '/' );
-}
-add_filter( 'login_headerurl', 'tempo_studio_manager_login_headerurl' );
-
-function tempo_studio_manager_login_headertext() {
-	return get_bloginfo( 'name' );
-}
-add_filter( 'login_headertext', 'tempo_studio_manager_login_headertext' );
+require_once get_theme_file_path( 'inc/custom-login.php' );

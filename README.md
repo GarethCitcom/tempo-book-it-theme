@@ -39,6 +39,9 @@ chrome, or `teacher` / `password` for the teacher chrome.
   the header border, portal strip, headings, links, buttons and the login
   screen all follow the plugin's two brand colours automatically. The
   theme.json values are only the fallback when the plugin is absent.
+- **Login panel image**: Settings → Branding can supply an optional
+  full-bleed image for the right side of `/sign-in/`. The built-in studio
+  illustration remains the fallback when no image is selected.
 - **Nav URLs**: "Book classes" / "My classes" links auto-detect the pages
   hosting `[dsb_booking]` / `[dsb_register]` (cached daily, flushed on
   page save); the filters below still override.
@@ -53,9 +56,16 @@ chrome, or `teacher` / `password` for the teacher chrome.
 ## Members-only
 
 The whole front end requires login (`template_redirect` gate in
-`functions.php`); logged-out visitors are redirected to a branded
-`wp-login.php` (`assets/css/login.css`). The privacy policy page stays
-public.
+`functions.php`); logged-out visitors are redirected to the theme-owned
+`/sign-in/` experience. Sign-in, password recovery and password reset all
+use WordPress core authentication behind the custom route. The privacy policy
+page stays public.
+
+The same route provides public registration when the companion plugin exposes
+`dsb_registration_available()`. An independent student receives one customer
+account. A parent/guardian submission creates a parent account plus a linked,
+parent-managed student account. The real login account receives a secure
+set-password email only after the complete operation succeeds.
 
 ### Filters
 
@@ -65,6 +75,7 @@ public.
 | `tempo_studio_manager_book_url` | auto-detected, else `/book-classes/` | Page hosting `[dsb_booking]` |
 | `tempo_studio_manager_my_classes_url` | auto-detected, else `/my-classes/` | Page hosting `[dsb_register]` |
 | `tempo_studio_manager_public_paths` | `[]` | Path prefixes exempt from the login gate |
+| `tempo_studio_manager_login_path` | `/sign-in/` | Public path for the theme-owned authentication screen |
 
 ## Structure
 
