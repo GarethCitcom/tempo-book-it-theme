@@ -1,0 +1,592 @@
+/**
+ * Tempo Studio Manager — WooCommerce My Account + order re-skin (theme side).
+ *
+ * Styles the WooCommerce-native surfaces the plugin leaves to the theme:
+ * Account details, Payment methods, Orders and the single order / thank-you
+ * view. The plugin owns the booking panel, checkout decoration and its own
+ * account tabs — none of that is touched here.
+ *
+ * Design tokens come from the plugin's --dsb-* set when it is active, and fall
+ * back to the SJP Theatre Arts defaults otherwise, so these pages look right
+ * with or without the plugin. Scoped to tempo-woo markup and WooCommerce's own
+ * account/order classes; loaded only on account + order-received pages.
+ */
+
+:root {
+	--tw-surface: var(--dsb-color-bg-surface, #ffffff);
+	--tw-subtle: var(--dsb-color-bg-subtle, #f1f3f5);
+	--tw-brand-subtle: var(--dsb-color-bg-brand-subtle, #fff4eb);
+	--tw-border: var(--dsb-color-border-default, #e5e7eb);
+	--tw-primary: var(--dsb-color-brand-primary, #ff7300);
+	--tw-secondary: var(--dsb-color-brand-secondary, #330164);
+	--tw-brand-text: var(--dsb-color-text-brand, #330164);
+	--tw-text: var(--dsb-color-text-primary, #3f3f46);
+	--tw-muted: var(--dsb-color-text-muted, #6b7280);
+	--tw-focus: var(--dsb-color-brand-focus, #ff7300);
+	--tw-inverse: var(--dsb-color-text-inverse, #ffffff);
+	--tw-success-bg: var(--dsb-color-status-success-bg, #e8f7ef);
+	--tw-success-fg: var(--dsb-color-status-success-fg, #16794f);
+	--tw-warning-bg: var(--dsb-color-status-warning-bg, #fff5d6);
+	--tw-warning-fg: var(--dsb-color-status-warning-fg, #8a5a00);
+	--tw-danger-bg: var(--dsb-color-status-danger-bg, #feeceb);
+	--tw-danger-fg: var(--dsb-color-status-danger-fg, #b42318);
+	--tw-info-bg: var(--dsb-color-status-info-bg, #eaf2ff);
+	--tw-info-fg: var(--dsb-color-status-info-fg, #1d4ed8);
+	--tw-neutral-bg: var(--dsb-color-status-neutral-bg, #f1f3f5);
+	--tw-neutral-fg: var(--dsb-color-status-neutral-fg, #4b5563);
+	--tw-heading: var(--dsb-font-heading, "Poppins", sans-serif);
+	--tw-body: var(--dsb-font-body, "Montserrat", sans-serif);
+}
+
+/* ── Shared primitives ─────────────────────────────────────────────── */
+
+.tempo-woo {
+	font-family: var(--tw-body);
+	color: var(--tw-text);
+}
+
+.tempo-woo-badge {
+	display: inline-flex;
+	align-items: center;
+	gap: 6px;
+	border-radius: 999px;
+	padding: 4px 12px;
+	font-size: 10px;
+	font-weight: 600;
+	letter-spacing: 0.04em;
+	white-space: nowrap;
+	background: var(--tw-neutral-bg);
+	color: var(--tw-neutral-fg);
+}
+
+.tempo-woo-badge--success { background: var(--tw-success-bg); color: var(--tw-success-fg); }
+.tempo-woo-badge--warning { background: var(--tw-warning-bg); color: var(--tw-warning-fg); }
+.tempo-woo-badge--danger { background: var(--tw-danger-bg); color: var(--tw-danger-fg); }
+.tempo-woo-badge--info { background: var(--tw-info-bg); color: var(--tw-info-fg); }
+.tempo-woo-badge--neutral { background: var(--tw-neutral-bg); color: var(--tw-neutral-fg); }
+
+.tempo-woo-btn {
+	display: inline-flex;
+	align-items: center;
+	justify-content: center;
+	min-height: 48px;
+	box-sizing: border-box;
+	border-radius: 12px;
+	padding: 12px 20px;
+	font-family: var(--tw-body);
+	font-weight: 600;
+	font-size: 13px;
+	text-decoration: none;
+	cursor: pointer;
+	border: 0;
+	background: var(--tw-primary);
+	color: var(--tw-inverse);
+}
+
+.tempo-woo-btn:hover { opacity: 0.92; color: var(--tw-inverse); }
+
+.tempo-woo-btn--outline {
+	background: var(--tw-surface);
+	color: var(--tw-primary);
+	box-shadow: inset 0 0 0 2px var(--tw-focus);
+}
+
+.tempo-woo-btn--outline:hover { color: var(--tw-primary); }
+
+.tempo-woo-back {
+	display: inline-flex;
+	align-items: center;
+	align-self: flex-start;
+	font-size: 12px;
+	font-weight: 600;
+	color: var(--tw-primary);
+	text-decoration: none;
+}
+
+.tempo-woo-back:hover { color: var(--tw-secondary); }
+
+.tempo-woo-empty {
+	border-radius: 14px;
+	background: var(--tw-surface);
+	box-shadow: inset 0 0 0 1px var(--tw-border);
+	padding: 22px;
+	text-align: center;
+	font-size: 13px;
+	color: var(--tw-muted);
+}
+
+.tempo-woo-pagination {
+	display: flex;
+	gap: 10px;
+	margin-top: 16px;
+}
+
+/* ── Account details form ──────────────────────────────────────────── */
+
+.woocommerce-account .woocommerce-EditAccountForm {
+	display: flex;
+	flex-direction: column;
+	gap: 6px;
+	max-width: 620px;
+}
+
+.woocommerce-account .woocommerce-EditAccountForm .form-row {
+	display: flex;
+	flex-direction: column;
+	gap: 7px;
+	margin: 0 0 12px;
+	float: none;
+	width: 100%;
+}
+
+.woocommerce-account .woocommerce-EditAccountForm label {
+	font-family: var(--tw-body);
+	font-size: 12px;
+	font-weight: 600;
+	color: var(--tw-text);
+}
+
+.woocommerce-account .woocommerce-EditAccountForm .required {
+	color: var(--tw-primary);
+	border: 0;
+	text-decoration: none;
+}
+
+.woocommerce-account .woocommerce-EditAccountForm input.input-text,
+.woocommerce-account .woocommerce-EditAccountForm input[type="email"],
+.woocommerce-account .woocommerce-EditAccountForm input[type="password"],
+.woocommerce-account .woocommerce-EditAccountForm input[type="text"] {
+	box-sizing: border-box;
+	width: 100%;
+	min-height: 44px;
+	border: 0;
+	border-radius: 12px;
+	padding: 10px 14px;
+	font-family: var(--tw-body);
+	font-size: 14px;
+	color: var(--tw-text);
+	background: var(--tw-surface);
+	box-shadow: inset 0 0 0 1px var(--tw-border);
+}
+
+.woocommerce-account .woocommerce-EditAccountForm input.input-text:focus,
+.woocommerce-account .woocommerce-EditAccountForm input[type="email"]:focus,
+.woocommerce-account .woocommerce-EditAccountForm input[type="password"]:focus,
+.woocommerce-account .woocommerce-EditAccountForm input[type="text"]:focus {
+	outline: none;
+	box-shadow: inset 0 0 0 2px var(--tw-focus);
+}
+
+.woocommerce-account .woocommerce-EditAccountForm span em {
+	font-style: normal;
+	font-size: 11px;
+	line-height: 16px;
+	color: var(--tw-muted);
+}
+
+/* First + last name side by side from ~560px up. */
+@media (min-width: 560px) {
+	.woocommerce-account .woocommerce-EditAccountForm .form-row-first,
+	.woocommerce-account .woocommerce-EditAccountForm .form-row-last {
+		width: calc(50% - 8px);
+		display: inline-flex;
+		vertical-align: top;
+	}
+	.woocommerce-account .woocommerce-EditAccountForm .form-row-first { margin-right: 16px; }
+}
+
+/* Password change + Class reminders render as fieldsets — card them. */
+.woocommerce-account .woocommerce-EditAccountForm fieldset {
+	border: 0;
+	margin: 6px 0;
+	padding: 18px;
+	border-radius: 14px;
+	background: var(--tw-surface);
+	box-shadow: inset 0 0 0 1px var(--tw-border);
+	display: flex;
+	flex-direction: column;
+	gap: 12px;
+}
+
+.woocommerce-account .woocommerce-EditAccountForm fieldset legend {
+	padding: 0;
+	font-family: var(--tw-heading);
+	font-weight: 600;
+	font-size: 15px;
+	color: var(--tw-secondary);
+}
+
+.woocommerce-account .woocommerce-EditAccountForm fieldset .form-row {
+	margin-bottom: 0;
+}
+
+/* Password fields inside the card sit on the subtle surface. */
+.woocommerce-account .woocommerce-EditAccountForm fieldset input[type="password"],
+.woocommerce-account .woocommerce-EditAccountForm fieldset input[type="text"] {
+	background: var(--tw-subtle);
+}
+
+/* Show/Hide password toggle (added by woo.js). */
+.tempo-woo-pw {
+	position: relative;
+	display: block;
+}
+
+.tempo-woo-pw input {
+	padding-right: 62px !important;
+}
+
+.tempo-woo-pw__toggle {
+	position: absolute;
+	right: 12px;
+	top: 50%;
+	transform: translateY(-50%);
+	border: 0;
+	background: none;
+	padding: 0;
+	font-family: var(--tw-body);
+	font-size: 11px;
+	font-weight: 600;
+	color: var(--tw-primary);
+	cursor: pointer;
+}
+
+.woocommerce-account .woocommerce-EditAccountForm button[name="save_account_details"] {
+	align-self: flex-start;
+	min-height: 48px;
+	border: 0;
+	border-radius: 12px;
+	padding: 12px 24px;
+	font-family: var(--tw-body);
+	font-weight: 600;
+	font-size: 14px;
+	background: var(--tw-primary);
+	color: var(--tw-inverse);
+	cursor: pointer;
+}
+
+.woocommerce-account .woocommerce-EditAccountForm button[name="save_account_details"]:hover {
+	opacity: 0.92;
+}
+
+/* ── Orders list (cards) ───────────────────────────────────────────── */
+
+.tempo-woo-orders {
+	display: flex;
+	flex-direction: column;
+	gap: 12px;
+}
+
+.tempo-woo-order-card {
+	display: flex;
+	align-items: center;
+	gap: 14px;
+	flex-wrap: wrap;
+	border-radius: 14px;
+	background: var(--tw-surface);
+	box-shadow: inset 0 0 0 1px var(--tw-border);
+	padding: 16px;
+}
+
+.tempo-woo-order-card__id {
+	display: block;
+	font-family: var(--tw-heading);
+	font-weight: 600;
+	font-size: 15px;
+	color: var(--tw-secondary);
+}
+
+.tempo-woo-order-card__meta {
+	flex: 1;
+	min-width: 150px;
+	display: block;
+	font-size: 11px;
+	color: var(--tw-muted);
+}
+
+/* Keep the id + meta stacked in the same flex cell. */
+.tempo-woo-order-card__id + .tempo-woo-order-card__meta {
+	flex-basis: 100%;
+	margin-top: -8px;
+}
+
+.tempo-woo-order-card__total {
+	font-family: var(--tw-heading);
+	font-weight: 700;
+	font-size: 15px;
+	color: var(--tw-secondary);
+	font-variant-numeric: tabular-nums;
+	min-width: 62px;
+	text-align: right;
+}
+
+.tempo-woo-order-card__actions {
+	display: inline-flex;
+	align-items: center;
+	gap: 10px;
+}
+
+.tempo-woo-view {
+	display: inline-flex;
+	align-items: center;
+	min-height: 40px;
+	box-sizing: border-box;
+	border-radius: 999px;
+	padding: 9px 18px;
+	font-size: 12px;
+	font-weight: 600;
+	text-decoration: none;
+	background: var(--tw-brand-subtle);
+	color: var(--tw-primary);
+}
+
+.tempo-woo-view:hover { opacity: 0.85; color: var(--tw-primary); }
+
+.tempo-woo-order-card__action {
+	font-size: 12px;
+	font-weight: 600;
+	color: var(--tw-primary);
+	text-decoration: none;
+}
+
+/* Layout: id/meta take the left, badge/total/actions the right. */
+@media (min-width: 480px) {
+	.tempo-woo-order-card {
+		display: grid;
+		grid-template-columns: 1fr auto auto auto;
+		grid-template-rows: auto auto;
+		align-items: center;
+		column-gap: 14px;
+		row-gap: 2px;
+	}
+	.tempo-woo-order-card__id { grid-column: 1; grid-row: 1; }
+	.tempo-woo-order-card__meta { grid-column: 1; grid-row: 2; margin-top: 0; flex-basis: auto; }
+	.tempo-woo-order-card .tempo-woo-badge { grid-column: 2; grid-row: 1 / span 2; }
+	.tempo-woo-order-card__total { grid-column: 3; grid-row: 1 / span 2; }
+	.tempo-woo-order-card__actions { grid-column: 4; grid-row: 1 / span 2; }
+}
+
+/* ── Payment methods (cards) ───────────────────────────────────────── */
+
+.tempo-woo-payment-methods {
+	display: flex;
+	flex-direction: column;
+	gap: 14px;
+}
+
+.tempo-woo-payment-methods__intro {
+	margin: 0;
+	font-size: 13px;
+	line-height: 19px;
+	color: var(--tw-text);
+}
+
+.tempo-woo-card-row {
+	display: flex;
+	align-items: center;
+	gap: 14px;
+	flex-wrap: wrap;
+	border-radius: 14px;
+	background: var(--tw-surface);
+	box-shadow: inset 0 0 0 1px var(--tw-border);
+	padding: 16px;
+}
+
+.tempo-woo-card-row__brand {
+	display: flex;
+	align-items: center;
+	justify-content: center;
+	width: 52px;
+	height: 34px;
+	border-radius: 8px;
+	background: var(--tw-brand-subtle);
+	color: var(--tw-secondary);
+	font-family: var(--tw-heading);
+	font-weight: 700;
+	font-size: 11px;
+	letter-spacing: 0.04em;
+	flex-shrink: 0;
+}
+
+.tempo-woo-card-row__detail {
+	flex: 1;
+	min-width: 140px;
+	display: flex;
+	flex-direction: column;
+	gap: 2px;
+}
+
+.tempo-woo-card-row__number {
+	font-weight: 600;
+	font-size: 14px;
+	color: var(--tw-secondary);
+}
+
+.tempo-woo-card-row__expires {
+	font-size: 11px;
+	color: var(--tw-muted);
+}
+
+.tempo-woo-card-row__actions {
+	display: inline-flex;
+	align-items: center;
+	gap: 14px;
+}
+
+.tempo-woo-card-row__action {
+	font-size: 12px;
+	font-weight: 600;
+	color: var(--tw-primary);
+	text-decoration: none;
+	min-height: 24px;
+	display: inline-flex;
+	align-items: center;
+}
+
+.tempo-woo-card-row__action--danger { color: var(--tw-danger-fg); }
+
+/* ── Single order view / confirmation ──────────────────────────────── */
+
+.tempo-woo-order-view {
+	display: flex;
+	flex-direction: column;
+	gap: 20px;
+}
+
+.tempo-woo-order-banner {
+	display: flex;
+	align-items: center;
+	gap: 12px;
+	flex-wrap: wrap;
+	border-radius: 14px;
+	padding: 16px;
+	background: var(--tw-info-bg);
+}
+
+.tempo-woo-order-banner--success { background: var(--tw-success-bg); }
+.tempo-woo-order-banner--warning { background: var(--tw-warning-bg); }
+.tempo-woo-order-banner--danger { background: var(--tw-danger-bg); }
+.tempo-woo-order-banner--neutral { background: var(--tw-neutral-bg); }
+
+.tempo-woo-order-banner__text {
+	flex: 1;
+	min-width: 220px;
+	font-size: 13px;
+	line-height: 19px;
+	color: var(--tw-text);
+}
+
+.tempo-woo-order-banner__text strong { color: var(--tw-secondary); }
+
+/* WooCommerce-native order details + customer details, carded to match. */
+.woocommerce-order-details,
+.woocommerce-customer-details {
+	margin: 0 0 20px;
+}
+
+.woocommerce-order-details__title,
+.woocommerce-column__title,
+.woocommerce-customer-details h2 {
+	font-family: var(--tw-heading);
+	font-weight: 700;
+	font-size: 18px;
+	color: var(--tw-brand-text);
+	margin: 0 0 12px;
+}
+
+.woocommerce-table--order-details {
+	width: 100%;
+	border-collapse: collapse;
+	border-radius: 14px;
+	overflow: hidden;
+	background: var(--tw-surface);
+	box-shadow: inset 0 0 0 1px var(--tw-border);
+}
+
+.woocommerce-table--order-details thead th {
+	background: var(--tw-subtle);
+	border-bottom: 1px solid var(--tw-border);
+	padding: 12px 16px;
+	font-weight: 700;
+	font-size: 12px;
+	color: var(--tw-text);
+	text-align: left;
+}
+
+.woocommerce-table--order-details thead th.product-total { text-align: right; }
+
+.woocommerce-table--order-details tbody td,
+.woocommerce-table--order-details tbody th {
+	padding: 16px;
+	border-bottom: 1px solid var(--tw-border);
+	font-size: 14px;
+	color: var(--tw-secondary);
+	vertical-align: top;
+}
+
+.woocommerce-table--order-details .wc-item-meta,
+.woocommerce-table--order-details .wc-item-meta li {
+	margin: 6px 0 0;
+	list-style: none;
+	font-size: 12px;
+	line-height: 17px;
+	color: var(--tw-muted);
+	font-weight: 400;
+}
+
+.woocommerce-table--order-details .wc-item-meta strong {
+	color: var(--tw-text);
+	font-weight: 600;
+}
+
+.woocommerce-table--order-details td.product-total,
+.woocommerce-table--order-details .woocommerce-Price-amount {
+	font-variant-numeric: tabular-nums;
+}
+
+.woocommerce-table--order-details tfoot th,
+.woocommerce-table--order-details tfoot td {
+	padding: 12px 16px;
+	border-bottom: 1px solid var(--tw-border);
+	font-size: 13px;
+}
+
+.woocommerce-table--order-details tfoot th {
+	font-weight: 600;
+	color: var(--tw-text);
+	text-align: left;
+}
+
+.woocommerce-table--order-details tfoot td {
+	text-align: right;
+	font-family: var(--tw-heading);
+	font-weight: 700;
+	color: var(--tw-secondary);
+	font-variant-numeric: tabular-nums;
+}
+
+.woocommerce-table--order-details tfoot tr:last-child th,
+.woocommerce-table--order-details tfoot tr:last-child td {
+	border-bottom: 0;
+	font-size: 17px;
+}
+
+.woocommerce-customer-details address {
+	border-radius: 14px;
+	background: var(--tw-surface);
+	box-shadow: inset 0 0 0 1px var(--tw-border);
+	padding: 18px;
+	font-style: normal;
+	font-size: 13px;
+	line-height: 20px;
+	color: var(--tw-text);
+}
+
+.woocommerce-customer-details--email,
+.woocommerce-customer-details--phone {
+	margin: 8px 0 0;
+	font-size: 13px;
+	color: var(--tw-text);
+}
+
+.woocommerce-customer-details--email { color: var(--tw-primary); }
