@@ -125,8 +125,8 @@
 
 .woocommerce-account .woocommerce-EditAccountForm {
 	display: flex;
-	flex-direction: column;
-	gap: 6px;
+	flex-wrap: wrap;
+	gap: 0 16px;
 	max-width: 620px;
 }
 
@@ -136,7 +136,26 @@
 	gap: 7px;
 	margin: 0 0 12px;
 	float: none;
-	width: 100%;
+	flex: 1 1 100%;
+}
+
+/* First + last name pair up from ~560px. */
+@media (min-width: 560px) {
+	.woocommerce-account .woocommerce-EditAccountForm .form-row-first,
+	.woocommerce-account .woocommerce-EditAccountForm .form-row-last {
+		flex: 1 1 calc(50% - 8px);
+	}
+}
+
+/* WooCommerce's clear divs are redundant in the flex layout. */
+.woocommerce-account .woocommerce-EditAccountForm .clear {
+	display: none;
+}
+
+/* Full-width rows and the fieldsets always span the row. */
+.woocommerce-account .woocommerce-EditAccountForm .form-row-wide,
+.woocommerce-account .woocommerce-EditAccountForm fieldset {
+	flex: 1 1 100%;
 }
 
 .woocommerce-account .woocommerce-EditAccountForm label {
@@ -182,17 +201,6 @@
 	font-size: 11px;
 	line-height: 16px;
 	color: var(--tw-muted);
-}
-
-/* First + last name side by side from ~560px up. */
-@media (min-width: 560px) {
-	.woocommerce-account .woocommerce-EditAccountForm .form-row-first,
-	.woocommerce-account .woocommerce-EditAccountForm .form-row-last {
-		width: calc(50% - 8px);
-		display: inline-flex;
-		vertical-align: top;
-	}
-	.woocommerce-account .woocommerce-EditAccountForm .form-row-first { margin-right: 16px; }
 }
 
 /* Password change + Class reminders render as fieldsets — card them. */
