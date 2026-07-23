@@ -220,7 +220,7 @@ function tempo_studio_manager_requested_redirect() {
 function tempo_studio_manager_reset_user() {
 	$cookie_name = 'wp-resetpass-' . COOKIEHASH;
 	if ( empty( $_COOKIE[ $cookie_name ] ) || false === strpos( $_COOKIE[ $cookie_name ], ':' ) ) {
-		return new WP_Error( 'invalid_key', __( 'This password reset link is not valid.', 'tempo-studio-manager' ) );
+		return new WP_Error( 'invalid_key', __( 'This password reset link isn\'t valid.', 'tempo-studio-manager' ) );
 	}
 	list( $login, $key ) = explode( ':', wp_unslash( $_COOKIE[ $cookie_name ] ), 2 );
 	return check_password_reset_key( $key, $login );
@@ -322,9 +322,9 @@ function tempo_studio_manager_custom_login() {
 				wp_safe_redirect( tempo_studio_manager_login_url( $redirect_to, 'registered' ) );
 				exit;
 			} elseif ( ! tempo_studio_manager_registration_attempt_allowed() ) {
-				$errors->add( 'registration_rate_limit', __( 'Too many registration attempts were made from this connection. Wait 15 minutes and try again.', 'tempo-studio-manager' ) );
+				$errors->add( 'registration_rate_limit', __( 'You\'ve tried to register too many times from this connection. Wait 15 minutes and try again.', 'tempo-studio-manager' ) );
 			} elseif ( ! tempo_studio_manager_registration_available() || ! function_exists( 'dsb_register_member' ) ) {
-				$errors->add( 'registration_unavailable', __( 'Account registration is not available right now. Please contact the school.', 'tempo-studio-manager' ) );
+				$errors->add( 'registration_unavailable', __( 'Account registration isn\'t available right now. Please contact the school.', 'tempo-studio-manager' ) );
 			} else {
 				$result = dsb_register_member( $registration );
 				if ( is_wp_error( $result ) ) {
@@ -362,7 +362,7 @@ function tempo_studio_manager_custom_login() {
 			} elseif ( '' === $pass1 ) {
 				$errors->add( 'empty_password', __( 'Enter a new password.', 'tempo-studio-manager' ) );
 			} elseif ( $pass1 !== $pass2 ) {
-				$errors->add( 'password_mismatch', __( 'The passwords do not match.', 'tempo-studio-manager' ) );
+				$errors->add( 'password_mismatch', __( 'The passwords don\'t match.', 'tempo-studio-manager' ) );
 			}
 			do_action( 'validate_password_reset', $errors, $reset_user );
 			if ( ! $errors->has_errors() ) {
@@ -396,7 +396,7 @@ function tempo_studio_manager_login_error_messages( $errors ) {
 	}
 	$credential_codes = array( 'invalid_username', 'invalid_email', 'incorrect_password', 'empty_username', 'empty_password' );
 	if ( array_intersect( $credential_codes, $errors->get_error_codes() ) ) {
-		return array( __( 'The email address or password is not right. Check both and try again.', 'tempo-studio-manager' ) );
+		return array( __( 'That email address or password isn\'t right. Check both and try again.', 'tempo-studio-manager' ) );
 	}
 	$messages = array();
 	foreach ( $errors->get_error_messages() as $message ) {
@@ -461,15 +461,15 @@ function tempo_studio_manager_render_login( $action, $errors, $redirect_to, $use
 						<?php if ( 'login' === $action ) : ?>
 							<p><?php esc_html_e( 'Sign in to manage your classes, bookings and account.', 'tempo-studio-manager' ); ?></p>
 						<?php elseif ( 'register' === $action ) : ?>
-							<p><?php echo esc_html( sprintf( __( 'Tell us whether you are registering yourself or a %s you care for.', 'tempo-studio-manager' ), $student_word ) ); ?></p>
+							<p><?php echo esc_html( sprintf( __( 'Tell us whether you\'re registering yourself or a %s you care for.', 'tempo-studio-manager' ), $student_word ) ); ?></p>
 						<?php elseif ( 'registered' === $action ) : ?>
 							<p><?php esc_html_e( 'Your account is ready. Use the secure link we sent to choose your password.', 'tempo-studio-manager' ); ?></p>
 						<?php elseif ( 'lostpassword' === $action ) : ?>
-							<p><?php esc_html_e( 'Enter your email address or username and we will send you a secure reset link.', 'tempo-studio-manager' ); ?></p>
+							<p><?php esc_html_e( 'Enter your email address or username and we\'ll send you a secure reset link.', 'tempo-studio-manager' ); ?></p>
 						<?php elseif ( 'checkemail' === $action ) : ?>
 							<p><?php esc_html_e( 'If an account matches those details, a password reset link is on its way.', 'tempo-studio-manager' ); ?></p>
 						<?php elseif ( 'resetpass' === $action ) : ?>
-							<p><?php esc_html_e( 'Use a strong password you do not use anywhere else.', 'tempo-studio-manager' ); ?></p>
+							<p><?php esc_html_e( 'Use a strong password you don\'t use anywhere else.', 'tempo-studio-manager' ); ?></p>
 						<?php else : ?>
 							<p><?php esc_html_e( 'Your new password is ready. You can sign in now.', 'tempo-studio-manager' ); ?></p>
 						<?php endif; ?>
@@ -519,11 +519,11 @@ function tempo_studio_manager_render_login( $action, $errors, $redirect_to, $use
 								<div class="tempo-registration__choice-grid">
 									<label class="tempo-registration__choice-card">
 										<input type="radio" name="account_type" value="student" <?php checked( $registration_as, 'student' ); ?> required>
-										<span><strong><?php echo esc_html( sprintf( __( 'I am the %s', 'tempo-studio-manager' ), $student_word ) ); ?></strong><small><?php esc_html_e( 'Create my own login', 'tempo-studio-manager' ); ?></small></span>
+										<span><strong><?php echo esc_html( sprintf( __( 'I\'m the %s', 'tempo-studio-manager' ), $student_word ) ); ?></strong><small><?php esc_html_e( 'Create my own login', 'tempo-studio-manager' ); ?></small></span>
 									</label>
 									<label class="tempo-registration__choice-card">
 										<input type="radio" name="account_type" value="parent" <?php checked( $registration_as, 'parent' ); ?> required>
-										<span><strong><?php esc_html_e( 'I am a parent or guardian', 'tempo-studio-manager' ); ?></strong><small><?php echo esc_html( sprintf( __( 'Register a %s I care for', 'tempo-studio-manager' ), $student_word ) ); ?></small></span>
+										<span><strong><?php esc_html_e( 'I\'m a parent or guardian', 'tempo-studio-manager' ); ?></strong><small><?php echo esc_html( sprintf( __( 'Register a %s I care for', 'tempo-studio-manager' ), $student_word ) ); ?></small></span>
 									</label>
 								</div>
 							</fieldset>
@@ -540,7 +540,7 @@ function tempo_studio_manager_render_login( $action, $errors, $redirect_to, $use
 								<div class="tempo-field">
 									<label for="tempo-student-email"><?php esc_html_e( 'Your email address', 'tempo-studio-manager' ); ?></label>
 									<input id="tempo-student-email" name="student_email" type="email" value="<?php echo esc_attr( $registration['student_email'] ?? '' ); ?>" autocomplete="email" data-registration-required>
-									<p class="tempo-field__hint"><?php esc_html_e( 'We will email you a secure link to choose your password.', 'tempo-studio-manager' ); ?></p>
+									<p class="tempo-field__hint"><?php esc_html_e( 'We\'ll email you a secure link to choose your password.', 'tempo-studio-manager' ); ?></p>
 								</div>
 							</div>
 
@@ -555,7 +555,7 @@ function tempo_studio_manager_render_login( $action, $errors, $redirect_to, $use
 									<div class="tempo-field"><label for="tempo-parent-email"><?php esc_html_e( 'Email address', 'tempo-studio-manager' ); ?></label><input id="tempo-parent-email" name="parent_email" type="email" value="<?php echo esc_attr( $registration['parent_email'] ?? '' ); ?>" autocomplete="email" data-registration-required></div>
 									<div class="tempo-field"><label for="tempo-parent-mobile"><?php esc_html_e( 'Mobile number', 'tempo-studio-manager' ); ?></label><input id="tempo-parent-mobile" name="parent_mobile" type="tel" value="<?php echo esc_attr( $registration['parent_mobile'] ?? '' ); ?>" autocomplete="tel" maxlength="40" data-registration-required></div>
 								</div>
-								<p class="tempo-field__hint"><?php esc_html_e( 'Your login will manage the linked student account. We will email you a secure link to choose your password.', 'tempo-studio-manager' ); ?></p>
+								<p class="tempo-field__hint"><?php esc_html_e( 'This login manages the linked student account. We\'ll email you a secure link to choose your password.', 'tempo-studio-manager' ); ?></p>
 							</fieldset>
 
 							<div class="tempo-registration__honeypot" aria-hidden="true"><label for="tempo-contact-fax">Fax</label><input id="tempo-contact-fax" name="contact_fax" type="text" value="" autocomplete="off" tabindex="-1"></div>
@@ -593,7 +593,7 @@ function tempo_studio_manager_render_login( $action, $errors, $redirect_to, $use
 							<button class="tempo-login__submit" type="submit"><?php esc_html_e( 'Save new password', 'tempo-studio-manager' ); ?><span aria-hidden="true">&rarr;</span></button>
 						</form>
 					<?php else : ?>
-						<div id="tempo-login-form" class="tempo-login__notice tempo-login__notice--success" role="status"><span aria-hidden="true">&#10003;</span><p><?php echo in_array( $action, array( 'checkemail', 'registered' ), true ) ? esc_html__( 'The email can take a few minutes to arrive. Check your spam folder too.', 'tempo-studio-manager' ) : esc_html__( 'Your password has been changed successfully.', 'tempo-studio-manager' ); ?></p></div>
+						<div id="tempo-login-form" class="tempo-login__notice tempo-login__notice--success" role="status"><span aria-hidden="true">&#10003;</span><p><?php echo in_array( $action, array( 'checkemail', 'registered' ), true ) ? esc_html__( 'The email can take a few minutes to arrive. Check your spam folder too.', 'tempo-studio-manager' ) : esc_html__( 'Your password has been changed.', 'tempo-studio-manager' ); ?></p></div>
 						<a class="tempo-login__submit tempo-login__submit--link" href="<?php echo esc_url( tempo_studio_manager_login_url( $redirect_to ) ); ?>"><?php esc_html_e( 'Return to sign in', 'tempo-studio-manager' ); ?><span aria-hidden="true">&rarr;</span></a>
 					<?php endif; ?>
 
@@ -620,7 +620,7 @@ function tempo_studio_manager_render_login( $action, $errors, $redirect_to, $use
 				<div class="tempo-login__showcase-content">
 					<p class="tempo-login__showcase-kicker"><?php esc_html_e( 'Everything in one place', 'tempo-studio-manager' ); ?></p>
 					<h2><?php esc_html_e( 'Your studio, all in step.', 'tempo-studio-manager' ); ?></h2>
-					<p><?php esc_html_e( 'Classes, bookings and account details—ready whenever you are.', 'tempo-studio-manager' ); ?></p>
+					<p><?php esc_html_e( 'Classes, bookings and account details, ready whenever you are.', 'tempo-studio-manager' ); ?></p>
 					<div class="tempo-portal-card" aria-hidden="true">
 						<div class="tempo-portal-card__top"><span></span><span><?php esc_html_e( 'This week', 'tempo-studio-manager' ); ?></span><b>&middot;&middot;&middot;</b></div>
 						<div class="tempo-portal-card__days"><span>M</span><span>T</span><span>W</span><span>T</span><span>F</span><span>S</span><span>S</span></div>

@@ -15,7 +15,7 @@
 <!-- /wp:heading -->
 
 <!-- wp:paragraph -->
-<p><?php echo esc_html__( 'Book classes, manage your bookings and keep your details up to date — all in one place.', 'tempo-studio-manager' ); ?></p>
+<p><?php echo esc_html__( 'Book classes, manage your bookings and keep your details up to date, all in one place.', 'tempo-studio-manager' ); ?></p>
 <!-- /wp:paragraph -->
 
 <!-- wp:buttons {"style":{"spacing":{"margin":{"top":"var:preset|spacing|24"}}}} -->

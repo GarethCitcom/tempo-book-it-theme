@@ -222,7 +222,7 @@ add_action( 'woocommerce_my_account_my_orders_column_order-total', 'tempo_studio
 function tempo_studio_manager_payment_methods_intro( $has_methods ) {
 	unset( $has_methods );
 	echo '<p class="tempo-woo-payment-intro">'
-		. esc_html__( 'Saved cards let you check out faster next term. Details are held securely by our payment provider — we never store your full card number.', 'tempo-studio-manager' )
+		. esc_html__( 'Saved cards let you check out faster next term. Your details are held securely by our payment provider, and we never store your full card number.', 'tempo-studio-manager' )
 		. '</p>';
 }
 add_action( 'woocommerce_before_account_payment_methods', 'tempo_studio_manager_payment_methods_intro', 5 );

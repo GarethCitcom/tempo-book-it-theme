@@ -584,7 +584,7 @@
 			}
 
 			const payLabel = free
-				? 'Place order — nothing to pay today'
+				? 'Place order, nothing to pay today'
 				: 'Pay ' + formattedTotal + ' securely';
 
 			button.setAttribute( 'data-tempo-total', formattedTotal );
@@ -620,7 +620,7 @@
 				note = document.createElement( 'span' );
 				note.className = 'tempo-checkout-desktop-pay-note';
 				note.textContent =
-					'Hold expiry is enforced by the server — the countdown is a courtesy display.';
+					'The server keeps track of when your hold expires. The countdown here is just a guide.';
 				actionsBlock.appendChild( note );
 			}
 		}

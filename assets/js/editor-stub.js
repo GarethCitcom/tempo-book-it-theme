@@ -27,7 +27,7 @@
 							fontSize: '13px'
 						}
 					},
-					title + ' — ' + hint
+					title + ': ' + hint
 				);
 			},
 			save: function () {
