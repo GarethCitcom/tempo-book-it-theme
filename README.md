@@ -92,11 +92,13 @@ set-password email only after the complete operation succeeds.
   `tempo/portal-strip`. `assets/js/editor-stub.js` gives them Site Editor
   placeholders.
 - `parts/`, `templates/`, `patterns/` — chrome parts and page templates.
-- `inc/woocommerce-account.php`, `assets/css/woocommerce-account.css`,
-  `assets/css/woocommerce-order-received.css` and
+- `inc/woocommerce-account.php`, `inc/woocommerce-checkout.php`,
+  `assets/css/woocommerce-account.css`, `assets/css/woocommerce-checkout.css`,
+  `assets/js/woocommerce-checkout-boot.js`,
+  `assets/js/woocommerce-checkout.js`, `assets/css/woocommerce-order-received.css` and
   `woocommerce/myaccount/view-order.php` — scoped presentation for Woo's
-  native account and order-confirmation endpoints; no payment, account or
-  order logic.
+  native account, checkout and order-confirmation endpoints; no payment,
+  account, coupon or order logic.
 - `assets/fonts/` — Poppins 600/700 + Montserrat variable, bundled locally
   (no Google Fonts requests).
 - `design/` — design sources (prototypes, tokens); not shipped to production.

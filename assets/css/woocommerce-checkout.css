@@ -1,0 +1,1477 @@
+/**
+ * Tempo Studio Manager — WooCommerce checkout presentation.
+ *
+ * All selectors are scoped to the theme body class. WooCommerce continues to
+ * own its blocks, forms, validation, coupon store, gateways and place-order
+ * action; the booking plugin continues to own every .dsb-* component.
+ */
+
+.tempo-woo-checkout {
+	--tempo-checkout-surface: var(--dsb-color-bg-surface, var(--wp--preset--color--base, #fff));
+	--tempo-checkout-subtle: var(--dsb-color-bg-subtle, var(--wp--preset--color--page, #f1f3f5));
+	--tempo-checkout-brand-subtle: var(--dsb-color-bg-brand-subtle, var(--wp--preset--color--brand-tint-primary, #fff4eb));
+	--tempo-checkout-border: var(--dsb-color-border-default, var(--wp--preset--color--border, #e5e7eb));
+	--tempo-checkout-border-strong: var(--dsb-color-border-strong, #c9cdd3);
+	--tempo-checkout-primary: var(--dsb-color-brand-primary, var(--wp--preset--color--brand-primary, #ff7300));
+	--tempo-checkout-secondary: var(--dsb-color-brand-secondary, var(--wp--preset--color--brand-secondary, #330164));
+	--tempo-checkout-on-primary: var(--dsb-color-on-brand-primary, var(--wp--preset--color--brand-primary-contrast, #fff));
+	--tempo-checkout-on-secondary: var(--dsb-color-on-brand-secondary, var(--wp--preset--color--brand-secondary-contrast, #fff));
+	--tempo-checkout-text: var(--dsb-color-text-primary, var(--wp--preset--color--body, #3f3f46));
+	--tempo-checkout-muted: var(--dsb-color-text-muted, var(--wp--preset--color--muted, #6b7280));
+	--tempo-checkout-success-bg: var(--dsb-color-status-success-bg, var(--wp--preset--color--status-success-bg, #e8f7ef));
+	--tempo-checkout-success-fg: var(--dsb-color-status-success-fg, var(--wp--preset--color--status-success-fg, #16794f));
+	--tempo-checkout-info-bg: var(--dsb-color-status-info-bg, var(--wp--preset--color--status-info-bg, #eaf2ff));
+	--tempo-checkout-info-fg: var(--dsb-color-status-info-fg, var(--wp--preset--color--status-info-fg, #1d4ed8));
+	--tempo-checkout-warning-bg: var(--dsb-color-status-warning-bg, var(--wp--preset--color--status-warning-bg, #fff5d6));
+	--tempo-checkout-warning-fg: var(--dsb-color-status-warning-fg, var(--wp--preset--color--status-warning-fg, #8a5a00));
+	--tempo-checkout-danger-bg: var(--dsb-color-status-danger-bg, var(--wp--preset--color--status-danger-bg, #feeceb));
+	--tempo-checkout-danger-fg: var(--dsb-color-status-danger-fg, var(--wp--preset--color--status-danger-fg, #b42318));
+	--tempo-checkout-radius: 14px;
+	--tempo-checkout-payment-rail: 360px;
+	--tempo-checkout-context-rail: 320px;
+	--tempo-checkout-gap: 32px;
+}
+
+.tempo-woo-checkout .wp-block-woocommerce-checkout,
+.tempo-woo-checkout .wp-block-woocommerce-checkout *,
+.tempo-woo-checkout form.checkout,
+.tempo-woo-checkout form.checkout * {
+	box-sizing: border-box;
+}
+
+.tempo-woo-checkout main {
+	color: var(--tempo-checkout-text);
+	font-family: var(--dsb-font-body, var(--wp--preset--font-family--body, Montserrat, sans-serif));
+	font-size: var(--dsb-type-supporting-size, 13px);
+	line-height: var(--dsb-type-supporting-line, 19px);
+}
+
+.tempo-woo-checkout main .wp-block-woocommerce-checkout,
+.tempo-woo-checkout main .woocommerce {
+	width: 100%;
+	max-width: 1140px;
+	margin-inline: auto;
+}
+
+/*
+ * Checkout loading frame. It follows the plugin's five-step pulse language,
+ * while reflecting the selected checkout columns. The real Woo markup stays
+ * mounted underneath so its stores and gateways initialise normally.
+ */
+@keyframes tempoCheckoutPulse {
+	0% {
+		opacity: 0.45;
+	}
+
+	50% {
+		opacity: 1;
+	}
+
+	100% {
+		opacity: 0.45;
+	}
+}
+
+.tempo-woo-checkout .tempo-checkout-stage {
+	position: relative;
+	width: 100%;
+}
+
+.tempo-woo-checkout .tempo-checkout-stage__content {
+	opacity: 1;
+	transition: opacity 160ms ease;
+}
+
+.tempo-woo-checkout .tempo-checkout-skeleton {
+	display: none;
+}
+
+.tempo-checkout-loading-enabled .tempo-woo-checkout .tempo-checkout-stage:not(.is-ready) {
+	min-height: 720px;
+}
+
+.tempo-checkout-loading-enabled .tempo-woo-checkout .tempo-checkout-stage:not(.is-ready) > .tempo-checkout-skeleton {
+	position: absolute;
+	z-index: 30;
+	inset: 0;
+	display: block;
+	min-height: 720px;
+	background: var(--tempo-checkout-subtle);
+	pointer-events: none;
+}
+
+.tempo-checkout-loading-enabled .tempo-woo-checkout .tempo-checkout-stage:not(.is-ready) > .tempo-checkout-stage__content {
+	visibility: hidden;
+	opacity: 0;
+	pointer-events: none;
+}
+
+.tempo-woo-checkout .tempo-checkout-skeleton__grid {
+	display: grid;
+	width: 100%;
+	max-width: 1140px;
+	margin-inline: auto;
+	grid-template-columns: minmax(0, 1fr) var(--tempo-checkout-payment-rail);
+	gap: var(--tempo-checkout-gap);
+	align-items: start;
+}
+
+.tempo-woo-checkout .tempo-checkout-skeleton__column {
+	display: flex;
+	min-width: 0;
+	flex-direction: column;
+	gap: 14px;
+}
+
+.tempo-woo-checkout .tempo-checkout-skeleton__bar {
+	display: block;
+	width: 100%;
+	border-radius: var(--dsb-radius-small, 8px);
+	background: var(--tempo-checkout-border);
+	animation: tempoCheckoutPulse 1s ease infinite;
+}
+
+.tempo-woo-checkout .tempo-checkout-skeleton__bar--short {
+	width: 40%;
+	height: 16px;
+}
+
+.tempo-woo-checkout .tempo-checkout-skeleton__bar--heading {
+	width: 75%;
+	height: 32px;
+	animation-delay: 100ms;
+}
+
+.tempo-woo-checkout .tempo-checkout-skeleton__bar--banner {
+	height: 72px;
+	animation-delay: 200ms;
+}
+
+.tempo-woo-checkout .tempo-checkout-skeleton__bar--card {
+	height: 150px;
+	border-radius: var(--tempo-checkout-radius);
+	animation-delay: 300ms;
+}
+
+.tempo-woo-checkout .tempo-checkout-skeleton__bar--form {
+	height: 150px;
+	border-radius: var(--tempo-checkout-radius);
+	animation-delay: 400ms;
+}
+
+.tempo-woo-checkout .tempo-checkout-skeleton__bar--rail-heading {
+	width: 46%;
+	height: 16px;
+}
+
+.tempo-woo-checkout .tempo-checkout-skeleton__bar--express {
+	height: 122px;
+	border-radius: var(--tempo-checkout-radius);
+	animation-delay: 100ms;
+}
+
+.tempo-woo-checkout .tempo-checkout-skeleton__bar--payment {
+	height: 260px;
+	border-radius: var(--tempo-checkout-radius);
+	animation-delay: 200ms;
+}
+
+.tempo-woo-checkout .tempo-checkout-skeleton__bar--action {
+	height: 130px;
+	border-radius: var(--tempo-checkout-radius);
+	animation-delay: 300ms;
+}
+
+.tempo-woo-checkout .tempo-checkout-stage--swap .tempo-checkout-skeleton__grid {
+	grid-template-columns: minmax(0, 1fr) var(--tempo-checkout-context-rail);
+}
+
+.tempo-woo-checkout .tempo-checkout-stage--swap .tempo-checkout-skeleton__column--main {
+	grid-column: 2;
+	grid-row: 1;
+}
+
+.tempo-woo-checkout .tempo-checkout-stage--swap .tempo-checkout-skeleton__column--rail {
+	grid-column: 1;
+	grid-row: 1;
+}
+
+.tempo-woo-checkout .tempo-checkout-stage--inline .tempo-checkout-skeleton__grid {
+	grid-template-columns: minmax(0, 1fr);
+}
+
+.tempo-woo-checkout .tempo-checkout-stage--inline .tempo-checkout-skeleton__column--rail {
+	display: none;
+}
+
+.tempo-woo-checkout .wp-block-woocommerce-checkout,
+.tempo-woo-checkout .wc-block-components-form,
+.tempo-woo-checkout .wc-block-components-sidebar-layout {
+	color: var(--tempo-checkout-text);
+	font-family: inherit;
+	font-size: inherit;
+}
+.tempo-woo-checkout .wc-block-components-express-payment--checkout .wc-block-components-express-payment__content{
+	border: none;
+	border-radius: 0px;
+}
+
+/* Woo notices retain meaning but use the Tempo status palette. */
+.tempo-woo-checkout .wc-block-components-notice-banner,
+.tempo-woo-checkout .woocommerce-error,
+.tempo-woo-checkout .woocommerce-info,
+.tempo-woo-checkout .woocommerce-message {
+	margin: 0 0 16px;
+	padding: 13px 15px;
+	border: 0;
+	border-radius: var(--dsb-radius-medium, 12px);
+	background: var(--tempo-checkout-info-bg);
+	box-shadow: none;
+	color: var(--tempo-checkout-info-fg);
+	font-size: var(--dsb-type-small-size, 12px);
+	line-height: var(--dsb-type-small-line, 16px);
+}
+
+.tempo-woo-checkout .wc-block-components-notice-banner.is-error,
+.tempo-woo-checkout .woocommerce-error {
+	background: var(--tempo-checkout-danger-bg);
+	color: var(--tempo-checkout-danger-fg);
+}
+
+.tempo-woo-checkout .wc-block-components-notice-banner.is-success,
+.tempo-woo-checkout .woocommerce-message {
+	background: var(--tempo-checkout-success-bg);
+	color: var(--tempo-checkout-success-fg);
+}
+
+/* Checkout steps and headings. */
+.tempo-woo-checkout .wc-block-components-checkout-step {
+	margin: 0 0 18px;
+	padding: 0;
+	border: 0;
+	background: transparent;
+}
+
+.tempo-woo-checkout .wc-block-components-checkout-step__heading-container {
+	margin: 0 0 10px;
+	padding: 0;
+}
+
+.tempo-woo-checkout .wc-block-components-checkout-step__heading {
+	margin: 0;
+}
+
+.tempo-woo-checkout .wc-block-components-checkout-step__title,
+.tempo-woo-checkout .wc-block-components-title,
+.tempo-woo-checkout .wc-block-components-checkout-step h2,
+.tempo-woo-checkout .wc-block-components-checkout-step h3,
+.tempo-woo-checkout form.checkout h3 {
+	margin: 0;
+	color: var(--dsb-color-text-brand, var(--tempo-checkout-secondary));
+	font-family: var(--dsb-font-heading, var(--wp--preset--font-family--heading, Poppins, sans-serif));
+	font-size: 16px;
+	font-weight: 700;
+	line-height: 23px;
+}
+
+.tempo-woo-checkout .wc-block-components-checkout-step__description {
+	margin: 4px 0 0;
+	color: var(--tempo-checkout-muted);
+	font-size: 11px;
+	line-height: 16px;
+}
+
+.tempo-woo-checkout .wc-block-components-checkout-step__content {
+	padding: 0;
+}
+
+.tempo-woo-checkout .wc-block-components-checkout-step__content .wc-block-components-radio-control--highlight-checked label.wc-block-components-radio-control__option--checked-option-highlighted,
+.tempo-woo-checkout .wc-block-components-checkout-step__content .wc-block-components-radio-control--highlight-checked .wc-block-components-radio-control-accordion-option--checked-option-highlighted {
+	box-shadow: none;
+}
+
+.tempo-woo-checkout .wc-block-components-checkout-step__content .wc-block-components-radio-control--highlight-checked:after {
+	border: none;
+}
+
+.tempo-woo-checkout .wc-block-components-checkout-step__content .wc-block-components-radio-control-accordion-content {
+	padding: 0 16px 16px 16px;
+}
+
+/* Standard Woo block and classic form controls. */
+.tempo-woo-checkout .wc-block-components-text-input,
+.tempo-woo-checkout .wc-blocks-components-select,
+.tempo-woo-checkout .wc-block-components-combobox,
+.tempo-woo-checkout .form-row {
+	margin-bottom: 12px;
+}
+
+.tempo-woo-checkout .wc-block-components-text-input input[type="text"],
+.tempo-woo-checkout .wc-block-components-text-input input[type="email"],
+.tempo-woo-checkout .wc-block-components-text-input input[type="tel"],
+.tempo-woo-checkout .wc-block-components-text-input input[type="password"],
+.tempo-woo-checkout .wc-block-components-address-form select,
+.tempo-woo-checkout .wc-blocks-components-select__select,
+.tempo-woo-checkout .wc-block-components-combobox-control input,
+.tempo-woo-checkout .wc-block-components-textarea,
+.tempo-woo-checkout form.checkout input.input-text,
+.tempo-woo-checkout form.checkout select,
+.tempo-woo-checkout form.checkout textarea {
+	width: 100%;
+	min-height: var(--dsb-size-control-min, 44px);
+	margin: 0;
+	padding: 10px 14px;
+	border: 0;
+	border-radius: var(--dsb-radius-medium, 12px);
+	outline: 0;
+	background: var(--tempo-checkout-surface);
+	box-shadow: inset 0 0 0 1px var(--tempo-checkout-border);
+	color: var(--tempo-checkout-text);
+	font: 400 var(--dsb-type-label-size, 14px) / var(--dsb-type-label-line, 20px) var(--dsb-font-body, Montserrat, sans-serif);
+}
+
+.tempo-woo-checkout .wc-block-components-text-input input:focus,
+.tempo-woo-checkout .wc-block-components-address-form select:focus,
+.tempo-woo-checkout .wc-blocks-components-select__select:focus,
+.tempo-woo-checkout .wc-block-components-combobox-control input:focus,
+.tempo-woo-checkout .wc-block-components-textarea:focus,
+.tempo-woo-checkout form.checkout input.input-text:focus,
+.tempo-woo-checkout form.checkout select:focus,
+.tempo-woo-checkout form.checkout textarea:focus {
+	box-shadow: inset 0 0 0 2px var(--dsb-color-brand-focus, var(--tempo-checkout-primary));
+}
+
+.tempo-woo-checkout .wc-block-components-text-input label,
+.tempo-woo-checkout .wc-block-components-address-form label,
+.tempo-woo-checkout form.checkout label {
+	color: var(--tempo-checkout-muted);
+	font-family: var(--dsb-font-body, Montserrat, sans-serif);
+	font-size: var(--dsb-type-small-size, 12px);
+	font-weight: 600;
+}
+
+.tempo-woo-checkout .wc-block-components-text-input.is-active label {
+	color: var(--tempo-checkout-muted);
+}
+
+.tempo-woo-checkout .wc-block-components-checkbox input[type="checkbox"],
+.tempo-woo-checkout .wc-block-components-radio-control input[type="radio"],
+.tempo-woo-checkout form.checkout input[type="checkbox"],
+.tempo-woo-checkout form.checkout input[type="radio"] {
+	accent-color: var(--tempo-checkout-primary);
+}
+
+.tempo-woo-checkout .wc-block-components-checkbox .wc-block-components-checkbox__mark {
+	fill: var(--tempo-checkout-primary);
+}
+
+.tempo-woo-checkout .wc-block-components-checkbox .wc-block-components-checkbox__input {
+	width: 17px;
+	height: 17px;
+	min-height: 17px;
+	border-color: var(--tempo-checkout-border-strong);
+	border-radius: var(--dsb-radius-xsmall, 4px);
+	accent-color: var(--tempo-checkout-primary);
+}
+
+.tempo-woo-checkout .wc-block-components-checkbox label,
+.tempo-woo-checkout .wc-block-components-radio-control__label {
+	color: var(--tempo-checkout-text);
+	font-size: var(--dsb-type-small-size, 12px);
+	font-weight: 400;
+	line-height: var(--dsb-type-small-line, 16px);
+}
+
+/* Contact and address blocks are calm form sections, not Woo panels. */
+.tempo-woo-checkout .wp-block-woocommerce-checkout-contact-information-block,
+.tempo-woo-checkout .wp-block-woocommerce-checkout-shipping-address-block,
+.tempo-woo-checkout .wp-block-woocommerce-checkout-billing-address-block,
+.tempo-woo-checkout .wp-block-woocommerce-checkout-additional-information-block {
+	min-width: 0;
+}
+
+.tempo-woo-checkout .wc-block-components-address-card {
+	padding: 16px;
+	border: 0;
+	border-radius: var(--tempo-checkout-radius);
+	background: var(--tempo-checkout-surface);
+	box-shadow: inset 0 0 0 1px var(--tempo-checkout-border);
+}
+
+.tempo-woo-checkout .wc-block-components-address-card address {
+	color: var(--tempo-checkout-muted);
+	font-size: var(--dsb-type-supporting-size, 13px);
+	font-style: normal;
+	line-height: var(--dsb-type-supporting-line, 19px);
+}
+
+.tempo-woo-checkout .wc-block-components-address-card__edit {
+	color: var(--tempo-checkout-primary);
+	font-size: var(--dsb-type-small-size, 12px);
+	font-weight: 600;
+	text-decoration: none;
+}
+
+/* Express checkout. */
+.tempo-woo-checkout .wp-block-woocommerce-checkout-express-payment-block {
+	margin: 0 0 18px;
+}
+
+.tempo-woo-checkout .wc-block-components-express-payment {
+	padding: 14px;
+	border: 0;
+	border-radius: var(--tempo-checkout-radius);
+	background: var(--tempo-checkout-surface);
+	box-shadow: inset 0 0 0 1px var(--tempo-checkout-border);
+}
+
+.tempo-woo-checkout .wp-block-woocommerce-checkout-express-payment-block fieldset,
+.tempo-woo-checkout .wp-block-woocommerce-checkout-express-payment-block legend {
+	margin: 0;
+	padding: 0;
+	border: 0;
+}
+
+.tempo-woo-checkout .wc-block-components-express-payment__title {
+	margin: 0 0 10px;
+	color: var(--tempo-checkout-muted);
+	font-size: 11px;
+	font-weight: 600;
+	letter-spacing: 0.04em;
+	text-align: center;
+}
+
+.tempo-woo-checkout .wc-block-components-express-payment__event-buttons {
+	display: grid !important;
+	grid-template-columns: repeat(2, minmax(0, 1fr));
+	gap: 10px;
+	margin: 0;
+	padding: 0;
+	list-style: none;
+}
+
+.tempo-woo-checkout .wc-block-components-express-payment__event-buttons:has(> :only-child) {
+	grid-template-columns: minmax(0, 1fr);
+}
+
+.tempo-woo-checkout .wc-block-components-express-payment__event-buttons > * {
+	min-width: 0;
+	margin: 0;
+}
+
+.tempo-woo-checkout .wc-block-components-express-payment-continue-rule {
+	margin: 12px 0 0;
+	color: var(--tempo-checkout-muted);
+	font-size: 11px;
+}
+
+.tempo-woo-checkout .wc-block-components-express-payment-continue-rule::before,
+.tempo-woo-checkout .wc-block-components-express-payment-continue-rule::after {
+	background: var(--tempo-checkout-border);
+}
+
+/* Payment gateways: decorate the host UI, never the secure provider fields. */
+.tempo-woo-checkout .wp-block-woocommerce-checkout-payment-block {
+	margin-top: 4px;
+}
+
+.tempo-woo-checkout .wc-block-checkout__payment-method {
+	padding: 0;
+	border: 0;
+	background: transparent;
+	box-shadow: none;
+}
+
+.tempo-woo-checkout .wc-block-checkout__payment-method > .wc-block-components-checkout-step__content {
+	overflow: hidden;
+	border-radius: var(--tempo-checkout-radius);
+	background: var(--tempo-checkout-surface);
+	box-shadow: inset 0 0 0 1px var(--tempo-checkout-border);
+}
+
+.tempo-woo-checkout .wc-block-components-radio-control-accordion-option {
+	margin: 0;
+	border: 0;
+	border-bottom: 1px solid var(--tempo-checkout-border);
+}
+
+.tempo-woo-checkout .wc-block-components-radio-control-accordion-option:last-child {
+	border-bottom: 0;
+}
+
+.tempo-woo-checkout .wc-block-components-radio-control-accordion-option--checked-option-highlighted {
+	border-radius: 0;
+	box-shadow: inset 4px 0 0 var(--tempo-checkout-primary);
+}
+
+.tempo-woo-checkout .wc-block-components-radio-control__option {
+	position: relative;
+	min-height: 54px;
+	padding: 16px 16px 14px 46px;
+}
+
+.tempo-woo-checkout .wc-block-components-radio-control__input {
+	position: absolute;
+	top: 50%;
+	left: 16px;
+	width: 18px;
+	height: 18px;
+	margin: 0;
+	transform: translateY(-50%);
+}
+
+.tempo-woo-checkout .wc-block-components-radio-control__label {
+	color: var(--tempo-checkout-secondary);
+	font-size: var(--dsb-type-supporting-size, 13px);
+	font-weight: 600;
+	line-height: var(--dsb-type-supporting-line, 19px);
+}
+
+.tempo-woo-checkout .wc-block-components-payment-method-label {
+	align-items: center;
+	gap: 8px;
+}
+
+.tempo-woo-checkout .wc-block-components-payment-method-icons {
+	margin-left: auto;
+}
+
+.tempo-woo-checkout .wc-block-components-radio-control-accordion-content {
+	padding: 0 16px 16px 45px;
+	color: var(--tempo-checkout-muted);
+	font-size: var(--dsb-type-small-size, 12px);
+	line-height: var(--dsb-type-small-line, 16px);
+}
+
+.tempo-woo-checkout .wc-block-components-checkout-step__description-payments-aligned {
+	margin: 12px 16px 8px;
+	padding: 0;
+	color: var(--tempo-checkout-muted);
+	font-size: 11px;
+	line-height: 16px;
+}
+
+.tempo-woo-checkout .wc-block-components-payment-method-content,
+.tempo-woo-checkout .wc-block-gateway-container,
+.tempo-woo-checkout .wc-stripe-upe-element,
+.tempo-woo-checkout #wcpay-upe-element,
+.tempo-woo-checkout .wcpay-upe-element,
+.tempo-woo-checkout .wcpay-payment-element-wrapper {
+	min-width: 0;
+	margin: 0;
+	padding: 12px;
+	border: 0;
+	border-radius: var(--dsb-radius-medium, 12px);
+	background: var(--tempo-checkout-subtle);
+	box-shadow: inset 0 0 0 1px var(--tempo-checkout-border);
+}
+
+.tempo-woo-checkout .wc-block-components-payment-method-content iframe,
+.tempo-woo-checkout .wc-block-gateway-container iframe,
+.tempo-woo-checkout .wc-stripe-upe-element iframe,
+.tempo-woo-checkout #wcpay-upe-element iframe,
+.tempo-woo-checkout .wcpay-upe-element iframe,
+.tempo-woo-checkout .wcpay-payment-element iframe {
+	width: 100%;
+	max-width: none;
+}
+
+.tempo-woo-checkout .wc-block-components-payment-method-content .testmode-info,
+.tempo-woo-checkout .wc-block-gateway-container .testmode-info {
+	margin: 0 0 10px;
+	padding: 9px 10px;
+	border-radius: var(--dsb-radius-small, 8px);
+	background: var(--tempo-checkout-warning-bg);
+	color: var(--tempo-checkout-warning-fg);
+	font-size: 11px;
+	line-height: 15px;
+}
+
+/* Order note, policies and the primary action. */
+.tempo-woo-checkout .wp-block-woocommerce-checkout-order-note-block {
+	margin: 4px 0 12px;
+	padding: 0;
+}
+
+.tempo-woo-checkout .wc-block-checkout__add-note {
+	color: var(--tempo-checkout-text);
+	font-size: var(--dsb-type-small-size, 12px);
+}
+
+.tempo-woo-checkout .wc-block-checkout__terms,
+.tempo-woo-checkout .wc-block-checkout__terms.wc-block-checkout__terms--with-separator {
+	margin: 12px 0;
+	padding: 0;
+	border: 0;
+	color: var(--tempo-checkout-muted);
+	font-size: 10px;
+	line-height: 15px;
+}
+
+.tempo-woo-checkout .wc-block-checkout__terms a {
+	color: var(--tempo-checkout-primary);
+	text-underline-offset: 2px;
+}
+
+.tempo-woo-checkout .wc-block-checkout__actions {
+	padding: 0;
+}
+
+.tempo-woo-checkout .wc-block-components-checkout-place-order-button,
+.tempo-woo-checkout form.checkout #place_order,
+.tempo-woo-checkout .checkout_coupon .button {
+	display: inline-flex;
+	align-items: center;
+	justify-content: center;
+	min-height: var(--dsb-size-control-primary, 48px);
+	padding: 12px 20px;
+	border: 0;
+	border-radius: var(--dsb-radius-medium, 12px);
+	background: var(--tempo-checkout-primary);
+	box-shadow: none;
+	color: var(--tempo-checkout-on-primary);
+	font-family: var(--dsb-font-body, Montserrat, sans-serif);
+	font-size: var(--dsb-type-label-size, 14px);
+	font-weight: 700;
+	line-height: var(--dsb-type-label-line, 20px);
+	text-decoration: none;
+}
+
+.tempo-woo-checkout .wc-block-components-checkout-place-order-button {
+	width: 100%;
+	min-height: 52px;
+}
+
+.tempo-woo-checkout .wc-block-components-checkout-place-order-button__text {
+	display: flex;
+	width: 100%;
+	align-items: center;
+	justify-content: center;
+	gap: 12px;
+}
+
+.tempo-woo-checkout .wc-block-components-checkout-place-order-button__text[data-tempo-pay-label] {
+	font-size: 0;
+}
+
+.tempo-woo-checkout .wc-block-components-checkout-place-order-button__text[data-tempo-pay-label]::after {
+	content: attr(data-tempo-pay-label);
+	font-family: var(--dsb-font-body, Montserrat, sans-serif);
+	font-size: 13px;
+	font-weight: 600;
+	line-height: 20px;
+}
+
+.tempo-woo-checkout .wc-block-components-checkout-place-order-button:hover,
+.tempo-woo-checkout .wc-block-components-checkout-place-order-button:focus-visible,
+.tempo-woo-checkout form.checkout #place_order:hover,
+.tempo-woo-checkout form.checkout #place_order:focus-visible {
+	background: var(--tempo-checkout-secondary);
+	color: var(--tempo-checkout-on-secondary);
+}
+
+.tempo-woo-checkout .wc-block-components-checkout-return-to-cart-button {
+	color: var(--tempo-checkout-primary);
+	font-size: var(--dsb-type-small-size, 12px);
+	font-weight: 600;
+}
+
+/* Coupon: the native Store API form, reduced to the approved compact control. */
+.tempo-woo-checkout .wp-block-woocommerce-checkout-order-summary-coupon-form-block {
+	margin: 12px 0 18px;
+	padding: 12px 14px;
+	border: 0;
+	border-radius: var(--dsb-radius-medium, 12px);
+	background: var(--tempo-checkout-surface);
+	box-shadow: inset 0 0 0 1px var(--tempo-checkout-border);
+}
+
+.tempo-woo-checkout .wc-block-components-totals-coupon {
+	padding: 0;
+	border: 0;
+}
+
+.tempo-woo-checkout .tempo-checkout-coupon-in-totals {
+	padding: 0 !important;
+	border: 0 !important;
+	background: transparent !important;
+	box-shadow: none !important;
+}
+
+.tempo-woo-checkout .wc-block-components-totals-coupon > .wc-block-components-panel__button {
+	min-height: 24px;
+	padding: 0;
+	color: var(--tempo-checkout-primary);
+	font-size: 11px;
+	font-weight: 600;
+	text-decoration: none;
+}
+
+.tempo-woo-checkout .wc-block-components-totals-coupon > .wc-block-components-panel__button::before {
+	content: "+";
+	margin-right: 4px;
+}
+
+.tempo-woo-checkout .wc-block-components-totals-coupon > .wc-block-components-panel__button[aria-expanded="true"]::before {
+	content: "−";
+}
+
+.tempo-woo-checkout .wc-block-components-totals-coupon > .wc-block-components-panel__button .wc-block-components-panel__button-icon {
+	display: none;
+}
+
+.tempo-woo-checkout .wc-block-components-totals-coupon__button {
+	min-height: 24px;
+	padding: 0;
+	color: var(--tempo-checkout-primary);
+	font-size: 11px;
+	font-weight: 600;
+	text-decoration: none;
+}
+
+.tempo-woo-checkout .wc-block-components-totals-coupon__form {
+	display: flex;
+	align-items: flex-end;
+	gap: 8px;
+	margin-top: 10px;
+}
+
+.tempo-woo-checkout .wc-block-components-totals-coupon__form .wc-block-components-text-input {
+	min-width: 0;
+	flex: 1;
+	margin: 0;
+}
+
+.tempo-woo-checkout .wc-block-components-totals-coupon__form .wc-block-components-button {
+	min-height: var(--dsb-size-control-min, 44px);
+	padding: 10px 16px;
+	border: 0;
+	border-radius: var(--dsb-radius-medium, 12px);
+	background: var(--tempo-checkout-brand-subtle);
+	box-shadow: none;
+	color: var(--tempo-checkout-primary);
+	font-family: inherit;
+	font-size: var(--dsb-type-small-size, 12px);
+	font-weight: 600;
+}
+
+/* Full native order summary, retained for the plugin's inline/standard mode. */
+.tempo-woo-checkout .wc-block-checkout__sidebar {
+	border-radius: var(--tempo-checkout-radius);
+}
+
+.tempo-woo-checkout .wc-block-components-order-summary {
+	padding: 0;
+	border: 0;
+	border-radius: var(--tempo-checkout-radius);
+	background: var(--tempo-checkout-surface);
+	box-shadow: inset 0 0 0 1px var(--tempo-checkout-border);
+}
+
+.tempo-woo-checkout .wc-block-components-order-summary__button-text {
+	color: var(--tempo-checkout-secondary);
+	font-family: var(--dsb-font-heading, Poppins, sans-serif);
+	font-size: 15px;
+	font-weight: 600;
+}
+
+.tempo-woo-checkout .wc-block-components-order-summary-item {
+	padding: 12px 14px;
+	border-bottom: 1px solid var(--tempo-checkout-border);
+}
+
+.tempo-woo-checkout .wc-block-components-order-summary-item__description {
+	color: var(--tempo-checkout-text);
+	font-size: var(--dsb-type-small-size, 12px);
+}
+
+.tempo-woo-checkout .wc-block-components-order-summary-item__total-price {
+	color: var(--tempo-checkout-secondary);
+	font-weight: 700;
+}
+
+.tempo-woo-checkout .wc-block-components-totals-wrapper {
+	padding: 0 14px;
+	border-top: 1px solid var(--tempo-checkout-border);
+}
+
+.tempo-woo-checkout .wc-block-components-totals-item {
+	padding: 10px 0;
+	color: var(--tempo-checkout-text);
+	font-size: var(--dsb-type-small-size, 12px);
+}
+
+.tempo-woo-checkout .wc-block-components-totals-footer-item {
+	color: var(--tempo-checkout-secondary);
+	font-family: var(--dsb-font-heading, Poppins, sans-serif);
+	font-size: 16px;
+	font-weight: 700;
+}
+
+/*
+ * Plugin shell layouts already include the booking rows. Suppress Woo's
+ * repeated itemisation, but retain its coupon form and authoritative final
+ * total because Store API changes (including coupons) update those values.
+ */
+.tempo-woo-checkout .dsb-checkout:not(.dsb-checkout--inline) .wp-block-woocommerce-checkout-order-summary-cart-items-block,
+.tempo-woo-checkout .dsb-checkout:not(.dsb-checkout--inline) .wp-block-woocommerce-checkout-order-summary-subtotal-block,
+.tempo-woo-checkout .dsb-checkout:not(.dsb-checkout--inline) .wp-block-woocommerce-checkout-order-summary-fee-block,
+.tempo-woo-checkout .dsb-checkout:not(.dsb-checkout--inline) .wp-block-woocommerce-checkout-order-summary-discount-block,
+.tempo-woo-checkout .dsb-checkout:not(.dsb-checkout--inline) .wp-block-woocommerce-checkout-order-summary-shipping-block,
+.tempo-woo-checkout .dsb-checkout:not(.dsb-checkout--inline) .wp-block-woocommerce-checkout-order-summary-taxes-block,
+.tempo-woo-checkout .dsb-checkout:not(.dsb-checkout--inline) .wc-block-components-totals-discount,
+.tempo-woo-checkout .dsb-checkout:not(.dsb-checkout--inline) .wc-block-components-checkout-order-summary__title,
+.tempo-woo-checkout .dsb-checkout:not(.dsb-checkout--inline) .wc-block-components-checkout-order-summary__title-text,
+.tempo-woo-checkout .dsb-checkout:not(.dsb-checkout--inline) .wc-block-components-order-summary,
+.tempo-woo-checkout .dsb-checkout:not(.dsb-checkout--inline) .wp-block-woocommerce-paypal-payments-checkout-paylater-messages,
+.tempo-woo-checkout .dsb-checkout:not(.dsb-checkout--inline) .wc-block-components-order-summary__button-text {
+	display: none !important;
+}
+
+.tempo-woo-checkout .dsb-checkout:not(.dsb-checkout--inline) .wc-block-components-totals-footer-item {
+	display: none !important;
+}
+
+.tempo-woo-checkout .dsb-checkout:not(.dsb-checkout--inline) .wp-block-woocommerce-checkout-order-summary-discount-block {
+	margin: 0 0 12px;
+	padding: 0 14px;
+	border: 0;
+	border-radius: var(--dsb-radius-medium, 12px);
+	background: var(--tempo-checkout-surface);
+	box-shadow: inset 0 0 0 1px var(--tempo-checkout-border);
+}
+
+.tempo-woo-checkout .dsb-checkout:not(.dsb-checkout--inline) .wc-block-components-totals-discount {
+	padding: 10px 0;
+	border: 0;
+}
+
+.tempo-woo-checkout .dsb-checkout:not(.dsb-checkout--inline) .wp-block-woocommerce-checkout {
+	display: block;
+	margin: 0;
+}
+
+.tempo-woo-checkout .dsb-checkout:not(.dsb-checkout--inline) .wc-block-components-sidebar-layout {
+	display: block;
+}
+
+.tempo-woo-checkout .dsb-checkout:not(.dsb-checkout--inline) .wc-block-checkout__main {
+	width: 100%;
+	padding: 0;
+}
+
+.tempo-woo-checkout .dsb-checkout:not(.dsb-checkout--inline) .wc-block-checkout__sidebar,
+.tempo-woo-checkout .dsb-checkout:not(.dsb-checkout--inline) .wp-block-woocommerce-checkout-totals-block {
+	display: block;
+	width: 100%;
+	margin: 16px 0 0;
+	padding: 0;
+	border: 0;
+	box-shadow: none;
+}
+
+.tempo-woo-checkout .dsb-checkout:not(.dsb-checkout--inline) .wp-block-woocommerce-checkout-order-summary-block,
+.tempo-woo-checkout .dsb-checkout:not(.dsb-checkout--inline) .wc-block-components-checkout-order-summary__content,
+.tempo-woo-checkout .dsb-checkout:not(.dsb-checkout--inline) .wp-block-woocommerce-checkout-order-summary-totals-block {
+	display: block !important;
+	width: 100%;
+	margin: 0;
+	padding: 0;
+	border: 0;
+	box-shadow: none;
+}
+
+.tempo-woo-checkout .dsb-checkout:not(.dsb-checkout--inline) .wc-block-components-checkout-order-summary__content > .wc-block-components-totals-wrapper {
+	display: block;
+	width: 100%;
+	margin: 0;
+	padding: 0;
+	border: 0;
+	box-shadow: none;
+}
+
+/* Classic checkout fallback. */
+.tempo-woo-checkout form.checkout {
+	display: grid;
+	grid-template-columns: minmax(0, 1fr);
+	gap: 20px 32px;
+}
+
+.tempo-woo-checkout form.checkout .col2-set,
+.tempo-woo-checkout form.checkout #order_review_heading,
+.tempo-woo-checkout form.checkout #order_review {
+	margin: 0;
+}
+
+.tempo-woo-checkout form.checkout .col2-set::before,
+.tempo-woo-checkout form.checkout .col2-set::after {
+	display: none;
+	content: none;
+}
+
+.tempo-woo-checkout form.checkout .col-1,
+.tempo-woo-checkout form.checkout .col-2 {
+	float: none;
+	width: 100%;
+}
+
+.tempo-woo-checkout form.checkout #order_review {
+	padding: 16px;
+	border-radius: var(--tempo-checkout-radius);
+	background: var(--tempo-checkout-surface);
+	box-shadow: inset 0 0 0 1px var(--tempo-checkout-border);
+}
+
+.tempo-woo-checkout form.checkout table.shop_table,
+.tempo-woo-checkout form.checkout table.shop_table th,
+.tempo-woo-checkout form.checkout table.shop_table td {
+	border: 0;
+	border-bottom: 1px solid var(--tempo-checkout-border);
+}
+
+.tempo-woo-checkout form.checkout #payment {
+	overflow: hidden;
+	border-radius: var(--tempo-checkout-radius);
+	background: var(--tempo-checkout-surface);
+	box-shadow: inset 0 0 0 1px var(--tempo-checkout-border);
+}
+
+.tempo-woo-checkout form.checkout #payment ul.payment_methods {
+	margin: 0;
+	padding: 0;
+	border: 0;
+	list-style: none;
+}
+
+.tempo-woo-checkout form.checkout #payment ul.payment_methods > li {
+	position: relative;
+	margin: 0;
+	padding: 14px 16px;
+	border: 0;
+	border-bottom: 1px solid var(--tempo-checkout-border);
+}
+
+.tempo-woo-checkout form.checkout #payment div.payment_box {
+	width: auto;
+	margin: 12px 0 0;
+	padding: 12px;
+	border: 0;
+	border-radius: var(--dsb-radius-medium, 12px);
+	background: var(--tempo-checkout-subtle);
+	color: var(--tempo-checkout-text);
+}
+
+.tempo-woo-checkout form.checkout #payment div.payment_box::before {
+	display: none;
+	content: none;
+}
+
+.tempo-woo-checkout form.checkout #payment > .form-row {
+	display: flex;
+	justify-content: flex-end;
+	margin: 0;
+	padding: 16px;
+	border: 0;
+}
+
+.tempo-woo-checkout form.checkout #payment #place_order {
+	float: none;
+	margin: 0;
+}
+
+@media (min-width: 1000px) {
+	/*
+	 * Payment-main mode uses one composed Express Checkout card. Woo's
+	 * default checkout treatment draws a notched fieldset title and puts the
+	 * continuation rule outside it; the approved Tempo layout keeps all three
+	 * parts inside a single quiet surface.
+	 */
+	.tempo-woo-checkout .dsb-checkout--swap .wp-block-woocommerce-checkout-express-payment-block,
+	.tempo-woo-checkout .dsb-checkout--swap .wp-block-woocommerce-checkout-express-payment-block.wp-block-woocommerce-checkout-express-payment-block--has-express-payment-methods {
+		position: relative;
+		margin: 0 0 18px !important;
+		padding: 14px !important;
+		border: 0;
+		border-radius: var(--tempo-checkout-radius);
+		background: var(--tempo-checkout-surface);
+		box-shadow: inset 0 0 0 1px var(--tempo-checkout-border);
+	}
+
+	.tempo-woo-checkout .dsb-checkout--swap .wc-block-components-express-payment {
+		width: 100%;
+		margin: 0;
+		padding: 0;
+		border: 0;
+		border-radius: 0;
+		background: transparent;
+		box-shadow: none;
+	}
+
+	.tempo-woo-checkout .dsb-checkout--swap .wc-block-components-express-payment__title-container {
+		position: static;
+		display: block;
+		margin: 0 0 10px;
+	}
+
+	.tempo-woo-checkout .dsb-checkout--swap .wc-block-components-express-payment__title-container::before,
+	.tempo-woo-checkout .dsb-checkout--swap .wc-block-components-express-payment__title-container::after {
+		display: none;
+		content: none;
+	}
+
+	.tempo-woo-checkout .dsb-checkout--swap .wc-block-components-express-payment__title {
+		width: 100%;
+		margin: 0;
+		padding: 0;
+		transform: none;
+		color: var(--tempo-checkout-muted);
+		font-size: 11px;
+		font-weight: 600;
+		letter-spacing: 0.04em;
+		line-height: 16px;
+		text-align: center;
+	}
+
+	.tempo-woo-checkout .dsb-checkout--swap .wc-block-components-express-payment__content {
+		min-height: 48px;
+		margin: 0;
+		padding: 0;
+		border: 0;
+		border-radius: 0;
+	}
+
+	.tempo-woo-checkout .dsb-checkout--swap .wc-block-components-express-payment-continue-rule {
+		margin: 12px 0 0;
+		font-size: 11px;
+		line-height: 16px;
+	}
+
+	/*
+	 * Desktop checkout action mirrors the mobile sticky bar: a calm total
+	 * row, one centred primary action, then the hold-expiry reassurance.
+	 * The button itself remains WooCommerce's native place-order control.
+	 */
+	.tempo-woo-checkout .dsb-checkout:not(.dsb-checkout--inline) .wp-block-woocommerce-checkout-actions-block {
+		display: flex;
+		flex-direction: column;
+		gap: 10px;
+		margin: 0;
+		padding: 16px;
+		border: 0;
+		border-radius: var(--tempo-checkout-radius);
+		background: var(--tempo-checkout-surface);
+		box-shadow: inset 0 0 0 1px var(--tempo-checkout-border);
+	}
+
+	.tempo-woo-checkout .dsb-checkout:not(.dsb-checkout--inline) .tempo-checkout-desktop-total-row {
+		display: flex;
+		align-items: center;
+		justify-content: space-between;
+		gap: 12px;
+	}
+
+	.tempo-woo-checkout .dsb-checkout:not(.dsb-checkout--inline) .tempo-checkout-desktop-total-label {
+		color: var(--tempo-checkout-text);
+		font-size: 12px;
+		font-weight: 600;
+		line-height: 18px;
+	}
+
+	.tempo-woo-checkout .dsb-checkout:not(.dsb-checkout--inline) .tempo-checkout-desktop-total-value {
+		color: var(--tempo-checkout-secondary);
+		font-family: var(--dsb-font-heading, Poppins, sans-serif);
+		font-size: 17px;
+		font-weight: 700;
+		font-variant-numeric: tabular-nums;
+		line-height: 22px;
+	}
+
+	.tempo-woo-checkout .dsb-checkout:not(.dsb-checkout--inline) .wc-block-checkout__actions,
+	.tempo-woo-checkout .dsb-checkout:not(.dsb-checkout--inline) .wc-block-checkout__actions_row {
+		display: block;
+		width: 100%;
+		margin: 0;
+		padding: 0;
+	}
+
+	.tempo-woo-checkout .dsb-checkout:not(.dsb-checkout--inline) .wc-block-components-checkout-return-to-cart-button {
+		display: none;
+	}
+
+	.tempo-woo-checkout .dsb-checkout:not(.dsb-checkout--inline) .wc-block-components-checkout-place-order-button {
+		min-height: 48px;
+		padding: 12px 20px;
+		font-size: 13px;
+		font-weight: 600;
+	}
+
+	.tempo-woo-checkout .dsb-checkout:not(.dsb-checkout--inline) .tempo-checkout-desktop-pay-note {
+		display: block;
+		color: var(--tempo-checkout-muted);
+		font-size: 10px;
+		line-height: 14px;
+	}
+
+	/*
+	 * Booking panel main:
+	 * The wrapper chain becomes layout-transparent, then each native Woo block
+	 * is assigned to the approved column. The booking panel spans the payment
+	 * rail's five functional rows, so contact/billing begin after the booking
+	 * context without moving any React-controlled DOM. The native coupon is
+	 * visually appended to the booking totals; Woo's live total remains in the
+	 * DOM as the value source for the visible "To pay today" amount.
+	 */
+	.tempo-woo-checkout .dsb-checkout:not(.dsb-checkout--swap):not(.dsb-checkout--inline) .dsb-checkout__grid {
+		--tempo-checkout-express-offset: 0px;
+
+		position: relative;
+		display: grid;
+		grid-template-columns: minmax(0, 1fr) var(--tempo-checkout-payment-rail);
+		grid-auto-rows: auto;
+		gap: 0 var(--tempo-checkout-gap);
+		align-items: start;
+	}
+
+	.tempo-woo-checkout .dsb-checkout:not(.dsb-checkout--swap):not(.dsb-checkout--inline) .dsb-checkout__main {
+		position: relative;
+		z-index: 1;
+		width: auto;
+		grid-column: 1;
+		grid-row: 1 / span 5;
+	}
+
+	.tempo-woo-checkout .dsb-checkout:not(.dsb-checkout--swap):not(.dsb-checkout--inline) .dsb-checkout__pay,
+	.tempo-woo-checkout .dsb-checkout:not(.dsb-checkout--swap):not(.dsb-checkout--inline) .wp-block-woocommerce-checkout,
+	.tempo-woo-checkout .dsb-checkout:not(.dsb-checkout--swap):not(.dsb-checkout--inline) .wc-block-components-sidebar-layout,
+	.tempo-woo-checkout .dsb-checkout:not(.dsb-checkout--swap):not(.dsb-checkout--inline) .wp-block-woocommerce-checkout-fields-block,
+	.tempo-woo-checkout .dsb-checkout:not(.dsb-checkout--swap):not(.dsb-checkout--inline) .wc-block-checkout__form,
+	.tempo-woo-checkout .dsb-checkout:not(.dsb-checkout--swap):not(.dsb-checkout--inline) .wc-block-checkout__sidebar,
+	.tempo-woo-checkout .dsb-checkout:not(.dsb-checkout--swap):not(.dsb-checkout--inline) .wp-block-woocommerce-checkout-totals-block,
+	.tempo-woo-checkout .dsb-checkout:not(.dsb-checkout--swap):not(.dsb-checkout--inline) .wp-block-woocommerce-checkout-order-summary-block,
+	.tempo-woo-checkout .dsb-checkout:not(.dsb-checkout--swap):not(.dsb-checkout--inline) .wc-block-components-checkout-order-summary__content,
+	.tempo-woo-checkout .dsb-checkout:not(.dsb-checkout--swap):not(.dsb-checkout--inline) .wc-block-components-checkout-order-summary__content > .wc-block-components-totals-wrapper,
+	.tempo-woo-checkout .dsb-checkout:not(.dsb-checkout--swap):not(.dsb-checkout--inline) .wp-block-woocommerce-checkout-order-summary-totals-block {
+		display: contents !important;
+	}
+
+	/*
+	 * Woo inserts several layout wrappers between the plugin shell and its
+	 * checkout steps. They must remain in the DOM for React and Woo's stores,
+	 * but their boxes are layout-transparent here so each native step can be
+	 * placed directly on the plugin grid. This avoids CSS subgrid: browsers
+	 * that ignored nested subgrid collapsed the checkout to one full-width
+	 * column and caused the booking/payment overlap.
+	 */
+	.tempo-woo-checkout .dsb-checkout:not(.dsb-checkout--swap):not(.dsb-checkout--inline) .wp-block-woocommerce-checkout-express-payment-block,
+	.tempo-woo-checkout .dsb-checkout:not(.dsb-checkout--swap):not(.dsb-checkout--inline) .wp-block-woocommerce-checkout-contact-information-block,
+	.tempo-woo-checkout .dsb-checkout:not(.dsb-checkout--swap):not(.dsb-checkout--inline) .wp-block-woocommerce-checkout-shipping-method-block,
+	.tempo-woo-checkout .dsb-checkout:not(.dsb-checkout--swap):not(.dsb-checkout--inline) .wp-block-woocommerce-checkout-pickup-options-block,
+	.tempo-woo-checkout .dsb-checkout:not(.dsb-checkout--swap):not(.dsb-checkout--inline) .wp-block-woocommerce-checkout-shipping-address-block,
+	.tempo-woo-checkout .dsb-checkout:not(.dsb-checkout--swap):not(.dsb-checkout--inline) .wp-block-woocommerce-checkout-shipping-methods-block,
+	.tempo-woo-checkout .dsb-checkout:not(.dsb-checkout--swap):not(.dsb-checkout--inline) .wp-block-woocommerce-checkout-billing-address-block,
+	.tempo-woo-checkout .dsb-checkout:not(.dsb-checkout--swap):not(.dsb-checkout--inline) .wp-block-woocommerce-checkout-additional-information-block,
+	.tempo-woo-checkout .dsb-checkout:not(.dsb-checkout--swap):not(.dsb-checkout--inline) .wp-block-woocommerce-checkout-payment-block,
+	.tempo-woo-checkout .dsb-checkout:not(.dsb-checkout--swap):not(.dsb-checkout--inline) .wp-block-woocommerce-checkout-order-note-block,
+	.tempo-woo-checkout .dsb-checkout:not(.dsb-checkout--swap):not(.dsb-checkout--inline) .wp-block-woocommerce-checkout-terms-block,
+	.tempo-woo-checkout .dsb-checkout:not(.dsb-checkout--swap):not(.dsb-checkout--inline) .wp-block-woocommerce-checkout-actions-block,
+	.tempo-woo-checkout .dsb-checkout:not(.dsb-checkout--swap):not(.dsb-checkout--inline) .wp-block-woocommerce-checkout-order-summary-coupon-form-block,
+	.tempo-woo-checkout .dsb-checkout:not(.dsb-checkout--swap):not(.dsb-checkout--inline) .wp-block-woocommerce-checkout-order-summary-discount-block {
+		min-width: 0;
+	}
+
+	.tempo-woo-checkout .dsb-checkout:not(.dsb-checkout--swap):not(.dsb-checkout--inline) .wp-block-woocommerce-checkout-payment-block,
+	.tempo-woo-checkout .dsb-checkout:not(.dsb-checkout--swap):not(.dsb-checkout--inline) .wp-block-woocommerce-checkout-contact-information-block,
+	.tempo-woo-checkout .dsb-checkout:not(.dsb-checkout--swap):not(.dsb-checkout--inline) .wp-block-woocommerce-checkout-billing-address-block {
+		container-type: inline-size;
+	}
+
+	.tempo-woo-checkout .dsb-checkout:not(.dsb-checkout--swap):not(.dsb-checkout--inline) .wp-block-woocommerce-checkout-express-payment-block {
+		position: static !important;
+		display: contents !important;
+		width: auto;
+		margin: 0 !important;
+	}
+
+	.tempo-woo-checkout .dsb-checkout:not(.dsb-checkout--swap):not(.dsb-checkout--inline) .wc-block-components-express-payment {
+		padding: 0;
+		background: transparent;
+		box-shadow: none;
+	}
+
+	.tempo-woo-checkout .dsb-checkout:not(.dsb-checkout--swap):not(.dsb-checkout--inline) .wp-block-woocommerce-checkout-payment-block {
+		grid-column: 2 !important;
+		grid-row: 2 !important;
+		margin-top: var(--tempo-checkout-express-offset) !important;
+	}
+
+	.tempo-woo-checkout .dsb-checkout:not(.dsb-checkout--swap):not(.dsb-checkout--inline) .wp-block-woocommerce-checkout-payment-block .wc-block-components-checkout-step__title {
+		font-size: 0;
+	}
+
+	.tempo-woo-checkout .dsb-checkout:not(.dsb-checkout--swap):not(.dsb-checkout--inline) .wp-block-woocommerce-checkout-payment-block .wc-block-components-checkout-step__title::after {
+		content: "Payment";
+		font-size: 16px;
+	}
+
+	.tempo-woo-checkout .dsb-checkout:not(.dsb-checkout--swap):not(.dsb-checkout--inline) .wp-block-woocommerce-checkout-order-note-block {
+		grid-column: 2 !important;
+		grid-row: 3 !important;
+	}
+
+	.tempo-woo-checkout .dsb-checkout:not(.dsb-checkout--swap):not(.dsb-checkout--inline) .wp-block-woocommerce-checkout-terms-block {
+		grid-column: 2 !important;
+		grid-row: 4 !important;
+	}
+
+	.tempo-woo-checkout .dsb-checkout:not(.dsb-checkout--inline) .wp-block-woocommerce-checkout-actions-block {
+		grid-column: 2 !important;
+		grid-row: 5 !important;
+		padding: 16px;
+	}
+	.tempo-woo-checkout .dsb-checkout:not(.dsb-checkout--inline) .wp-block-woocommerce-checkout-actions-block .wc-block-components-checkout-place-order-button {
+		margin: 8px auto;
+	}
+
+	.tempo-woo-checkout .dsb-checkout:not(.dsb-checkout--swap):not(.dsb-checkout--inline) .wp-block-woocommerce-checkout-order-summary-coupon-form-block {
+		width: auto;
+		grid-column: 1 !important;
+		grid-row: 6 !important;
+	}
+
+	.tempo-woo-checkout .dsb-checkout:not(.dsb-checkout--swap):not(.dsb-checkout--inline) .wp-block-woocommerce-checkout-order-summary-discount-block {
+		width: auto;
+		grid-column: 1 !important;
+		grid-row: 7 !important;
+	}
+
+	.tempo-woo-checkout .dsb-checkout:not(.dsb-checkout--swap):not(.dsb-checkout--inline) .wp-block-woocommerce-checkout-contact-information-block {
+		width: auto;
+		grid-column: 1 !important;
+		grid-row: 8 !important;
+	}
+
+	.tempo-woo-checkout .dsb-checkout:not(.dsb-checkout--swap):not(.dsb-checkout--inline) .wp-block-woocommerce-checkout-shipping-method-block {
+		width: auto;
+		grid-column: 1 !important;
+		grid-row: 9 !important;
+	}
+
+	.tempo-woo-checkout .dsb-checkout:not(.dsb-checkout--swap):not(.dsb-checkout--inline) .wp-block-woocommerce-checkout-pickup-options-block {
+		width: auto;
+		grid-column: 1 !important;
+		grid-row: 10 !important;
+	}
+
+	.tempo-woo-checkout .dsb-checkout:not(.dsb-checkout--swap):not(.dsb-checkout--inline) .wp-block-woocommerce-checkout-shipping-address-block {
+		width: auto;
+		grid-column: 1 !important;
+		grid-row: 11 !important;
+	}
+
+	.tempo-woo-checkout .dsb-checkout:not(.dsb-checkout--swap):not(.dsb-checkout--inline) .wp-block-woocommerce-checkout-shipping-methods-block {
+		width: auto;
+		grid-column: 1 !important;
+		grid-row: 12 !important;
+	}
+
+	.tempo-woo-checkout .dsb-checkout:not(.dsb-checkout--swap):not(.dsb-checkout--inline) .wp-block-woocommerce-checkout-billing-address-block {
+		width: auto;
+		grid-column: 1 !important;
+		grid-row: 13 !important;
+	}
+
+	.tempo-woo-checkout .dsb-checkout:not(.dsb-checkout--swap):not(.dsb-checkout--inline) .wp-block-woocommerce-checkout-additional-information-block {
+		width: auto;
+		grid-column: 1 !important;
+		grid-row: 14 !important;
+	}
+
+	.tempo-woo-checkout .dsb-checkout:not(.dsb-checkout--swap):not(.dsb-checkout--inline) .wp-block-woocommerce-checkout-contact-information-block {
+		margin-top: 8px;
+		padding-top: 24px;
+		border-top: 1px solid var(--tempo-checkout-border);
+	}
+
+	.tempo-woo-checkout .dsb-checkout:not(.dsb-checkout--swap):not(.dsb-checkout--inline) .wp-block-woocommerce-checkout-order-summary-coupon-form-block {
+		margin-top: 8px;
+		margin-bottom: 0;
+	}
+
+	/* Payment-main mode uses the full Woo field column beside plugin rail. */
+	.tempo-woo-checkout .dsb-checkout--swap .wp-block-woocommerce-checkout {
+		display: block;
+	}
+
+	.tempo-woo-checkout .dsb-checkout--swap .wc-block-checkout__main {
+		width: 100%;
+		padding: 0;
+	}
+
+	/* Standard/classic checkout retains a conventional form/review split. */
+	.tempo-woo-checkout form.checkout {
+		grid-template-columns: minmax(0, 1fr) var(--tempo-checkout-context-rail);
+	}
+
+	.tempo-woo-checkout form.checkout .col2-set {
+		grid-column: 1;
+	}
+
+	.tempo-woo-checkout form.checkout #order_review_heading,
+	.tempo-woo-checkout form.checkout #order_review {
+		grid-column: 2;
+	}
+}
+
+@media (max-width: 999.98px) {
+	.tempo-checkout-loading-enabled .tempo-woo-checkout .tempo-checkout-stage:not(.is-ready),
+	.tempo-checkout-loading-enabled .tempo-woo-checkout .tempo-checkout-stage:not(.is-ready) > .tempo-checkout-skeleton {
+		min-height: 660px;
+	}
+
+	.tempo-woo-checkout .tempo-checkout-skeleton__grid {
+		grid-template-columns: minmax(0, 1fr);
+	}
+
+	.tempo-woo-checkout .tempo-checkout-skeleton__column--main,
+	.tempo-woo-checkout .tempo-checkout-stage--swap .tempo-checkout-skeleton__column--main {
+		grid-column: 1;
+		grid-row: 1;
+	}
+
+	.tempo-woo-checkout .tempo-checkout-skeleton__column--rail {
+		display: none;
+	}
+
+	.tempo-woo-checkout .tempo-checkout-desktop-total-row,
+	.tempo-woo-checkout .tempo-checkout-desktop-pay-note {
+		display: none !important;
+	}
+
+	.tempo-woo-checkout .dsb-checkout:not(.dsb-checkout--inline) .wp-block-woocommerce-checkout,
+	.tempo-woo-checkout .dsb-checkout:not(.dsb-checkout--inline) .wp-block-woocommerce-checkout-fields-block,
+	.tempo-woo-checkout .dsb-checkout:not(.dsb-checkout--inline) .wc-block-checkout__form {
+		display: block !important;
+	}
+
+	.tempo-woo-checkout .wc-block-checkout__main,
+	.tempo-woo-checkout .wc-block-checkout__sidebar {
+		width: 100%;
+		padding: 0;
+	}
+
+	/*
+	 * The shell's booking panel is already first on mobile. Put the only
+	 * retained summary controls (coupon/discount) immediately after it,
+	 * before contact, billing and payment, as in the approved flow.
+	 */
+	.tempo-woo-checkout .dsb-checkout:not(.dsb-checkout--inline) .wc-block-components-sidebar-layout {
+		display: flex !important;
+		flex-direction: column;
+	}
+
+	.tempo-woo-checkout .dsb-checkout:not(.dsb-checkout--inline) .wc-block-checkout__sidebar {
+		order: -1;
+		margin-top: 0;
+	}
+
+	.tempo-woo-checkout .wp-block-woocommerce-checkout-order-summary-coupon-form-block {
+		margin-bottom: 16px;
+	}
+
+	.tempo-woo-checkout .dsb-checkout:not(.dsb-checkout--inline) .wc-block-components-checkout-place-order-button,
+	.tempo-woo-checkout .dsb-checkout:not(.dsb-checkout--inline) .wc-block-checkout__sidebar h2,
+	.tempo-woo-checkout .dsb-checkout:not(.dsb-checkout--inline) .wc-block-components-checkout-order-summary__title,
+	.tempo-woo-checkout .dsb-checkout:not(.dsb-checkout--inline) .wp-block-woocommerce-checkout-order-summary-heading-block,
+	.tempo-woo-checkout .dsb-checkout:not(.dsb-checkout--inline) .tempo-checkout-mobile-summary-redundant {
+		display: none !important;
+	}
+
+	/*
+	 * The coupon panel is visually placed inside the plugin-owned totals card.
+	 * Its Woo block wrapper remains mounted for React, but contributes no
+	 * mobile spacing or duplicate summary chrome.
+	 */
+	.tempo-woo-checkout .dsb-checkout:not(.dsb-checkout--inline) .wp-block-woocommerce-checkout-order-summary-coupon-form-block:has(.tempo-checkout-coupon-in-totals) {
+		display: contents !important;
+		margin: 0 !important;
+		padding: 0 !important;
+		border: 0 !important;
+		background: transparent !important;
+		box-shadow: none !important;
+	}
+
+	/*
+	 * Woo adds a card around its express fieldset on the stacked layout.
+	 * The approved mobile treatment uses the page background with only the
+	 * labelled rules and gateway buttons visible.
+	 */
+	.tempo-woo-checkout .wc-block-components-express-payment,
+	.tempo-woo-checkout .wc-block-components-express-payment__event-buttons,
+	.tempo-woo-checkout .wp-block-woocommerce-checkout-express-payment-block fieldset {
+		padding-right: 0 !important;
+		padding-left: 0 !important;
+		border: 0 !important;
+		border-radius: 0 !important;
+		background: transparent !important;
+		box-shadow: none !important;
+	}
+
+	.tempo-woo-checkout .wc-block-components-express-payment {
+		padding-top: 0 !important;
+		padding-bottom: 0 !important;
+	}
+}
+
+@media (max-width: 699px) {
+	.tempo-woo-checkout .wc-block-components-radio-control__option {
+		padding: 14px 13px 14px 46px;
+	}
+
+	.tempo-woo-checkout .wc-block-components-radio-control-accordion-content {
+		padding: 0 13px 13px 45px;
+	}
+
+	.tempo-woo-checkout .wc-block-components-payment-method-content,
+	.tempo-woo-checkout .wc-block-gateway-container,
+	.tempo-woo-checkout .wc-stripe-upe-element,
+	.tempo-woo-checkout #wcpay-upe-element,
+	.tempo-woo-checkout .wcpay-upe-element,
+	.tempo-woo-checkout .wcpay-payment-element-wrapper {
+		padding: 10px;
+	}
+
+	.tempo-woo-checkout .wc-block-components-totals-coupon__form {
+		align-items: stretch;
+		flex-direction: column;
+	}
+
+	.tempo-woo-checkout .wc-block-components-totals-coupon__form .wc-block-components-button {
+		width: 100%;
+	}
+}
+
+@media (prefers-reduced-motion: no-preference) {
+	.tempo-woo-checkout .wc-block-components-checkout-place-order-button,
+	.tempo-woo-checkout .wc-block-components-address-card__edit,
+	.tempo-woo-checkout .wc-block-components-totals-coupon__button,
+	.tempo-woo-checkout .wc-block-components-checkout-return-to-cart-button {
+		transition: color 150ms ease, background-color 150ms ease, opacity 150ms ease;
+	}
+}
+
+@media (prefers-reduced-motion: reduce) {
+	.tempo-woo-checkout .tempo-checkout-stage__content {
+		transition: none;
+	}
+
+	.tempo-woo-checkout .tempo-checkout-skeleton__bar {
+		animation: none;
+		opacity: 0.7;
+	}
+}
+
+
+/* Extra unknowns */
+.wp-block-woocommerce-checkout-order-summary-block .checkout-order-summary-block-fill {
+	border: 0;
+}
