@@ -1,0 +1,406 @@
+/**
+ * Tempo Studio Manager — WooCommerce order confirmation presentation.
+ *
+ * WooCommerce and the booking plugin retain ownership of all confirmation
+ * data and actions. This file only presents the block and classic receipt
+ * markup beneath the booking-first confirmation panel.
+ */
+
+.tempo-woo-order-received {
+	--tempo-receipt-surface: var(--dsb-color-bg-surface, var(--wp--preset--color--base, #fff));
+	--tempo-receipt-subtle: var(--dsb-color-bg-subtle, var(--wp--preset--color--page, #f1f3f5));
+	--tempo-receipt-brand-subtle: var(--dsb-color-bg-brand-subtle, var(--wp--preset--color--brand-tint-primary, #fff4eb));
+	--tempo-receipt-border: var(--dsb-color-border-default, var(--wp--preset--color--border, #e5e7eb));
+	--tempo-receipt-primary: var(--dsb-color-brand-primary, var(--wp--preset--color--brand-primary, #ff7300));
+	--tempo-receipt-secondary: var(--dsb-color-brand-secondary, var(--wp--preset--color--brand-secondary, #330164));
+	--tempo-receipt-on-primary: var(--dsb-color-on-brand-primary, var(--wp--preset--color--brand-primary-contrast, #fff));
+	--tempo-receipt-on-secondary: var(--dsb-color-on-brand-secondary, var(--wp--preset--color--brand-secondary-contrast, #fff));
+	--tempo-receipt-text: var(--dsb-color-text-primary, var(--wp--preset--color--body, #3f3f46));
+	--tempo-receipt-muted: var(--dsb-color-text-muted, var(--wp--preset--color--muted, #6b7280));
+	--tempo-receipt-danger-bg: var(--dsb-color-status-danger-bg, var(--wp--preset--color--status-danger-bg, #feeceb));
+	--tempo-receipt-danger-fg: var(--dsb-color-status-danger-fg, var(--wp--preset--color--status-danger-fg, #b42318));
+	--tempo-receipt-radius: 14px;
+}
+
+.tempo-woo-order-received main {
+	color: var(--tempo-receipt-text);
+	font-family: var(--dsb-font-body, var(--wp--preset--font-family--body, Montserrat, sans-serif));
+}
+
+.tempo-woo-order-received main .wc-block-order-confirmation-status,
+.tempo-woo-order-received main .wc-block-order-confirmation-summary,
+.tempo-woo-order-received main .wc-block-order-confirmation-totals-wrapper,
+.tempo-woo-order-received main .wc-block-order-confirmation-downloads-wrapper,
+.tempo-woo-order-received main .wc-block-order-confirmation-address-wrapper,
+.tempo-woo-order-received main .wc-block-order-confirmation-additional-fields-wrapper,
+.tempo-woo-order-received main .wc-block-order-confirmation-additional-information,
+.tempo-woo-order-received main .woocommerce-order {
+	width: min(100%, 1140px);
+	margin-inline: auto;
+}
+
+/*
+ * The booking panel is the primary success message. This rule styles only the
+ * boundary after it, leaving all .dsb-* content under plugin ownership.
+ */
+.tempo-woo-order-received .wc-block-order-confirmation-status > .dsb-confirmed + h1 {
+	margin-top: 18px;
+	padding-top: 28px;
+	border-top: 1px solid var(--tempo-receipt-border);
+}
+
+.tempo-woo-order-received .woocommerce-order > .dsb-confirmed + .woocommerce-thankyou-order-received {
+	margin-top: 18px;
+	padding-top: 28px;
+	border-top: 1px solid var(--tempo-receipt-border);
+}
+
+/* Order received heading and supporting status. */
+.tempo-woo-order-received .wc-block-order-confirmation-status {
+	margin-bottom: 18px;
+	font-size: var(--dsb-type-supporting-size, 13px);
+	line-height: var(--dsb-type-supporting-line, 19px);
+}
+
+.tempo-woo-order-received .wc-block-order-confirmation-status > h1 {
+	margin-bottom: 9px;
+	color: var(--dsb-color-text-brand, var(--tempo-receipt-secondary));
+	font-family: var(--dsb-font-heading, var(--wp--preset--font-family--heading, Poppins, sans-serif));
+	font-size: var(--dsb-type-page-size, 28px);
+	font-weight: 700;
+	line-height: 1.15;
+}
+
+.tempo-woo-order-received .wc-block-order-confirmation-status > p,
+.tempo-woo-order-received .woocommerce-thankyou-order-received {
+	margin-bottom: 0;
+	color: var(--tempo-receipt-muted);
+	font-size: var(--dsb-type-supporting-size, 13px);
+	line-height: var(--dsb-type-supporting-line, 19px);
+}
+
+.tempo-woo-order-received .wc-block-order-confirmation-status__actions {
+	display: flex;
+	flex-wrap: wrap;
+	gap: 10px;
+	margin-top: 14px;
+}
+
+.tempo-woo-order-received main .button {
+	display: inline-flex;
+	align-items: center;
+	justify-content: center;
+	min-height: var(--dsb-size-control-primary, 48px);
+	padding: 12px 20px;
+	border: 0;
+	border-radius: var(--dsb-radius-medium, 12px);
+	background: var(--tempo-receipt-primary);
+	box-shadow: none;
+	color: var(--tempo-receipt-on-primary);
+	font-family: var(--dsb-font-body, Montserrat, sans-serif);
+	font-size: var(--dsb-type-label-size, 14px);
+	font-weight: 600;
+	line-height: var(--dsb-type-label-line, 20px);
+	text-decoration: none;
+}
+
+.tempo-woo-order-received main .button:hover,
+.tempo-woo-order-received main .button:focus-visible {
+	background: var(--tempo-receipt-secondary);
+	color: var(--tempo-receipt-on-secondary);
+}
+
+/* Compact receipt summary. */
+.tempo-woo-order-received .wc-block-order-confirmation-summary {
+	margin-bottom: 24px;
+	overflow: hidden;
+	border-radius: var(--tempo-receipt-radius);
+	background: var(--tempo-receipt-surface);
+	box-shadow: inset 0 0 0 1px var(--tempo-receipt-border);
+}
+
+.tempo-woo-order-received .wc-block-order-confirmation-summary-list,
+.tempo-woo-order-received .woocommerce-order-overview {
+	display: grid;
+	grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+	gap: 0;
+	margin: 0;
+	padding: 0;
+	list-style: none;
+}
+
+.tempo-woo-order-received .wc-block-order-confirmation-summary-list-item,
+.tempo-woo-order-received .woocommerce-order-overview > li {
+	display: flex;
+	flex-direction: column;
+	gap: 5px;
+	min-width: 0;
+	margin: 0;
+	padding: 16px 18px;
+	border: 0;
+	border-left: 1px solid var(--tempo-receipt-border);
+	color: var(--tempo-receipt-text);
+	font-size: var(--dsb-type-supporting-size, 13px);
+	line-height: var(--dsb-type-supporting-line, 19px);
+	text-transform: none;
+}
+
+.tempo-woo-order-received .wc-block-order-confirmation-summary-list-item:first-child,
+.tempo-woo-order-received .woocommerce-order-overview > li:first-child {
+	border-left: 0;
+}
+
+.tempo-woo-order-received .wc-block-order-confirmation-summary-list-item__key {
+	color: var(--tempo-receipt-muted);
+	font-size: var(--dsb-type-small-size, 12px);
+	font-weight: 600;
+	line-height: var(--dsb-type-small-line, 16px);
+}
+
+.tempo-woo-order-received .wc-block-order-confirmation-summary-list-item__value,
+.tempo-woo-order-received .woocommerce-order-overview > li strong {
+	display: block;
+	overflow-wrap: anywhere;
+	color: var(--tempo-receipt-secondary);
+	font-family: var(--dsb-font-heading, Poppins, sans-serif);
+	font-size: var(--dsb-type-label-size, 14px);
+	font-weight: 600;
+	line-height: var(--dsb-type-label-line, 20px);
+}
+
+.tempo-woo-order-received .woocommerce-order-overview {
+	margin-bottom: 24px;
+	overflow: hidden;
+	border-radius: var(--tempo-receipt-radius);
+	background: var(--tempo-receipt-surface);
+	box-shadow: inset 0 0 0 1px var(--tempo-receipt-border);
+}
+
+.tempo-woo-order-received .woocommerce-order-overview > li::before,
+.tempo-woo-order-received .woocommerce-order-overview > li::after {
+	display: none;
+	content: none;
+}
+
+/* Shared section headings. */
+.tempo-woo-order-received .wc-block-order-confirmation-totals-wrapper,
+.tempo-woo-order-received .wc-block-order-confirmation-downloads-wrapper,
+.tempo-woo-order-received .wc-block-order-confirmation-address-wrapper,
+.tempo-woo-order-received .wc-block-order-confirmation-additional-fields-wrapper,
+.tempo-woo-order-received .woocommerce-order-details,
+.tempo-woo-order-received .woocommerce-customer-details {
+	margin-top: 24px;
+	margin-bottom: 0;
+}
+
+.tempo-woo-order-received .wc-block-order-confirmation-totals-wrapper h2,
+.tempo-woo-order-received .wc-block-order-confirmation-totals-wrapper h3,
+.tempo-woo-order-received .wc-block-order-confirmation-downloads-wrapper h2,
+.tempo-woo-order-received .wc-block-order-confirmation-downloads-wrapper h3,
+.tempo-woo-order-received .wc-block-order-confirmation-address-wrapper h2,
+.tempo-woo-order-received .wc-block-order-confirmation-address-wrapper h3,
+.tempo-woo-order-received .wc-block-order-confirmation-additional-fields-wrapper h2,
+.tempo-woo-order-received .wc-block-order-confirmation-additional-fields-wrapper h3,
+.tempo-woo-order-received .woocommerce-order-details__title,
+.tempo-woo-order-received .woocommerce-customer-details > h2 {
+	margin: 0 0 12px;
+	color: var(--dsb-color-text-brand, var(--tempo-receipt-secondary));
+	font-family: var(--dsb-font-heading, Poppins, sans-serif);
+	font-size: 18px;
+	font-weight: 700;
+	line-height: 25px;
+}
+
+/* Purchased products and totals. */
+.tempo-woo-order-received .wc-block-order-confirmation-totals__table,
+.tempo-woo-order-received .woocommerce-table--order-details {
+	width: 100%;
+	margin: 0;
+	overflow: hidden;
+	border: 0;
+	border-spacing: 0;
+	border-radius: var(--tempo-receipt-radius);
+	background: var(--tempo-receipt-surface);
+	box-shadow: inset 0 0 0 1px var(--tempo-receipt-border);
+}
+
+.tempo-woo-order-received .wc-block-order-confirmation-totals__table th,
+.tempo-woo-order-received .wc-block-order-confirmation-totals__table td,
+.tempo-woo-order-received .woocommerce-table--order-details th,
+.tempo-woo-order-received .woocommerce-table--order-details td {
+	padding: 12px 16px;
+	border: 0;
+	border-bottom: 1px solid var(--tempo-receipt-border);
+	background: transparent;
+	color: var(--tempo-receipt-text);
+	font-size: var(--dsb-type-supporting-size, 13px);
+	line-height: var(--dsb-type-supporting-line, 19px);
+	text-align: left;
+	vertical-align: top;
+}
+
+.tempo-woo-order-received .wc-block-order-confirmation-totals__table thead th,
+.tempo-woo-order-received .woocommerce-table--order-details thead th {
+	background: var(--tempo-receipt-subtle);
+	font-size: var(--dsb-type-small-size, 12px);
+	font-weight: 700;
+}
+
+.tempo-woo-order-received .wc-block-order-confirmation-totals__table .wc-block-order-confirmation-totals__total,
+.tempo-woo-order-received .woocommerce-table--order-details .product-total,
+.tempo-woo-order-received .woocommerce-table--order-details tfoot td {
+	text-align: right;
+	font-variant-numeric: tabular-nums;
+	white-space: nowrap;
+}
+
+.tempo-woo-order-received .wc-block-order-confirmation-totals__product > a,
+.tempo-woo-order-received .woocommerce-table--order-details .product-name > a,
+.tempo-woo-order-received .woocommerce-table--order-details .product-name {
+	color: var(--tempo-receipt-secondary);
+	font-size: var(--dsb-type-label-size, 14px);
+	font-weight: 600;
+	text-decoration: none;
+}
+
+.tempo-woo-order-received .wc-block-order-confirmation-totals__table .wc-item-meta,
+.tempo-woo-order-received .woocommerce-table--order-details .wc-item-meta {
+	margin: 8px 0 0;
+	padding: 0;
+	list-style: none;
+	color: var(--tempo-receipt-muted);
+	font-size: var(--dsb-type-small-size, 12px);
+	font-weight: 400;
+	line-height: 17px;
+}
+
+.tempo-woo-order-received .wc-block-order-confirmation-totals__table .wc-item-meta li,
+.tempo-woo-order-received .woocommerce-table--order-details .wc-item-meta li {
+	display: flex;
+	gap: 4px;
+}
+
+.tempo-woo-order-received .wc-block-order-confirmation-totals__table .wc-item-meta p,
+.tempo-woo-order-received .woocommerce-table--order-details .wc-item-meta p {
+	margin: 0;
+}
+
+.tempo-woo-order-received .wc-block-order-confirmation-totals__table tfoot tr:last-child th,
+.tempo-woo-order-received .wc-block-order-confirmation-totals__table tfoot tr:last-child td,
+.tempo-woo-order-received .woocommerce-table--order-details tfoot tr:last-child th,
+.tempo-woo-order-received .woocommerce-table--order-details tfoot tr:last-child td {
+	border-bottom: 0;
+	color: var(--tempo-receipt-secondary);
+	font-family: var(--dsb-font-heading, Poppins, sans-serif);
+	font-size: 17px;
+	font-weight: 700;
+}
+
+/* Addresses and additional receipt information. */
+.tempo-woo-order-received .wc-block-order-confirmation-address-wrapper {
+	gap: 16px;
+}
+
+.tempo-woo-order-received .wc-block-order-confirmation-billing-address,
+.tempo-woo-order-received .wc-block-order-confirmation-shipping-address,
+.tempo-woo-order-received .wc-block-order-confirmation-additional-fields,
+.tempo-woo-order-received .woocommerce-customer-details address {
+	margin: 0;
+	padding: 18px;
+	border: 0;
+	border-radius: var(--tempo-receipt-radius);
+	background: var(--tempo-receipt-surface);
+	box-shadow: inset 0 0 0 1px var(--tempo-receipt-border);
+	color: var(--tempo-receipt-text);
+	font-size: var(--dsb-type-supporting-size, 13px);
+	font-style: normal;
+	line-height: 20px;
+}
+
+.tempo-woo-order-received .wc-block-order-confirmation-billing-address address,
+.tempo-woo-order-received .wc-block-order-confirmation-shipping-address address {
+	margin: 0;
+	font-style: normal;
+}
+
+.tempo-woo-order-received .wc-block-order-confirmation-billing-address p,
+.tempo-woo-order-received .wc-block-order-confirmation-shipping-address p,
+.tempo-woo-order-received .woocommerce-customer-details address p {
+	margin: 4px 0 0;
+}
+
+/* Failed or gateway-specific notices retain their meaning within the theme. */
+.tempo-woo-order-received .woocommerce-thankyou-order-failed,
+.tempo-woo-order-received .woocommerce-error {
+	margin: 0 0 16px;
+	padding: 14px 16px;
+	border: 0;
+	border-radius: var(--dsb-radius-medium, 12px);
+	background: var(--tempo-receipt-danger-bg);
+	color: var(--tempo-receipt-danger-fg);
+	font-size: var(--dsb-type-supporting-size, 13px);
+}
+
+@media (max-width: 699px) {
+	.tempo-woo-order-received .wc-block-order-confirmation-status > .dsb-confirmed + h1,
+	.tempo-woo-order-received .woocommerce-order > .dsb-confirmed + .woocommerce-thankyou-order-received {
+		padding-top: 22px;
+	}
+
+	.tempo-woo-order-received .wc-block-order-confirmation-summary-list,
+	.tempo-woo-order-received .woocommerce-order-overview {
+		grid-template-columns: repeat(2, minmax(0, 1fr));
+	}
+
+	.tempo-woo-order-received .wc-block-order-confirmation-summary-list-item,
+	.tempo-woo-order-received .woocommerce-order-overview > li {
+		padding: 13px 14px;
+		border-top: 1px solid var(--tempo-receipt-border);
+		border-left: 0;
+	}
+
+	.tempo-woo-order-received .wc-block-order-confirmation-summary-list-item:nth-child(-n + 2),
+	.tempo-woo-order-received .woocommerce-order-overview > li:nth-child(-n + 2) {
+		border-top: 0;
+	}
+
+	.tempo-woo-order-received .wc-block-order-confirmation-summary-list-item:nth-child(even),
+	.tempo-woo-order-received .woocommerce-order-overview > li:nth-child(even) {
+		border-left: 1px solid var(--tempo-receipt-border);
+	}
+
+	.tempo-woo-order-received .wc-block-order-confirmation-totals__table th,
+	.tempo-woo-order-received .wc-block-order-confirmation-totals__table td,
+	.tempo-woo-order-received .woocommerce-table--order-details th,
+	.tempo-woo-order-received .woocommerce-table--order-details td {
+		padding-inline: 12px;
+	}
+}
+
+@media (max-width: 440px) {
+	.tempo-woo-order-received .wc-block-order-confirmation-summary-list,
+	.tempo-woo-order-received .woocommerce-order-overview {
+		grid-template-columns: minmax(0, 1fr);
+	}
+
+	.tempo-woo-order-received .wc-block-order-confirmation-summary-list-item,
+	.tempo-woo-order-received .wc-block-order-confirmation-summary-list-item:nth-child(-n + 2),
+	.tempo-woo-order-received .wc-block-order-confirmation-summary-list-item:nth-child(even),
+	.tempo-woo-order-received .woocommerce-order-overview > li,
+	.tempo-woo-order-received .woocommerce-order-overview > li:nth-child(-n + 2),
+	.tempo-woo-order-received .woocommerce-order-overview > li:nth-child(even) {
+		border-top: 1px solid var(--tempo-receipt-border);
+		border-left: 0;
+	}
+
+	.tempo-woo-order-received .wc-block-order-confirmation-summary-list-item:first-child,
+	.tempo-woo-order-received .woocommerce-order-overview > li:first-child {
+		border-top: 0;
+	}
+}
+
+@media (prefers-reduced-motion: no-preference) {
+	.tempo-woo-order-received main .button {
+		transition: color 150ms ease, background-color 150ms ease;
+	}
+}
