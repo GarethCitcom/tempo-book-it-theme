@@ -101,7 +101,7 @@
 }
 
 /* Shared controls and Woo notices. */
-.tempo-woo-account .woocommerce-MyAccount-content label {
+.tempo-woo-account .woocommerce-MyAccount-content label:not(.dsb-btn):not(.dsb-profile-photo__remove-btn) {
 	display: block;
 	margin-bottom: 7px;
 	color: var(--tempo-woo-text);

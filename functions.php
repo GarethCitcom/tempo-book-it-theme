@@ -26,6 +26,7 @@ function tempo_studio_manager_setup() {
 	// this theme keeps the setting simply by keeping this line.
 	add_theme_support( 'dsb-header-background' );
 	add_theme_support( 'dsb-login-panel-image' );
+	add_theme_support( 'dsb-student-profile' );
 }
 add_action( 'after_setup_theme', 'tempo_studio_manager_setup' );
 
