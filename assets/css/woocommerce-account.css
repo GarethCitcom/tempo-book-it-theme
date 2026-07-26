@@ -100,7 +100,7 @@
 	color: var(--tempo-woo-on-secondary);
 }
 
-/* Shared controls and Woo notices. */
+/* Shared form controls. Notices are in assets/css/dsb-notices.css. */
 .tempo-woo-account .woocommerce-MyAccount-content label:not(.dsb-btn):not(.dsb-profile-photo__remove-btn) {
 	display: block;
 	margin-bottom: 7px;
@@ -171,8 +171,8 @@
 	color: var(--tempo-woo-on-secondary);
 }
 
-/* Notices are in assets/css/dsb-notices.css — see the note in
- * woocommerce-checkout.css about why nothing here is scoped to the body class. */
+/* Notices are in assets/css/dsb-notices.css, scoped there to
+ * body.tempo-woo-notices so they win against WooCommerce's own rules. */
 
 /* Account details. */
 .tempo-woo-account form.edit-account {

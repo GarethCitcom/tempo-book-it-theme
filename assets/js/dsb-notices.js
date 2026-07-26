@@ -402,8 +402,13 @@
 	/* ── Scan and promote ──────────────────────────────────────────── */
 
 	/**
-	 * A page-load popup should not re-block on every revisit, so an
-	 * acknowledgement is remembered for the session. Toasts are never suppressed.
+	 * A popup that leaves its inline copy on the page should not re-block on
+	 * every revisit, so an acknowledgement is remembered for the session.
+	 *
+	 * Only relevant to the keep-inline case. When the host is removed there is
+	 * nothing left on the page to re-block over, and the notice will not be
+	 * rendered again unless the server queues it again — which is a genuinely new
+	 * event worth showing. Toasts are never suppressed.
 	 */
 	function alreadyAcknowledged( key ) {
 		if ( ! key ) {
@@ -434,6 +439,7 @@
 			title: marker.getAttribute( 'data-dsb-title' ) || '',
 			ctaLabel: marker.getAttribute( 'data-dsb-cta-label' ) || '',
 			ctaUrl: marker.getAttribute( 'data-dsb-cta-url' ) || '',
+			keepInline: marker.hasAttribute( 'data-dsb-keep-inline' ),
 			text: ( marker.textContent || '' ).trim(),
 			tone: toneOf( host, marker )
 		};
@@ -467,8 +473,18 @@
 			}
 
 			if ( 'popup' === channel ) {
-				// The inline copy deliberately stays rendered underneath, so
-				// dismissing the dialog never destroys the message.
+				// The dialog is showing the same words, so the host goes — unless
+				// the plugin marked it to stay. It does that for the
+				// paid-but-not-booked notice, which is the order's standing record
+				// of a money failure rather than a transient state.
+				if ( ! notice.keepInline ) {
+					showPopup( notice );
+					host.parentNode && host.parentNode.removeChild( host );
+					return;
+				}
+
+				// Kept inline, so suppress the dialog on a revisit — otherwise it
+				// re-blocks every time the parent opens that order.
 				if ( alreadyAcknowledged( notice.key ) ) {
 					return;
 				}
@@ -491,6 +507,15 @@
 	/* ── Boot ──────────────────────────────────────────────────────── */
 
 	function init() {
+		// The boot script hid promoted notices before first paint and armed a
+		// fail-safe to reveal them if this file never arrived. It did arrive, so
+		// cancel it — that keeps the pre-paint suppression in force for the rest of
+		// the session, including notices the plugin injects later over REST.
+		if ( window.tempoNoticesFailsafe ) {
+			window.clearTimeout( window.tempoNoticesFailsafe );
+			window.tempoNoticesFailsafe = null;
+		}
+
 		scan();
 
 		// The Blocks notice banner mounts after first paint, and the plugin
@@ -509,8 +534,35 @@
 		// where the plugin enqueued its script.
 		document.addEventListener( 'dsb:state', scan );
 
+		// A checkout hold lapsing. This one carries its own payload rather than
+		// marking up a notice, because there is no server render to attach a
+		// marker to — the countdown simply reaches zero on whatever page the
+		// parent is on. Copy still comes from the plugin.
+		document.addEventListener( 'dsb:hold-expired', onHoldExpiredEvent );
+
 		// WooCommerce Blocks' own cart event.
 		document.body.addEventListener( 'wc-blocks_added_to_cart', scan );
+	}
+
+	/**
+	 * Present an expired hold as a blocking dialog.
+	 *
+	 * @param {CustomEvent} event detail = { key, title, text, ctaLabel, ctaUrl }.
+	 */
+	function onHoldExpiredEvent( event ) {
+		var detail = event && event.detail ? event.detail : {};
+		if ( ! detail.text ) {
+			return;
+		}
+
+		showPopup( {
+			key: detail.key || 'hold_expired',
+			title: detail.title || '',
+			text: detail.text,
+			ctaLabel: detail.ctaLabel || '',
+			ctaUrl: detail.ctaUrl || '',
+			tone: detail.tone || 'danger'
+		} );
 	}
 
 	if ( 'loading' === document.readyState ) {

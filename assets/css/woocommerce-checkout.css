@@ -218,8 +218,8 @@
 
 /* Notices live in assets/css/dsb-notices.css now — a white surface with a status
  * keyline, shared by every WooCommerce screen. Nothing is scoped to
- * .tempo-woo-checkout here on purpose: a body-class-scoped rule would out-specify
- * that stylesheet and quietly win. */
+ * .tempo-woo-checkout here on purpose: a rule scoped to this page's body class
+ * would out-specify that stylesheet and quietly win. */
 
 /* Checkout steps and headings. */
 .tempo-woo-checkout .wc-block-components-checkout-step {

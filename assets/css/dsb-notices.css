@@ -48,26 +48,33 @@
  *
  * Each notice system names its tones differently, so the tone is resolved once
  * into --tempo-notice-bg/-fg/-glyph and every rule below reads those.
+ *
+ * Every selector in sections 1 and 2 is qualified with `body.tempo-woo-notices`
+ * (added in inc/woocommerce-notices.php). That is not decoration: WooCommerce
+ * Blocks paints its banner backgrounds on two-class selectors such as
+ * `.wc-block-components-notice-banner.is-error`, which beat a bare
+ * `.wc-block-components-notice-banner` rule no matter which stylesheet loads
+ * last. With the body class and element, these sit one step above that.
  * ---------------------------------------------------------------------- */
 
-.woocommerce-message,
-.wc-block-components-notice-banner.is-success {
+body.tempo-woo-notices .woocommerce-message,
+body.tempo-woo-notices .wc-block-components-notice-banner.is-success {
 	--tempo-notice-bg: var(--tempo-notice-success-bg);
 	--tempo-notice-fg: var(--tempo-notice-success-fg);
 	--tempo-notice-glyph: "\2713"; /* ✓ */
 	--tempo-notice-glyph-style: normal;
 }
 
-.woocommerce-error,
-.wc-block-components-notice-banner.is-error {
+body.tempo-woo-notices .woocommerce-error,
+body.tempo-woo-notices .wc-block-components-notice-banner.is-error {
 	--tempo-notice-bg: var(--tempo-notice-danger-bg);
 	--tempo-notice-fg: var(--tempo-notice-danger-fg);
 	--tempo-notice-glyph: "!";
 	--tempo-notice-glyph-style: normal;
 }
 
-.woocommerce-info,
-.wc-block-components-notice-banner.is-info {
+body.tempo-woo-notices .woocommerce-info,
+body.tempo-woo-notices .wc-block-components-notice-banner.is-info {
 	--tempo-notice-bg: var(--tempo-notice-info-bg);
 	--tempo-notice-fg: var(--tempo-notice-info-fg);
 	--tempo-notice-glyph: "i";
@@ -77,8 +84,8 @@
 /* .dsb-flash is the plugin's own slot and the plugin styles its box. Only the
  * tone tokens are set here, so a marker's title inside it picks up the right
  * colour — the theme does not restyle plugin internals. */
-.wc-block-components-notice-banner.is-warning,
-.dsb-flash {
+body.tempo-woo-notices .wc-block-components-notice-banner.is-warning,
+body.tempo-woo-notices .dsb-flash {
 	--tempo-notice-bg: var(--tempo-notice-warning-bg);
 	--tempo-notice-fg: var(--tempo-notice-warning-fg);
 	--tempo-notice-glyph: "!";
@@ -86,11 +93,15 @@
 }
 
 /* Warning has no class in either system, so the plugin declares it on the
- * marker. This has to out-specify the tone rules above, hence :has(). */
-.woocommerce-message:has(> .dsb-notice[data-dsb-type="warning"]),
-.woocommerce-error:has(> .dsb-notice[data-dsb-type="warning"]),
-.woocommerce-info:has(> .dsb-notice[data-dsb-type="warning"]),
-.wc-block-components-notice-banner:has(.dsb-notice[data-dsb-type="warning"]) {
+ * marker. This has to out-specify the tone rules above, hence :has().
+ *
+ * Descendant, not child: wc_print_notices renders errors as
+ * <ul class="woocommerce-error"><li>…</li></ul>, so the marker is a grandchild
+ * there while it is a direct child of the message and info divs. */
+body.tempo-woo-notices .woocommerce-message:has(.dsb-notice[data-dsb-type="warning"]),
+body.tempo-woo-notices .woocommerce-error:has(.dsb-notice[data-dsb-type="warning"]),
+body.tempo-woo-notices .woocommerce-info:has(.dsb-notice[data-dsb-type="warning"]),
+body.tempo-woo-notices .wc-block-components-notice-banner:has(.dsb-notice[data-dsb-type="warning"]) {
 	--tempo-notice-bg: var(--tempo-notice-warning-bg);
 	--tempo-notice-fg: var(--tempo-notice-warning-fg);
 	--tempo-notice-glyph: "!";
@@ -101,18 +112,12 @@
  * 2. Inline — the default, and the fallback for everything else
  * ---------------------------------------------------------------------- */
 
-/* The glyph disc is positioned rather than laid out as a flex item, because the
- * content of a WooCommerce notice is not predictable: it may be bare text, a
- * <ul> of several errors, or a content div plus an action link. Absolute
- * positioning styles all of those without reordering anything. */
-.woocommerce-message,
-.woocommerce-error,
-.woocommerce-info,
-.wc-block-components-notice-banner {
-	position: relative;
+/* Shared surface for both notice systems. */
+body.tempo-woo-notices .woocommerce-message,
+body.tempo-woo-notices .woocommerce-error,
+body.tempo-woo-notices .woocommerce-info,
+body.tempo-woo-notices .wc-block-components-notice-banner {
 	margin: 0 0 12px;
-	/* Left padding clears the disc: 14 gutter + 22 disc + 12 gap. */
-	padding: 13px 14px 13px 48px;
 	border: 1px solid var(--tempo-notice-border);
 	border-left: 4px solid var(--tempo-notice-fg);
 	border-radius: 10px;
@@ -124,10 +129,32 @@
 	list-style: none;
 }
 
-.woocommerce-message::before,
-.woocommerce-error::before,
-.woocommerce-info::before,
-.wc-block-components-notice-banner::before {
+/* --- Classic markup: positioned disc ---------------------------------------
+ *
+ * The content of a classic notice is not predictable — bare text, a <ul> of
+ * several errors, or text plus an action link — so the disc is positioned rather
+ * than laid out as a flex item. That styles all of those without reordering
+ * anything, at the cost of needing the container's left padding to clear it.
+ *
+ * The padding carries !important because WooCommerce sets its own notice padding
+ * that way (`padding: 1em 2em 1em 3.5em !important` in woocommerce.css, and
+ * `padding: 1em !important` on the Blocks banner, which computes to 14px and has
+ * been observed leaking onto classic markup). Specificity cannot beat an
+ * !important, so this is the only thing that can. It is scoped to the one
+ * property that needs it.
+ * ---------------------------------------------------------------------- */
+body.tempo-woo-notices .woocommerce-message,
+body.tempo-woo-notices .woocommerce-error,
+body.tempo-woo-notices .woocommerce-info {
+	position: relative;
+	padding: 13px 14px !important;
+	/* Clears the disc: 14 gutter + 22 disc + 12 gap. */
+	padding-left: 48px !important;
+}
+
+body.tempo-woo-notices .woocommerce-message::before,
+body.tempo-woo-notices .woocommerce-error::before,
+body.tempo-woo-notices .woocommerce-info::before {
 	content: var(--tempo-notice-glyph);
 	position: absolute;
 	/* 14px in from the padding box, which sits inside the 4px keyline. */
@@ -147,58 +174,120 @@
 	font-family: inherit;
 }
 
-/* WooCommerce ships its own SVG icon in the Blocks banner; the disc replaces it. */
-.wc-block-components-notice-banner > svg {
+/* --- Blocks banner: the disc is a flex item -------------------------------
+ *
+ * The banner is already a flex row in WooCommerce Blocks (an SVG icon plus a
+ * __content child), so the disc goes in as a flex item and `gap` does the
+ * spacing. That means WooCommerce's `padding: 1em !important` is harmless here —
+ * nothing has to be overridden, and no !important is needed.
+ * ---------------------------------------------------------------------- */
+body.tempo-woo-notices .wc-block-components-notice-banner {
+	display: flex;
+	align-items: flex-start;
+	gap: 12px;
+}
+
+body.tempo-woo-notices .wc-block-components-notice-banner::before {
+	content: var(--tempo-notice-glyph);
+	flex: none;
+	display: flex;
+	align-items: center;
+	justify-content: center;
+	width: 22px;
+	height: 22px;
+	margin-top: 1px;
+	border-radius: 999px;
+	background: var(--tempo-notice-bg);
+	color: var(--tempo-notice-fg);
+	font-size: 12px;
+	font-weight: 800;
+	font-style: var(--tempo-notice-glyph-style);
+	font-family: inherit;
+}
+
+/* WooCommerce ships its own SVG icon in the banner; the disc replaces it. */
+body.tempo-woo-notices .wc-block-components-notice-banner > svg {
 	display: none;
 }
 
-.wc-block-components-notice-banner__content {
+body.tempo-woo-notices .wc-block-components-notice-banner__content {
+	flex: 1;
 	padding: 0;
 	font-size: 14px;
 	line-height: 1.5;
 }
 
 /* Classic error notices are a <ul>. Several errors stack, one per line. */
-.woocommerce-error > li {
+body.tempo-woo-notices .woocommerce-error > li {
 	list-style: none;
 	margin: 0;
 }
 
-.woocommerce-error > li + li {
+body.tempo-woo-notices .woocommerce-error > li + li {
 	margin-top: 4px;
 }
 
 /* Multiple notices stack rather than butt together. */
-.woocommerce-notices-wrapper > * + *,
-.woocommerce-NoticeGroup > * + * {
+body.tempo-woo-notices .woocommerce-notices-wrapper > * + *,
+body.tempo-woo-notices .woocommerce-NoticeGroup > * + * {
 	margin-top: 12px;
 }
 
 /* WooCommerce's own "view cart" / "browse" action link. Floated because the
- * container is not a flex context — see the note above. */
-.woocommerce-message > .button,
-.woocommerce-info > .button,
-.woocommerce-error > .button {
+ * classic container is not a flex context — see the note above.
+ *
+ * !important on the visual properties because the account stylesheet claims
+ * every button inside the account content area
+ * (`.tempo-woo-account .woocommerce-MyAccount-content .button`, three classes),
+ * which out-specifies anything reasonable here and would render this subtle text
+ * link as a full orange pill. Notices moved out of that stylesheet's remit, so
+ * this is the notice layer taking its own link back. */
+body.tempo-woo-notices .woocommerce-message > .button,
+body.tempo-woo-notices .woocommerce-info > .button,
+body.tempo-woo-notices .woocommerce-error > .button {
 	float: right;
-	margin: 0 0 0 12px;
-	padding: 0;
-	border: 0;
-	background: none;
-	color: var(--tempo-notice-brand);
-	font-size: 13px;
+	min-height: 0 !important;
+	margin: 0 0 0 12px !important;
+	padding: 0 !important;
+	border: 0 !important;
+	border-radius: 0 !important;
+	background: none !important;
+	box-shadow: none !important;
+	color: var(--tempo-notice-brand) !important;
+	font-size: 13px !important;
 	font-weight: 700;
 	text-decoration: none;
 }
 
-.woocommerce-message > .button:hover,
-.woocommerce-message > .button:focus-visible,
-.woocommerce-info > .button:hover,
-.woocommerce-info > .button:focus-visible,
-.woocommerce-error > .button:hover,
-.woocommerce-error > .button:focus-visible {
-	background: none;
-	color: var(--tempo-notice-brand-alt);
+body.tempo-woo-notices .woocommerce-message > .button:hover,
+body.tempo-woo-notices .woocommerce-message > .button:focus-visible,
+body.tempo-woo-notices .woocommerce-info > .button:hover,
+body.tempo-woo-notices .woocommerce-info > .button:focus-visible,
+body.tempo-woo-notices .woocommerce-error > .button:hover,
+body.tempo-woo-notices .woocommerce-error > .button:focus-visible {
+	background: none !important;
+	color: var(--tempo-notice-brand-alt) !important;
 	text-decoration: underline;
+}
+
+/* -------------------------------------------------------------------------
+ * 2b. Pre-paint suppression for promoted notices
+ *
+ * A toast or popup notice is rendered inline by the server and then lifted out
+ * by the controller. Without this it paints first and visibly flashes. The class
+ * is set by assets/js/dsb-notices-boot.js in the head, so it is also the
+ * JS-available signal: with JS off it never appears and these stay visible.
+ * ---------------------------------------------------------------------- */
+
+html.tempo-notices-js body.tempo-woo-notices .woocommerce-message:has(.dsb-notice[data-dsb-channel="toast"]),
+html.tempo-notices-js body.tempo-woo-notices .woocommerce-error:has(.dsb-notice[data-dsb-channel="toast"]),
+html.tempo-notices-js body.tempo-woo-notices .woocommerce-info:has(.dsb-notice[data-dsb-channel="toast"]),
+html.tempo-notices-js body.tempo-woo-notices .wc-block-components-notice-banner:has(.dsb-notice[data-dsb-channel="toast"]),
+html.tempo-notices-js body.tempo-woo-notices .woocommerce-message:has(.dsb-notice[data-dsb-channel="popup"]:not([data-dsb-keep-inline])),
+html.tempo-notices-js body.tempo-woo-notices .woocommerce-error:has(.dsb-notice[data-dsb-channel="popup"]:not([data-dsb-keep-inline])),
+html.tempo-notices-js body.tempo-woo-notices .woocommerce-info:has(.dsb-notice[data-dsb-channel="popup"]:not([data-dsb-keep-inline])),
+html.tempo-notices-js body.tempo-woo-notices .wc-block-components-notice-banner:has(.dsb-notice[data-dsb-channel="popup"]:not([data-dsb-keep-inline])) {
+	display: none;
 }
 
 /* An inline title, when the plugin supplied one. Takes the status colour here,
