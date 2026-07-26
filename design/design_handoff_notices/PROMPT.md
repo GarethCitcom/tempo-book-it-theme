@@ -2,7 +2,7 @@
 
 You are working on two codebases that ship together:
 
-- **Theme** — the SJP Theatre Arts WordPress theme. Owns page chrome and, from now on, **how a notice looks and where it appears**.
+- **Theme** — the Tempo Studio Manager WordPress theme. Owns page chrome and, from now on, **how a notice looks and where it appears**.
 - **Plugin** — Tempo Studio Manager (`[dsb_booking]`, booking/holds/credit/My Account). Owns **what a notice says and how urgent it is**.
 
 Read `README.md` in this folder before writing code. It carries the full visual spec, DOM structures, token values and QA list. The design source of truth is `Woo Notice Options.dc.html` (open it in a browser, it runs standalone) and the PNGs in `screens/`.
@@ -25,11 +25,11 @@ Do not start editing. First:
 
 ## The three channels
 
-| Channel | What it means to a parent | Behaviour |
-|---|---|---|
-| **inline** (default) | "Here is the state of this page." | Stays in the page flow where Woo put it. Restyled only. |
-| **toast** | "Noted, carry on." | Slides in top right over the page, stacks, times out after 5s, never blocks anything. |
-| **popup** | "Stop and read this." | Centred dialog over a dimmed backdrop, focus trapped, dismissed only by the parent. |
+| Channel              | What it means to a parent         | Behaviour                                                                             |
+| -------------------- | --------------------------------- | ------------------------------------------------------------------------------------- |
+| **inline** (default) | "Here is the state of this page." | Stays in the page flow where Woo put it. Restyled only.                               |
+| **toast**            | "Noted, carry on."                | Slides in top right over the page, stacks, times out after 5s, never blocks anything. |
+| **popup**            | "Stop and read this."             | Centred dialog over a dimmed backdrop, focus trapped, dismissed only by the parent.   |
 
 The line between them: **would the parent's next action be wrong if they missed this?** If yes it is a popup. If the message only confirms something they just did, it is a toast. Everything else is inline.
 

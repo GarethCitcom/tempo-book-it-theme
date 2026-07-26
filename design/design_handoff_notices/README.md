@@ -1,8 +1,8 @@
-# SJP notice system — implementation spec
+# Tempo notice system — implementation spec
 
 Companion to `PROMPT.md`. Design source: `Woo Notice Options.dc.html` (opens standalone in a browser). Screens in `screens/`.
 
-Three channels, one shared visual language: white surface, status colour used as a keyline and a glyph disc, never as a full-bleed fill.
+Three channels, one shared visual language: white surface, status colour used as a keyline and a glyph disc, never as a full-bleed fill. Note: SJP Theatre Arts is the tenant - their branding has been used for this build.
 
 ---
 
@@ -12,21 +12,21 @@ Plugin-side tokens are `--dsb-*` with theme tokens as the fallback chain, so the
 
 ```css
 :root {
-  --dsb-surface:        var(--color-bg-surface, #ffffff);
-  --dsb-border:         var(--color-border-default, #e5e7eb);
-  --dsb-text:           var(--color-text-primary, #1f2937);
-  --dsb-text-muted:     var(--color-text-muted, #6b7280);
-  --dsb-brand:          var(--color-brand-primary, #f36f21);
-  --dsb-brand-alt:      var(--color-brand-secondary, #3d0b5e);
+  --dsb-surface: var(--color-bg-surface, #ffffff);
+  --dsb-border: var(--color-border-default, #e5e7eb);
+  --dsb-text: var(--color-text-primary, #1f2937);
+  --dsb-text-muted: var(--color-text-muted, #6b7280);
+  --dsb-brand: var(--color-brand-primary, #f36f21);
+  --dsb-brand-alt: var(--color-brand-secondary, #3d0b5e);
 
-  --dsb-success-bg:     var(--color-status-success-bg, #ecfdf5);
-  --dsb-success-fg:     var(--color-status-success-fg, #047857);
-  --dsb-danger-bg:      var(--color-status-danger-bg, #fef2f2);
-  --dsb-danger-fg:      var(--color-status-danger-fg, #b91c1c);
-  --dsb-warning-bg:     var(--color-status-warning-bg, #fffbeb);
-  --dsb-warning-fg:     var(--color-status-warning-fg, #92400e);
-  --dsb-info-bg:        var(--color-status-info-bg, #eff6ff);
-  --dsb-info-fg:        var(--color-status-info-fg, #1d4ed8);
+  --dsb-success-bg: var(--color-status-success-bg, #ecfdf5);
+  --dsb-success-fg: var(--color-status-success-fg, #047857);
+  --dsb-danger-bg: var(--color-status-danger-bg, #fef2f2);
+  --dsb-danger-fg: var(--color-status-danger-fg, #b91c1c);
+  --dsb-warning-bg: var(--color-status-warning-bg, #fffbeb);
+  --dsb-warning-fg: var(--color-status-warning-fg, #92400e);
+  --dsb-info-bg: var(--color-status-info-bg, #eff6ff);
+  --dsb-info-fg: var(--color-status-info-fg, #1d4ed8);
 }
 ```
 
@@ -116,8 +116,13 @@ $args = [
 It emits, then hands to `wc_add_notice()`:
 
 ```html
-<span class="dsb-notice" data-dsb-channel="toast" data-dsb-key="credit_applied"
-      data-dsb-title="Credit applied">£15.00 of your credit has come off this booking.</span>
+<span
+  class="dsb-notice"
+  data-dsb-channel="toast"
+  data-dsb-key="credit_applied"
+  data-dsb-title="Credit applied"
+  >£15.00 of your credit has come off this booking.</span
+>
 ```
 
 The channel passes through `apply_filters( 'dsb_notice_channel', $channel, $key, $type )` before it is written, so a tenant can force `inline` globally.
