@@ -216,33 +216,10 @@
 	border-radius: 0px;
 }
 
-/* Woo notices retain meaning but use the Tempo status palette. */
-.tempo-woo-checkout .wc-block-components-notice-banner,
-.tempo-woo-checkout .woocommerce-error,
-.tempo-woo-checkout .woocommerce-info,
-.tempo-woo-checkout .woocommerce-message {
-	margin: 0 0 16px;
-	padding: 13px 15px;
-	border: 0;
-	border-radius: var(--dsb-radius-medium, 12px);
-	background: var(--tempo-checkout-info-bg);
-	box-shadow: none;
-	color: var(--tempo-checkout-info-fg);
-	font-size: var(--dsb-type-small-size, 12px);
-	line-height: var(--dsb-type-small-line, 16px);
-}
-
-.tempo-woo-checkout .wc-block-components-notice-banner.is-error,
-.tempo-woo-checkout .woocommerce-error {
-	background: var(--tempo-checkout-danger-bg);
-	color: var(--tempo-checkout-danger-fg);
-}
-
-.tempo-woo-checkout .wc-block-components-notice-banner.is-success,
-.tempo-woo-checkout .woocommerce-message {
-	background: var(--tempo-checkout-success-bg);
-	color: var(--tempo-checkout-success-fg);
-}
+/* Notices live in assets/css/dsb-notices.css now — a white surface with a status
+ * keyline, shared by every WooCommerce screen. Nothing is scoped to
+ * .tempo-woo-checkout here on purpose: a body-class-scoped rule would out-specify
+ * that stylesheet and quietly win. */
 
 /* Checkout steps and headings. */
 .tempo-woo-checkout .wc-block-components-checkout-step {
