@@ -540,6 +540,12 @@
 		// parent is on. Copy still comes from the plugin.
 		document.addEventListener( 'dsb:hold-expired', onHoldExpiredEvent );
 
+		// A register state that arrives as the screen is being replaced — the day
+		// boundary passing, or the register completed on another device. Same
+		// reasoning as the hold above: swapTo() destroys anything inline, so the
+		// plugin hands it over as an event instead.
+		document.addEventListener( 'dsb:register-notice', onRegisterNotice );
+
 		// WooCommerce Blocks' own cart event.
 		document.body.addEventListener( 'wc-blocks_added_to_cart', scan );
 	}
@@ -563,6 +569,41 @@
 			ctaUrl: detail.ctaUrl || '',
 			tone: detail.tone || 'danger'
 		} );
+	}
+
+	/**
+	 * Present a register state the teacher's next tap depends on.
+	 *
+	 * @param {CustomEvent} event detail = { channel, key, tone, title, text }.
+	 */
+	function onRegisterNotice( event ) {
+		var detail = event && event.detail ? event.detail : {};
+		if ( ! detail.text ) {
+			return;
+		}
+
+		// The plugin decides the channel; a tenant demoting everything to inline
+		// through dsb_notice_channel already arrives here as 'inline', and there is
+		// nothing for the theme to do with it — the plugin renders those in place.
+		if ( 'popup' !== detail.channel && 'toast' !== detail.channel ) {
+			return;
+		}
+
+		var payload = {
+			key: detail.key || '',
+			title: detail.title || '',
+			text: detail.text,
+			ctaLabel: detail.ctaLabel || '',
+			ctaUrl: detail.ctaUrl || '',
+			tone: detail.tone || 'warning'
+		};
+
+		if ( 'toast' === detail.channel ) {
+			showToast( payload );
+			return;
+		}
+
+		showPopup( payload );
 	}
 
 	if ( 'loading' === document.readyState ) {
