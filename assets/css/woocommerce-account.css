@@ -100,7 +100,7 @@
 	color: var(--tempo-woo-on-secondary);
 }
 
-/* Shared controls and Woo notices. */
+/* Shared form controls. Notices are in assets/css/dsb-notices.css. */
 .tempo-woo-account .woocommerce-MyAccount-content label:not(.dsb-btn):not(.dsb-profile-photo__remove-btn) {
 	display: block;
 	margin-bottom: 7px;
@@ -171,31 +171,8 @@
 	color: var(--tempo-woo-on-secondary);
 }
 
-.tempo-woo-account .woocommerce-error,
-.tempo-woo-account .woocommerce-info,
-.tempo-woo-account .woocommerce-message {
-	margin: 0 0 18px;
-	padding: 14px 16px;
-	border: 0;
-	border-radius: var(--dsb-radius-medium, 12px);
-	list-style: none;
-	font-size: var(--dsb-type-supporting-size, 13px);
-}
-
-.tempo-woo-account .woocommerce-message {
-	background: var(--tempo-woo-success-bg);
-	color: var(--tempo-woo-success-fg);
-}
-
-.tempo-woo-account .woocommerce-info {
-	background: var(--tempo-woo-info-bg);
-	color: var(--tempo-woo-info-fg);
-}
-
-.tempo-woo-account .woocommerce-error {
-	background: var(--tempo-woo-danger-bg);
-	color: var(--tempo-woo-danger-fg);
-}
+/* Notices are in assets/css/dsb-notices.css, scoped there to
+ * body.tempo-woo-notices so they win against WooCommerce's own rules. */
 
 /* Account details. */
 .tempo-woo-account form.edit-account {
@@ -496,14 +473,9 @@
 	color: var(--tempo-woo-danger-fg);
 }
 
-.tempo-woo-account .tempo-woo-payment-intro + .woocommerce-info,
-.tempo-woo-account .woocommerce-MyAccount-content > .woocommerce-info:only-child {
-	padding: 22px;
-	background: var(--tempo-woo-surface);
-	box-shadow: inset 0 0 0 1px var(--tempo-woo-border);
-	color: var(--tempo-woo-muted);
-	text-align: center;
-}
+/* The empty-state info notice used to become a centred card here. It is now the
+ * same inline notice as everywhere else — glyph disc, status keyline, action link
+ * on the right — per the notice spec's treatment of empty states. */
 
 /*
  * Add payment method.

@@ -504,3 +504,4 @@ add_action( 'template_redirect', 'tempo_studio_manager_require_login' );
 require_once get_theme_file_path( 'inc/custom-login.php' );
 require_once get_theme_file_path( 'inc/woocommerce-account.php' );
 require_once get_theme_file_path( 'inc/woocommerce-checkout.php' );
+require_once get_theme_file_path( 'inc/woocommerce-notices.php' );

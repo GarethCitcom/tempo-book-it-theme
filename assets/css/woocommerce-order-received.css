@@ -329,16 +329,38 @@
 	margin: 4px 0 0;
 }
 
-/* Failed or gateway-specific notices retain their meaning within the theme. */
-.tempo-woo-order-received .woocommerce-thankyou-order-failed,
-.tempo-woo-order-received .woocommerce-error {
+/* .woocommerce-error is styled by assets/css/dsb-notices.css, along with every
+ * other notice. This one keeps a local rule because it is not a notice element:
+ * WooCommerce renders the failed-payment explanation as a bare paragraph. */
+.tempo-woo-order-received .woocommerce-thankyou-order-failed {
+	display: flex;
+	align-items: flex-start;
+	gap: 12px;
 	margin: 0 0 16px;
-	padding: 14px 16px;
-	border: 0;
-	border-radius: var(--dsb-radius-medium, 12px);
+	padding: 13px 14px;
+	border: 1px solid var(--tempo-receipt-border);
+	border-left: 4px solid var(--tempo-receipt-danger-fg);
+	border-radius: 10px;
+	background: var(--tempo-receipt-surface);
+	color: var(--tempo-receipt-text);
+	font-size: 14px;
+	line-height: 1.5;
+}
+
+.tempo-woo-order-received .woocommerce-thankyou-order-failed::before {
+	content: "!";
+	flex: none;
+	display: flex;
+	align-items: center;
+	justify-content: center;
+	width: 22px;
+	height: 22px;
+	margin-top: 1px;
+	border-radius: 999px;
 	background: var(--tempo-receipt-danger-bg);
 	color: var(--tempo-receipt-danger-fg);
-	font-size: var(--dsb-type-supporting-size, 13px);
+	font-size: 12px;
+	font-weight: 800;
 }
 
 @media (max-width: 699px) {

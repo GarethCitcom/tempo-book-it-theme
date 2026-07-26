@@ -1,0 +1,675 @@
+/* -------------------------------------------------------------------------
+ * Notices — one visual language across three channels.
+ *
+ * The theme owns how a notice looks and where it appears; the plugin owns what
+ * it says and how urgent it is, declared on a `.dsb-notice[data-dsb-channel]`
+ * marker. This file styles every notice inline. assets/js/dsb-notices.js then
+ * promotes the marked ones into a toast or a dialog — so with JS off, or if that
+ * script never runs, everything below still renders and reads correctly.
+ *
+ * Both WooCommerce notice systems are restyled, because My Account and checkout
+ * mix them: the Blocks banner and the classic message/error/info markup.
+ *
+ * Status colour is a keyline and a glyph disc, never a full-bleed fill.
+ * ---------------------------------------------------------------------- */
+
+:root {
+	/* Three-tier chain, matching assets/css/woocommerce-checkout.css: the
+	 * plugin's tokens first so a tenant's brand and palette win, then this
+	 * theme's own presets, then a literal. The literals are theme.json's
+	 * values, which agree with the Figma export. */
+	--tempo-notice-surface: var(--dsb-color-bg-surface, var(--wp--preset--color--base, #ffffff));
+	--tempo-notice-subtle: var(--dsb-color-bg-subtle, var(--wp--preset--color--page, #f1f3f5));
+	--tempo-notice-border: var(--dsb-color-border-default, var(--wp--preset--color--border, #e5e7eb));
+	--tempo-notice-text: var(--dsb-color-text-primary, var(--wp--preset--color--body, #3f3f46));
+	--tempo-notice-muted: var(--dsb-color-text-muted, var(--wp--preset--color--muted, #6b7280));
+	--tempo-notice-brand: var(--dsb-color-brand-primary, var(--wp--preset--color--brand-primary, #ff7300));
+	--tempo-notice-brand-alt: var(--dsb-color-brand-secondary, var(--wp--preset--color--brand-secondary, #330164));
+	--tempo-notice-on-brand: var(--dsb-color-on-brand-primary, var(--wp--preset--color--brand-primary-contrast, #ffffff));
+
+	--tempo-notice-success-bg: var(--dsb-color-status-success-bg, var(--wp--preset--color--status-success-bg, #e8f7ef));
+	--tempo-notice-success-fg: var(--dsb-color-status-success-fg, var(--wp--preset--color--status-success-fg, #16794f));
+	--tempo-notice-danger-bg: var(--dsb-color-status-danger-bg, var(--wp--preset--color--status-danger-bg, #feeceb));
+	--tempo-notice-danger-fg: var(--dsb-color-status-danger-fg, var(--wp--preset--color--status-danger-fg, #b42318));
+	--tempo-notice-warning-bg: var(--dsb-color-status-warning-bg, var(--wp--preset--color--status-warning-bg, #fff5d6));
+	--tempo-notice-warning-fg: var(--dsb-color-status-warning-fg, var(--wp--preset--color--status-warning-fg, #8a5a00));
+	--tempo-notice-info-bg: var(--dsb-color-status-info-bg, var(--wp--preset--color--status-info-bg, #eaf2ff));
+	--tempo-notice-info-fg: var(--dsb-color-status-info-fg, var(--wp--preset--color--status-info-fg, #1d4ed8));
+
+	/* Info is the resting tone: an unclassified notice is neither good nor bad. */
+	--tempo-notice-bg: var(--tempo-notice-info-bg);
+	--tempo-notice-fg: var(--tempo-notice-info-fg);
+	--tempo-notice-glyph: "i";
+	--tempo-notice-glyph-style: italic;
+}
+
+/* -------------------------------------------------------------------------
+ * 1. Tone selection
+ *
+ * Each notice system names its tones differently, so the tone is resolved once
+ * into --tempo-notice-bg/-fg/-glyph and every rule below reads those.
+ *
+ * Every selector in sections 1 and 2 is qualified with `body.tempo-woo-notices`
+ * (added in inc/woocommerce-notices.php). That is not decoration: WooCommerce
+ * Blocks paints its banner backgrounds on two-class selectors such as
+ * `.wc-block-components-notice-banner.is-error`, which beat a bare
+ * `.wc-block-components-notice-banner` rule no matter which stylesheet loads
+ * last. With the body class and element, these sit one step above that.
+ * ---------------------------------------------------------------------- */
+
+body.tempo-woo-notices .woocommerce-message,
+body.tempo-woo-notices .wc-block-components-notice-banner.is-success {
+	--tempo-notice-bg: var(--tempo-notice-success-bg);
+	--tempo-notice-fg: var(--tempo-notice-success-fg);
+	--tempo-notice-glyph: "\2713"; /* ✓ */
+	--tempo-notice-glyph-style: normal;
+}
+
+body.tempo-woo-notices .woocommerce-error,
+body.tempo-woo-notices .wc-block-components-notice-banner.is-error {
+	--tempo-notice-bg: var(--tempo-notice-danger-bg);
+	--tempo-notice-fg: var(--tempo-notice-danger-fg);
+	--tempo-notice-glyph: "!";
+	--tempo-notice-glyph-style: normal;
+}
+
+body.tempo-woo-notices .woocommerce-info,
+body.tempo-woo-notices .wc-block-components-notice-banner.is-info {
+	--tempo-notice-bg: var(--tempo-notice-info-bg);
+	--tempo-notice-fg: var(--tempo-notice-info-fg);
+	--tempo-notice-glyph: "i";
+	--tempo-notice-glyph-style: italic;
+}
+
+/* .dsb-flash is the plugin's own slot and the plugin styles its box. Only the
+ * tone tokens are set here, so a marker's title inside it picks up the right
+ * colour — the theme does not restyle plugin internals. */
+body.tempo-woo-notices .wc-block-components-notice-banner.is-warning,
+body.tempo-woo-notices .dsb-flash {
+	--tempo-notice-bg: var(--tempo-notice-warning-bg);
+	--tempo-notice-fg: var(--tempo-notice-warning-fg);
+	--tempo-notice-glyph: "!";
+	--tempo-notice-glyph-style: normal;
+}
+
+/* Warning has no class in either system, so the plugin declares it on the
+ * marker. This has to out-specify the tone rules above, hence :has().
+ *
+ * Descendant, not child: wc_print_notices renders errors as
+ * <ul class="woocommerce-error"><li>…</li></ul>, so the marker is a grandchild
+ * there while it is a direct child of the message and info divs. */
+body.tempo-woo-notices .woocommerce-message:has(.dsb-notice[data-dsb-type="warning"]),
+body.tempo-woo-notices .woocommerce-error:has(.dsb-notice[data-dsb-type="warning"]),
+body.tempo-woo-notices .woocommerce-info:has(.dsb-notice[data-dsb-type="warning"]),
+body.tempo-woo-notices .wc-block-components-notice-banner:has(.dsb-notice[data-dsb-type="warning"]) {
+	--tempo-notice-bg: var(--tempo-notice-warning-bg);
+	--tempo-notice-fg: var(--tempo-notice-warning-fg);
+	--tempo-notice-glyph: "!";
+	--tempo-notice-glyph-style: normal;
+}
+
+/* -------------------------------------------------------------------------
+ * 2. Inline — the default, and the fallback for everything else
+ * ---------------------------------------------------------------------- */
+
+/* Shared surface for both notice systems. */
+body.tempo-woo-notices .woocommerce-message,
+body.tempo-woo-notices .woocommerce-error,
+body.tempo-woo-notices .woocommerce-info,
+body.tempo-woo-notices .wc-block-components-notice-banner {
+	margin: 0 0 12px;
+	border: 1px solid var(--tempo-notice-border);
+	border-left: 4px solid var(--tempo-notice-fg);
+	border-radius: 10px;
+	background: var(--tempo-notice-surface);
+	box-shadow: none;
+	color: var(--tempo-notice-text);
+	font-size: 14px;
+	line-height: 1.5;
+	list-style: none;
+}
+
+/* --- Classic markup: positioned disc ---------------------------------------
+ *
+ * The content of a classic notice is not predictable — bare text, a <ul> of
+ * several errors, or text plus an action link — so the disc is positioned rather
+ * than laid out as a flex item. That styles all of those without reordering
+ * anything, at the cost of needing the container's left padding to clear it.
+ *
+ * The padding carries !important because WooCommerce sets its own notice padding
+ * that way (`padding: 1em 2em 1em 3.5em !important` in woocommerce.css, and
+ * `padding: 1em !important` on the Blocks banner, which computes to 14px and has
+ * been observed leaking onto classic markup). Specificity cannot beat an
+ * !important, so this is the only thing that can. It is scoped to the one
+ * property that needs it.
+ * ---------------------------------------------------------------------- */
+body.tempo-woo-notices .woocommerce-message,
+body.tempo-woo-notices .woocommerce-error,
+body.tempo-woo-notices .woocommerce-info {
+	position: relative;
+	padding: 13px 14px !important;
+	/* Clears the disc: 14 gutter + 22 disc + 12 gap. */
+	padding-left: 48px !important;
+}
+
+body.tempo-woo-notices .woocommerce-message::before,
+body.tempo-woo-notices .woocommerce-error::before,
+body.tempo-woo-notices .woocommerce-info::before {
+	content: var(--tempo-notice-glyph);
+	position: absolute;
+	/* 14px in from the padding box, which sits inside the 4px keyline. */
+	left: 14px;
+	top: 14px;
+	display: flex;
+	align-items: center;
+	justify-content: center;
+	width: 22px;
+	height: 22px;
+	border-radius: 999px;
+	background: var(--tempo-notice-bg);
+	color: var(--tempo-notice-fg);
+	font-size: 12px;
+	font-weight: 800;
+	font-style: var(--tempo-notice-glyph-style);
+	font-family: inherit;
+}
+
+/* --- Blocks banner: the disc is a flex item -------------------------------
+ *
+ * The banner is already a flex row in WooCommerce Blocks (an SVG icon plus a
+ * __content child), so the disc goes in as a flex item and `gap` does the
+ * spacing. That means WooCommerce's `padding: 1em !important` is harmless here —
+ * nothing has to be overridden, and no !important is needed.
+ * ---------------------------------------------------------------------- */
+body.tempo-woo-notices .wc-block-components-notice-banner {
+	display: flex;
+	align-items: flex-start;
+	gap: 12px;
+}
+
+body.tempo-woo-notices .wc-block-components-notice-banner::before {
+	content: var(--tempo-notice-glyph);
+	flex: none;
+	display: flex;
+	align-items: center;
+	justify-content: center;
+	width: 22px;
+	height: 22px;
+	margin-top: 1px;
+	border-radius: 999px;
+	background: var(--tempo-notice-bg);
+	color: var(--tempo-notice-fg);
+	font-size: 12px;
+	font-weight: 800;
+	font-style: var(--tempo-notice-glyph-style);
+	font-family: inherit;
+}
+
+/* WooCommerce ships its own SVG icon in the banner; the disc replaces it. */
+body.tempo-woo-notices .wc-block-components-notice-banner > svg {
+	display: none;
+}
+
+body.tempo-woo-notices .wc-block-components-notice-banner__content {
+	flex: 1;
+	padding: 0;
+	font-size: 14px;
+	line-height: 1.5;
+}
+
+/* Classic error notices are a <ul>. Several errors stack, one per line. */
+body.tempo-woo-notices .woocommerce-error > li {
+	list-style: none;
+	margin: 0;
+}
+
+body.tempo-woo-notices .woocommerce-error > li + li {
+	margin-top: 4px;
+}
+
+/* Multiple notices stack rather than butt together. */
+body.tempo-woo-notices .woocommerce-notices-wrapper > * + *,
+body.tempo-woo-notices .woocommerce-NoticeGroup > * + * {
+	margin-top: 12px;
+}
+
+/* WooCommerce's own "view cart" / "browse" action link. Floated because the
+ * classic container is not a flex context — see the note above.
+ *
+ * !important on the visual properties because the account stylesheet claims
+ * every button inside the account content area
+ * (`.tempo-woo-account .woocommerce-MyAccount-content .button`, three classes),
+ * which out-specifies anything reasonable here and would render this subtle text
+ * link as a full orange pill. Notices moved out of that stylesheet's remit, so
+ * this is the notice layer taking its own link back. */
+body.tempo-woo-notices .woocommerce-message > .button,
+body.tempo-woo-notices .woocommerce-info > .button,
+body.tempo-woo-notices .woocommerce-error > .button {
+	float: right;
+	min-height: 0 !important;
+	margin: 0 0 0 12px !important;
+	padding: 0 !important;
+	border: 0 !important;
+	border-radius: 0 !important;
+	background: none !important;
+	box-shadow: none !important;
+	color: var(--tempo-notice-brand) !important;
+	font-size: 13px !important;
+	font-weight: 700;
+	text-decoration: none;
+}
+
+body.tempo-woo-notices .woocommerce-message > .button:hover,
+body.tempo-woo-notices .woocommerce-message > .button:focus-visible,
+body.tempo-woo-notices .woocommerce-info > .button:hover,
+body.tempo-woo-notices .woocommerce-info > .button:focus-visible,
+body.tempo-woo-notices .woocommerce-error > .button:hover,
+body.tempo-woo-notices .woocommerce-error > .button:focus-visible {
+	background: none !important;
+	color: var(--tempo-notice-brand-alt) !important;
+	text-decoration: underline;
+}
+
+/* -------------------------------------------------------------------------
+ * 2b. Pre-paint suppression for promoted notices
+ *
+ * A toast or popup notice is rendered inline by the server and then lifted out
+ * by the controller. Without this it paints first and visibly flashes. The class
+ * is set by assets/js/dsb-notices-boot.js in the head, so it is also the
+ * JS-available signal: with JS off it never appears and these stay visible.
+ * ---------------------------------------------------------------------- */
+
+html.tempo-notices-js body.tempo-woo-notices .woocommerce-message:has(.dsb-notice[data-dsb-channel="toast"]),
+html.tempo-notices-js body.tempo-woo-notices .woocommerce-error:has(.dsb-notice[data-dsb-channel="toast"]),
+html.tempo-notices-js body.tempo-woo-notices .woocommerce-info:has(.dsb-notice[data-dsb-channel="toast"]),
+html.tempo-notices-js body.tempo-woo-notices .wc-block-components-notice-banner:has(.dsb-notice[data-dsb-channel="toast"]),
+html.tempo-notices-js body.tempo-woo-notices .woocommerce-message:has(.dsb-notice[data-dsb-channel="popup"]:not([data-dsb-keep-inline])),
+html.tempo-notices-js body.tempo-woo-notices .woocommerce-error:has(.dsb-notice[data-dsb-channel="popup"]:not([data-dsb-keep-inline])),
+html.tempo-notices-js body.tempo-woo-notices .woocommerce-info:has(.dsb-notice[data-dsb-channel="popup"]:not([data-dsb-keep-inline])),
+html.tempo-notices-js body.tempo-woo-notices .wc-block-components-notice-banner:has(.dsb-notice[data-dsb-channel="popup"]:not([data-dsb-keep-inline])) {
+	display: none;
+}
+
+/* An inline title, when the plugin supplied one. Takes the status colour here,
+ * unlike toast and popup titles, which are brand purple. The marker becomes a
+ * block so the title can sit on its own line above the body. */
+.dsb-notice[data-dsb-title] {
+	display: block;
+}
+
+.dsb-notice[data-dsb-title]::before {
+	content: attr(data-dsb-title);
+	display: block;
+	color: var(--tempo-notice-fg);
+	font-size: 14px;
+	font-weight: 700;
+}
+
+/* -------------------------------------------------------------------------
+ * 3. Toast — passing confirmations, never blocking
+ * ---------------------------------------------------------------------- */
+
+.dsb-toast-region {
+	/* The theme has no header-height variable and the header is not sticky, so
+	 * the offset is derived from the tokens that do exist: logo + the header's
+	 * 24px vertical padding + its bottom border + the portal strip + a gap.
+	 * A tenant raising logoHeight moves the toasts with it.
+	 *
+	 * Two known imprecisions, both harmless: the plugin's basket pill could in
+	 * principle be taller than the logo, and the portal strip is absent for
+	 * logged-out users, where this over-clears by ~29px. */
+	--dsb-toast-top: calc(
+		var(--wp--custom--header--logo-height-mobile, 34px) + 24px +
+			var(--wp--custom--header--border-width, 5px) + 29px + 16px
+	);
+
+	position: fixed;
+	top: var(--dsb-toast-top);
+	right: 16px;
+	z-index: 9000;
+	display: flex;
+	flex-direction: column;
+	gap: 10px;
+	/* The region must never intercept clicks meant for the page. */
+	pointer-events: none;
+}
+
+@media (min-width: 1000px) {
+	.dsb-toast-region {
+		--dsb-toast-top: calc(var(--wp--custom--header--logo-height, 46px) + 74px);
+	}
+}
+
+.dsb-toast {
+	pointer-events: auto;
+	overflow: hidden;
+	width: 300px;
+	max-width: calc(100vw - 32px);
+	border-radius: 12px;
+	background: var(--tempo-notice-surface);
+	box-shadow: 0 12px 32px rgba(17, 17, 26, 0.18);
+	/* Built by script into an arbitrary page, so don't inherit page text styles. */
+	color: var(--tempo-notice-text);
+	font-family: inherit;
+	text-align: left;
+	animation: dsbToastIn 200ms cubic-bezier(0.2, 0.8, 0.2, 1) both;
+}
+
+.dsb-toast.is-leaving {
+	animation: dsbToastOut 160ms cubic-bezier(0.2, 0.8, 0.2, 1) both;
+}
+
+.dsb-toast__inner {
+	display: flex;
+	align-items: flex-start;
+	gap: 10px;
+	padding: 13px 14px;
+}
+
+.dsb-toast__glyph {
+	flex: none;
+	display: flex;
+	align-items: center;
+	justify-content: center;
+	width: 22px;
+	height: 22px;
+	border-radius: 999px;
+	background: var(--tempo-notice-bg);
+	color: var(--tempo-notice-fg);
+	font-size: 12px;
+	font-weight: 800;
+	font-style: var(--tempo-notice-glyph-style);
+}
+
+.dsb-toast__body {
+	flex: 1;
+	display: flex;
+	flex-direction: column;
+	gap: 2px;
+}
+
+.dsb-toast__title {
+	color: var(--tempo-notice-brand-alt);
+	font-size: 13px;
+	font-weight: 800;
+}
+
+.dsb-toast__text {
+	color: var(--tempo-notice-muted);
+	font-size: 12.5px;
+	line-height: 1.5;
+}
+
+.dsb-toast__close {
+	flex: none;
+	padding: 2px 4px;
+	border: 0;
+	border-radius: 6px;
+	background: transparent;
+	color: var(--tempo-notice-muted);
+	font-size: 16px;
+	line-height: 1;
+	cursor: pointer;
+}
+
+.dsb-toast__close:hover,
+.dsb-toast__close:focus-visible {
+	background: var(--tempo-notice-subtle);
+	color: var(--tempo-notice-text);
+}
+
+.dsb-toast__bar {
+	height: 3px;
+	background: var(--tempo-notice-fg);
+	transform-origin: left;
+	animation: dsbBar 5s linear both;
+}
+
+/* Hovering or tabbing into a toast holds it open. */
+.dsb-toast:hover .dsb-toast__bar,
+.dsb-toast:focus-within .dsb-toast__bar {
+	animation-play-state: paused;
+}
+
+@media (max-width: 699px) {
+	.dsb-toast-region {
+		left: 16px;
+		right: 16px;
+	}
+
+	.dsb-toast {
+		width: auto;
+		max-width: none;
+	}
+}
+
+/* -------------------------------------------------------------------------
+ * 4. Popup — blocking states only
+ * ---------------------------------------------------------------------- */
+
+.dsb-notice-backdrop {
+	position: fixed;
+	inset: 0;
+	z-index: 9500;
+	display: flex;
+	align-items: center;
+	justify-content: center;
+	padding: 24px;
+	/* Brand purple, not neutral black. */
+	background: rgba(35, 10, 55, 0.55);
+	animation: dsbFade 160ms ease both;
+}
+
+.dsb-notice-dialog {
+	display: flex;
+	flex-direction: column;
+	gap: 14px;
+	width: calc(100% - 48px);
+	max-width: 420px;
+	padding: 24px;
+	border-radius: 16px;
+	background: var(--tempo-notice-surface);
+	box-shadow: 0 24px 60px rgba(17, 17, 26, 0.28);
+	animation: dsbPop 180ms cubic-bezier(0.2, 0.8, 0.2, 1) both;
+}
+
+.dsb-notice-dialog__header {
+	display: flex;
+	align-items: center;
+	gap: 12px;
+}
+
+.dsb-notice-dialog__glyph {
+	flex: none;
+	display: flex;
+	align-items: center;
+	justify-content: center;
+	width: 40px;
+	height: 40px;
+	border-radius: 999px;
+	background: var(--tempo-notice-bg);
+	color: var(--tempo-notice-fg);
+	font-size: 19px;
+	font-weight: 800;
+	font-style: var(--tempo-notice-glyph-style);
+}
+
+/* This is an <h2> injected into an arbitrary page, so the theme's and the
+ * block editor's heading styles are reset rather than inherited. */
+.dsb-notice-dialog__title {
+	margin: 0;
+	padding: 0;
+	color: var(--tempo-notice-brand-alt);
+	font-family: inherit;
+	font-size: 18px;
+	font-weight: 800;
+	line-height: 1.25;
+	letter-spacing: normal;
+	text-transform: none;
+}
+
+.dsb-notice-dialog__body {
+	color: var(--tempo-notice-muted);
+	font-size: 14px;
+	line-height: 1.6;
+	text-wrap: pretty;
+}
+
+.dsb-notice-dialog__actions {
+	display: flex;
+	justify-content: flex-end;
+	gap: 10px;
+	margin-top: 4px;
+}
+
+.dsb-notice-dialog__btn {
+	min-height: 44px;
+	padding: 11px 18px;
+	border-radius: 999px;
+	font-family: inherit;
+	font-size: 13px;
+	cursor: pointer;
+	text-decoration: none;
+	display: inline-flex;
+	align-items: center;
+	justify-content: center;
+}
+
+.dsb-notice-dialog__btn--secondary {
+	border: 1px solid var(--tempo-notice-border);
+	background: var(--tempo-notice-surface);
+	color: var(--tempo-notice-muted);
+	font-weight: 700;
+}
+
+.dsb-notice-dialog__btn--secondary:hover,
+.dsb-notice-dialog__btn--secondary:focus-visible {
+	border-color: var(--tempo-notice-brand-alt);
+	color: var(--tempo-notice-brand-alt);
+}
+
+.dsb-notice-dialog__btn--primary {
+	border: 0;
+	padding: 11px 20px;
+	background: var(--tempo-notice-brand);
+	color: var(--tempo-notice-on-brand);
+	font-weight: 800;
+}
+
+.dsb-notice-dialog__btn--primary:hover,
+.dsb-notice-dialog__btn--primary:focus-visible {
+	background: var(--tempo-notice-brand-alt);
+	color: var(--tempo-notice-on-brand);
+}
+
+/* While a dialog is open the page behind it must not scroll. */
+.dsb-notice-locked {
+	overflow: hidden;
+}
+
+/* -------------------------------------------------------------------------
+ * 5. Motion
+ * ---------------------------------------------------------------------- */
+
+@keyframes dsbToastIn {
+	from {
+		opacity: 0;
+		transform: translateX(24px);
+	}
+
+	to {
+		opacity: 1;
+		transform: none;
+	}
+}
+
+@keyframes dsbToastOut {
+	from {
+		opacity: 1;
+		transform: none;
+	}
+
+	to {
+		opacity: 0;
+		transform: translateX(24px);
+	}
+}
+
+@keyframes dsbFade {
+	from {
+		opacity: 0;
+	}
+
+	to {
+		opacity: 1;
+	}
+}
+
+@keyframes dsbPop {
+	from {
+		opacity: 0;
+		transform: translateY(10px) scale(0.97);
+	}
+
+	to {
+		opacity: 1;
+		transform: none;
+	}
+}
+
+@keyframes dsbBar {
+	from {
+		transform: scaleX(1);
+	}
+
+	to {
+		transform: scaleX(0);
+	}
+}
+
+@media (prefers-reduced-motion: reduce) {
+	.dsb-toast,
+	.dsb-toast.is-leaving,
+	.dsb-notice-backdrop,
+	.dsb-notice-dialog {
+		animation-duration: 120ms;
+		animation-timing-function: linear;
+	}
+
+	/* Opacity only — no slide, no scale. */
+	@keyframes dsbToastIn {
+		from {
+			opacity: 0;
+		}
+
+		to {
+			opacity: 1;
+		}
+	}
+
+	@keyframes dsbToastOut {
+		from {
+			opacity: 1;
+		}
+
+		to {
+			opacity: 0;
+		}
+	}
+
+	@keyframes dsbPop {
+		from {
+			opacity: 0;
+		}
+
+		to {
+			opacity: 1;
+		}
+	}
+
+	/* The bar jumps rather than animating. */
+	.dsb-toast__bar {
+		animation: none;
+		transform: scaleX(0);
+	}
+}
