@@ -26,6 +26,7 @@ Add that repo to the session when building against it.
 - PHP: dsb_logo_url(), dsb_login_panel_image_url(),
   dsb_brand_colour('primary'|'secondary'),
   dsb_vocab('class'|'classes'|'student'|…),
+  dsb_business_type('singular'|'plural'), dsb_business_name(),
   dsb_registration_available(), dsb_register_member(),
   dsb_booking()/dsb_register()
   template functions.

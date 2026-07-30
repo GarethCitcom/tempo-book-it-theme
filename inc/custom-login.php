@@ -420,6 +420,9 @@ function tempo_book_it_render_login( $action, $errors, $redirect_to, $user_login
 	$logo            = tempo_logo_url();
 	$panel_image     = tempo_login_panel_image_url();
 	$student_word    = function_exists( 'dsb_vocab' ) ? dsb_vocab( 'student' ) : __( 'student', 'tempo-book-it-theme' );
+	$classes_word    = tempo_vocab( 'classes' );
+	$class_word      = tempo_vocab( 'class' );
+	$business_type   = function_exists( 'dsb_business_type' ) ? dsb_business_type() : __( 'studio', 'tempo-book-it-theme' );
 	$student_label   = mb_strtoupper( mb_substr( $student_word, 0, 1 ) ) . mb_substr( $student_word, 1 );
 	$registration    = wp_parse_args( $registration, array( 'account_type' => 'student' ) );
 	$registration_as = 'parent' === $registration['account_type'] ? 'parent' : 'student';
@@ -459,7 +462,7 @@ function tempo_book_it_render_login( $action, $errors, $redirect_to, $user_login
 						<p class="tempo-login__eyebrow"><?php esc_html_e( 'Member portal', 'tempo-book-it-theme' ); ?></p>
 						<h1><?php echo esc_html( $title ); ?></h1>
 						<?php if ( 'login' === $action ) : ?>
-							<p><?php esc_html_e( 'Sign in to manage your classes, bookings and account.', 'tempo-book-it-theme' ); ?></p>
+							<p><?php /* translators: %s: vocabulary word for classes (plural). */ echo esc_html( sprintf( __( 'Sign in to manage your %s, bookings and account.', 'tempo-book-it-theme' ), $classes_word ) ); ?></p>
 						<?php elseif ( 'register' === $action ) : ?>
 							<p><?php echo esc_html( sprintf( __( 'Tell us whether you are registering yourself or a %s you care for.', 'tempo-book-it-theme' ), $student_word ) ); ?></p>
 						<?php elseif ( 'registered' === $action ) : ?>
@@ -610,7 +613,7 @@ function tempo_book_it_render_login( $action, $errors, $redirect_to, $user_login
 					aria-hidden="true"
 					style="<?php echo esc_attr( 'background-image: url("' . $panel_image . '");' ); ?>"
 				<?php else : ?>
-					aria-label="<?php esc_attr_e( 'Your studio portal', 'tempo-book-it-theme' ); ?>"
+					aria-label="<?php /* translators: %s: business-type label, e.g. "Football Club". */ echo esc_attr( sprintf( __( 'Your %s portal', 'tempo-book-it-theme' ), $business_type ) ); ?>"
 				<?php endif; ?>
 			>
 				<?php if ( ! $panel_image ) : ?>
@@ -619,12 +622,12 @@ function tempo_book_it_render_login( $action, $errors, $redirect_to, $user_login
 				<div class="tempo-login__ribbon tempo-login__ribbon--two" aria-hidden="true"></div>
 				<div class="tempo-login__showcase-content">
 					<p class="tempo-login__showcase-kicker"><?php esc_html_e( 'Everything in one place', 'tempo-book-it-theme' ); ?></p>
-					<h2><?php esc_html_e( 'Your studio, all in step.', 'tempo-book-it-theme' ); ?></h2>
-					<p><?php esc_html_e( 'Classes, bookings and account details—ready whenever you are.', 'tempo-book-it-theme' ); ?></p>
+					<h2><?php /* translators: %s: business-type label, e.g. "Football Club". */ echo esc_html( sprintf( __( 'Your %s, all in step.', 'tempo-book-it-theme' ), $business_type ) ); ?></h2>
+					<p><?php /* translators: %s: vocabulary word for classes (plural), capitalised. */ echo esc_html( sprintf( __( '%s, bookings and account details—ready whenever you are.', 'tempo-book-it-theme' ), mb_strtoupper( mb_substr( $classes_word, 0, 1 ) ) . mb_substr( $classes_word, 1 ) ) ); ?></p>
 					<div class="tempo-portal-card" aria-hidden="true">
 						<div class="tempo-portal-card__top"><span></span><span><?php esc_html_e( 'This week', 'tempo-book-it-theme' ); ?></span><b>&middot;&middot;&middot;</b></div>
 						<div class="tempo-portal-card__days"><span>M</span><span>T</span><span>W</span><span>T</span><span>F</span><span>S</span><span>S</span></div>
-						<div class="tempo-portal-card__line"><i></i><div><strong><?php esc_html_e( 'Move', 'tempo-book-it-theme' ); ?></strong><small><?php esc_html_e( 'Find your next class', 'tempo-book-it-theme' ); ?></small></div><em>&rarr;</em></div>
+						<div class="tempo-portal-card__line"><i></i><div><strong><?php esc_html_e( 'Move', 'tempo-book-it-theme' ); ?></strong><small><?php /* translators: %s: vocabulary word for a class (singular). */ echo esc_html( sprintf( __( 'Find your next %s', 'tempo-book-it-theme' ), $class_word ) ); ?></small></div><em>&rarr;</em></div>
 						<div class="tempo-portal-card__line tempo-portal-card__line--second"><i></i><div><strong><?php esc_html_e( 'Create', 'tempo-book-it-theme' ); ?></strong><small><?php esc_html_e( 'Keep every booking together', 'tempo-book-it-theme' ); ?></small></div><em>&rarr;</em></div>
 					</div>
 					<div class="tempo-login__pulse" aria-hidden="true"><span></span><?php esc_html_e( 'Ready when you are', 'tempo-book-it-theme' ); ?></div>
