@@ -5,7 +5,7 @@
 	"title": "Portal strip",
 	"category": "theme",
 	"description": "The orange strip below the header: \"Booking portal\" (or \"Teacher portal\") on the left, the signed-in name and Log out on the right.",
-	"textdomain": "tempo-studio-manager",
+	"textdomain": "tempo-book-it-theme",
 	"supports": {
 		"html": false,
 		"multiple": false,

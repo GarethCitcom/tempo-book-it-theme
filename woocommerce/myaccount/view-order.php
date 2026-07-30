@@ -16,17 +16,17 @@ defined( 'ABSPATH' ) || exit;
 $notes       = $order->get_customer_order_notes();
 $status      = $order->get_status();
 $status_name = wc_get_order_status_name( $status );
-$tone        = tempo_studio_manager_order_status_tone( $status );
+$tone        = tempo_book_it_order_status_tone( $status );
 ?>
 
 <div class="tempo-woo-order-view">
 	<a class="tempo-woo-order-view__back" href="<?php echo esc_url( wc_get_account_endpoint_url( 'orders' ) ); ?>">
-		<span aria-hidden="true">‹</span> <?php esc_html_e( 'Back to orders', 'tempo-studio-manager' ); ?>
+		<span aria-hidden="true">‹</span> <?php esc_html_e( 'Back to orders', 'tempo-book-it-theme' ); ?>
 	</a>
 
 	<div class="tempo-woo-order-view__summary tempo-woo-order-view__summary--<?php echo esc_attr( $tone ); ?>">
 		<span class="tempo-woo-status tempo-woo-status--<?php echo esc_attr( $status ); ?>">
-			<span class="tempo-woo-status__glyph" aria-hidden="true"><?php echo esc_html( tempo_studio_manager_order_status_glyph( $status ) ); ?></span>
+			<span class="tempo-woo-status__glyph" aria-hidden="true"><?php echo esc_html( tempo_book_it_order_status_glyph( $status ) ); ?></span>
 			<?php echo esc_html( $status_name ); ?>
 		</span>
 		<p>
@@ -34,7 +34,7 @@ $tone        = tempo_studio_manager_order_status_tone( $status );
 			echo wp_kses_post(
 				sprintf(
 					/* translators: 1: order number, 2: order date. */
-					__( 'Order <strong>#%1$s</strong> was placed on <strong>%2$s</strong>.', 'tempo-studio-manager' ),
+					__( 'Order <strong>#%1$s</strong> was placed on <strong>%2$s</strong>.', 'tempo-book-it-theme' ),
 					esc_html( $order->get_order_number() ),
 					esc_html( wc_format_datetime( $order->get_date_created() ) )
 				)

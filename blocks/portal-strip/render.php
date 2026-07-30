@@ -6,7 +6,7 @@
  * The site is members-only, so this only ever renders for logged-in users;
  * it outputs nothing otherwise (e.g. on the privacy policy page).
  *
- * @package tempo-studio-manager
+ * @package tempo-book-it-theme
  */
 
 defined( 'ABSPATH' ) || exit;
@@ -18,8 +18,8 @@ if ( ! is_user_logged_in() ) {
 $tempo_user  = wp_get_current_user();
 $tempo_label = tempo_is_teacher()
 	/* translators: %s: tenant word for "teacher", capitalised. */
-	? sprintf( __( '%s portal', 'tempo-studio-manager' ), ucfirst( tempo_vocab( 'teacher' ) ) )
-	: __( 'Booking portal', 'tempo-studio-manager' );
+	? sprintf( __( '%s portal', 'tempo-book-it-theme' ), ucfirst( tempo_vocab( 'teacher' ) ) )
+	: __( 'Booking portal', 'tempo-book-it-theme' );
 ?>
 <div class="tempo-portal-strip">
 	<div class="tempo-portal-strip__inner">
@@ -28,7 +28,7 @@ $tempo_label = tempo_is_teacher()
 			<?php echo esc_html( $tempo_user->display_name ); ?>
 			<span class="tempo-portal-strip__sep" aria-hidden="true">·</span>
 			<a class="tempo-portal-strip__logout" href="<?php echo esc_url( wp_logout_url( home_url( '/' ) ) ); ?>">
-				<?php esc_html_e( 'Log out', 'tempo-studio-manager' ); ?>
+				<?php esc_html_e( 'Log out', 'tempo-book-it-theme' ); ?>
 			</a>
 		</span>
 	</div>

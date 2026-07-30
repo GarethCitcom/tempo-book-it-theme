@@ -2,7 +2,7 @@
 	"$schema": "https://playground.wordpress.net/blueprint-schema.json",
 	"meta": {
 		"title": "Tempo Book It Theme preview",
-		"author": "tempo-studio-manager",
+		"author": "tempo-book-it-theme",
 		"description": "Previews the theme chrome (header, portal strip, footer, login) with WooCommerce but without the Tempo Book It plugin. A demo mu-plugin stubs the plugin's basket pill and window.dsbBooking API."
 	},
 	"landingPage": "/",
@@ -17,7 +17,7 @@
 		},
 		{
 			"step": "activateTheme",
-			"themeFolderName": "tempo-studio-manager",
+			"themeFolderName": "tempo-book-it-theme",
 			"progress": { "caption": "Activating Tempo Book It Theme" }
 		},
 		{

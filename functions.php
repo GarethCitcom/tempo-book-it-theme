@@ -6,7 +6,7 @@
  * All booking UI belongs to the Tempo Book It plugin — every plugin
  * call below is function_exists-guarded so the theme works standalone.
  *
- * @package tempo-studio-manager
+ * @package tempo-book-it-theme
  */
 
 defined( 'ABSPATH' ) || exit;
@@ -15,7 +15,7 @@ defined( 'ABSPATH' ) || exit;
  * Setup
  * ---------------------------------------------------------------------- */
 
-function tempo_studio_manager_setup() {
+function tempo_book_it_setup() {
 	add_theme_support( 'woocommerce' );
 	add_theme_support( 'editor-styles' );
 	add_editor_style( 'assets/css/chrome.css' );
@@ -28,7 +28,7 @@ function tempo_studio_manager_setup() {
 	add_theme_support( 'dsb-login-panel-image' );
 	add_theme_support( 'dsb-student-profile' );
 }
-add_action( 'after_setup_theme', 'tempo_studio_manager_setup' );
+add_action( 'after_setup_theme', 'tempo_book_it_setup' );
 
 /**
  * Seed a starter header navigation menu so the editable Navigation block
@@ -38,7 +38,7 @@ add_action( 'after_setup_theme', 'tempo_studio_manager_setup' );
  * classes link (those pages are top-level too). Never runs again once any
  * navigation menu exists, so it can't clobber a school's own editing.
  */
-function tempo_studio_manager_seed_navigation() {
+function tempo_book_it_seed_navigation() {
 	if ( ! post_type_exists( 'wp_navigation' ) ) {
 		return;
 	}
@@ -60,10 +60,10 @@ function tempo_studio_manager_seed_navigation() {
 		array(
 			'post_type'    => 'wp_navigation',
 			'post_status'  => 'publish',
-			'post_title'   => __( 'Header navigation', 'tempo-studio-manager' ),
+			'post_title'   => __( 'Header navigation', 'tempo-book-it-theme' ),
 			'post_content' => '<!-- wp:navigation-link ' . wp_json_encode(
 				array(
-					'label' => __( 'My account', 'tempo-studio-manager' ),
+					'label' => __( 'My account', 'tempo-book-it-theme' ),
 					'url'   => tempo_account_url(),
 					'kind'  => 'custom',
 				)
@@ -71,40 +71,40 @@ function tempo_studio_manager_seed_navigation() {
 		)
 	);
 }
-add_action( 'after_switch_theme', 'tempo_studio_manager_seed_navigation' );
+add_action( 'after_switch_theme', 'tempo_book_it_seed_navigation' );
 
-function tempo_studio_manager_register_blocks() {
+function tempo_book_it_register_blocks() {
 	register_block_type( get_theme_file_path( 'blocks/logo' ) );
 	register_block_type( get_theme_file_path( 'blocks/header-nav' ) );
 	register_block_type( get_theme_file_path( 'blocks/portal-strip' ) );
 }
-add_action( 'init', 'tempo_studio_manager_register_blocks' );
+add_action( 'init', 'tempo_book_it_register_blocks' );
 
-function tempo_studio_manager_enqueue() {
+function tempo_book_it_enqueue() {
 	$version = wp_get_theme()->get( 'Version' );
 	wp_enqueue_style(
-		'tempo-studio-manager-chrome',
+		'tempo-book-it-theme-chrome',
 		get_theme_file_uri( 'assets/css/chrome.css' ),
 		array(),
 		$version
 	);
 }
-add_action( 'wp_enqueue_scripts', 'tempo_studio_manager_enqueue' );
+add_action( 'wp_enqueue_scripts', 'tempo_book_it_enqueue' );
 
 /**
  * Site Editor stubs for the theme's PHP-rendered blocks, so they show a
  * labelled placeholder instead of a "missing block" warning. Plain JS, no build.
  */
-function tempo_studio_manager_editor_assets() {
+function tempo_book_it_editor_assets() {
 	wp_enqueue_script(
-		'tempo-studio-manager-editor-stub',
+		'tempo-book-it-theme-editor-stub',
 		get_theme_file_uri( 'assets/js/editor-stub.js' ),
 		array( 'wp-blocks', 'wp-element', 'wp-i18n' ),
 		wp_get_theme()->get( 'Version' ),
 		true
 	);
 }
-add_action( 'enqueue_block_editor_assets', 'tempo_studio_manager_editor_assets' );
+add_action( 'enqueue_block_editor_assets', 'tempo_book_it_editor_assets' );
 
 /* -------------------------------------------------------------------------
  * Tempo Book It bridge (all guarded — theme must work without plugin)
@@ -172,12 +172,12 @@ function tempo_brand_colour_contrast( $which = 'primary' ) {
 		return dsb_brand_colour_contrast( $which );
 	}
 
-	$hex = tempo_studio_manager_hex( tempo_studio_manager_brand_colour_fallback( $which ) );
-	return tempo_studio_manager_contrast_text( $hex );
+	$hex = tempo_book_it_hex( tempo_book_it_brand_colour_fallback( $which ) );
+	return tempo_book_it_contrast_text( $hex );
 }
 
 /** Theme's own default brand colour, used only when the plugin is absent. */
-function tempo_studio_manager_brand_colour_fallback( $which ) {
+function tempo_book_it_brand_colour_fallback( $which ) {
 	return 'secondary' === $which ? '#330164' : '#FF7300';
 }
 
@@ -185,7 +185,7 @@ function tempo_studio_manager_brand_colour_fallback( $which ) {
  * WCAG relative luminance (0-1) of a hex colour — theme's local copy of the
  * plugin's Assets::relative_luminance(), for standalone use.
  */
-function tempo_studio_manager_relative_luminance( $hex ) {
+function tempo_book_it_relative_luminance( $hex ) {
 	$hex = ltrim( trim( (string) $hex ), '#' );
 	if ( 3 === strlen( $hex ) ) {
 		$hex = $hex[0] . $hex[0] . $hex[1] . $hex[1] . $hex[2] . $hex[2];
@@ -211,14 +211,14 @@ function tempo_studio_manager_relative_luminance( $hex ) {
  * rationale — this is a safety net for pale colours, not a WCAG repaint
  * of the theme's default orange/purple, which stay white-on-brand.
  */
-function tempo_studio_manager_contrast_text( $hex ) {
-	$bg_luminance = tempo_studio_manager_relative_luminance( $hex );
+function tempo_book_it_contrast_text( $hex ) {
+	$bg_luminance = tempo_book_it_relative_luminance( $hex );
 	$white_ratio  = ( max( $bg_luminance, 1.0 ) + 0.05 ) / ( min( $bg_luminance, 1.0 ) + 0.05 );
 	return $white_ratio >= 1.5 ? '#FFFFFF' : '#3F3F46';
 }
 
 /** Normalise a hex colour, falling back to black for anything unusable. */
-function tempo_studio_manager_hex( $hex ) {
+function tempo_book_it_hex( $hex ) {
 	return sanitize_hex_color( (string) $hex ) ?: '#000000';
 }
 
@@ -234,7 +234,7 @@ function tempo_is_teacher( $user = null ) {
 	if ( ! $user->exists() ) {
 		return false;
 	}
-	$teacher_roles = apply_filters( 'tempo_studio_manager_teacher_roles', array( 'teacher' ) );
+	$teacher_roles = apply_filters( 'tempo_book_it_teacher_roles', array( 'teacher' ) );
 	return (bool) array_intersect( $teacher_roles, (array) $user->roles );
 }
 
@@ -245,8 +245,8 @@ function tempo_is_teacher( $user = null ) {
  * @param string $shortcode Shortcode tag, e.g. 'dsb_booking'.
  * @param string $fallback  URL to use when no page is found.
  */
-function tempo_studio_manager_shortcode_page_url( $shortcode, $fallback ) {
-	$cache = get_transient( 'tempo_studio_manager_shortcode_pages' );
+function tempo_book_it_shortcode_page_url( $shortcode, $fallback ) {
+	$cache = get_transient( 'tempo_book_it_shortcode_pages' );
 	if ( ! is_array( $cache ) ) {
 		$cache = array();
 	}
@@ -258,16 +258,16 @@ function tempo_studio_manager_shortcode_page_url( $shortcode, $fallback ) {
 				break;
 			}
 		}
-		set_transient( 'tempo_studio_manager_shortcode_pages', $cache, DAY_IN_SECONDS );
+		set_transient( 'tempo_book_it_shortcode_pages', $cache, DAY_IN_SECONDS );
 	}
 	$url = $cache[ $shortcode ] ? get_permalink( $cache[ $shortcode ] ) : '';
 	return $url ? $url : $fallback;
 }
 
-function tempo_studio_manager_flush_shortcode_pages() {
-	delete_transient( 'tempo_studio_manager_shortcode_pages' );
+function tempo_book_it_flush_shortcode_pages() {
+	delete_transient( 'tempo_book_it_shortcode_pages' );
 }
-add_action( 'save_post_page', 'tempo_studio_manager_flush_shortcode_pages' );
+add_action( 'save_post_page', 'tempo_book_it_flush_shortcode_pages' );
 
 /**
  * URL of the page hosting [dsb_booking]. The plugin creates this page on
@@ -277,22 +277,22 @@ add_action( 'save_post_page', 'tempo_studio_manager_flush_shortcode_pages' );
  */
 function tempo_book_url() {
 	if ( function_exists( 'dsb_booking_page_url' ) ) {
-		return apply_filters( 'tempo_studio_manager_book_url', dsb_booking_page_url() );
+		return apply_filters( 'tempo_book_it_book_url', dsb_booking_page_url() );
 	}
 	return apply_filters(
-		'tempo_studio_manager_book_url',
-		tempo_studio_manager_shortcode_page_url( 'dsb_booking', home_url( '/book-classes/' ) )
+		'tempo_book_it_book_url',
+		tempo_book_it_shortcode_page_url( 'dsb_booking', home_url( '/book-classes/' ) )
 	);
 }
 
 /** URL of the page hosting [dsb_register] (teacher day view). See tempo_book_url(). */
 function tempo_my_classes_url() {
 	if ( function_exists( 'dsb_register_page_url' ) ) {
-		return apply_filters( 'tempo_studio_manager_my_classes_url', dsb_register_page_url() );
+		return apply_filters( 'tempo_book_it_my_classes_url', dsb_register_page_url() );
 	}
 	return apply_filters(
-		'tempo_studio_manager_my_classes_url',
-		tempo_studio_manager_shortcode_page_url( 'dsb_register', home_url( '/my-classes/' ) )
+		'tempo_book_it_my_classes_url',
+		tempo_book_it_shortcode_page_url( 'dsb_register', home_url( '/my-classes/' ) )
 	);
 }
 
@@ -343,7 +343,7 @@ function tempo_header_foreground_colour() {
 	if ( function_exists( 'dsb_contrast_text' ) ) {
 		return dsb_contrast_text( $hex );
 	}
-	return tempo_studio_manager_contrast_text( $hex );
+	return tempo_book_it_contrast_text( $hex );
 }
 
 /** 'white' when the header background needs the light/inverse logo, else 'default'. */
@@ -358,7 +358,7 @@ function tempo_header_logo_variant() {
  * @param string $hex    '#rrggbb' (or '#rgb') colour.
  * @param float  $amount Portion of the colour to keep (0.09 = 9% colour, 91% white).
  */
-function tempo_studio_manager_tint( $hex, $amount ) {
+function tempo_book_it_tint( $hex, $amount ) {
 	$hex = ltrim( (string) $hex, '#' );
 	if ( 3 === strlen( $hex ) ) {
 		$hex = $hex[0] . $hex[0] . $hex[1] . $hex[1] . $hex[2] . $hex[2];
@@ -380,7 +380,7 @@ function tempo_studio_manager_tint( $hex, $amount ) {
  * plugin's branding without any theme edits. The theme.json values remain
  * the defaults when the plugin is absent or a colour is unset.
  */
-function tempo_studio_manager_brand_palette( $theme_json ) {
+function tempo_book_it_brand_palette( $theme_json ) {
 	if ( ! function_exists( 'dsb_brand_colour' ) ) {
 		return $theme_json;
 	}
@@ -390,12 +390,12 @@ function tempo_studio_manager_brand_palette( $theme_json ) {
 	$secondary = sanitize_hex_color( dsb_brand_colour( 'secondary' ) );
 	if ( $primary ) {
 		$overrides['brand-primary']          = $primary;
-		$overrides['brand-tint-primary']     = tempo_studio_manager_tint( $primary, 0.09 );
+		$overrides['brand-tint-primary']     = tempo_book_it_tint( $primary, 0.09 );
 		$overrides['brand-primary-contrast'] = tempo_brand_colour_contrast( 'primary' );
 	}
 	if ( $secondary ) {
 		$overrides['brand-secondary']          = $secondary;
-		$overrides['brand-tint-secondary']     = tempo_studio_manager_tint( $secondary, 0.05 );
+		$overrides['brand-tint-secondary']     = tempo_book_it_tint( $secondary, 0.05 );
 		$overrides['brand-secondary-contrast'] = tempo_brand_colour_contrast( 'secondary' );
 	}
 	if ( ! $overrides ) {
@@ -422,7 +422,7 @@ function tempo_studio_manager_brand_palette( $theme_json ) {
 		)
 	);
 }
-add_filter( 'wp_theme_json_data_theme', 'tempo_studio_manager_brand_palette' );
+add_filter( 'wp_theme_json_data_theme', 'tempo_book_it_brand_palette' );
 
 /**
  * Feed a custom theme-header background into theme.json when the tenant
@@ -432,7 +432,7 @@ add_filter( 'wp_theme_json_data_theme', 'tempo_studio_manager_brand_palette' );
  * `settings.custom.header` is a keyed object so a partial override here
  * doesn't disturb the untouched borderWidth/logoHeight siblings.
  */
-function tempo_studio_manager_header_background( $theme_json ) {
+function tempo_book_it_header_background( $theme_json ) {
 	if ( ! tempo_header_is_custom() ) {
 		return $theme_json;
 	}
@@ -451,13 +451,13 @@ function tempo_studio_manager_header_background( $theme_json ) {
 		)
 	);
 }
-add_filter( 'wp_theme_json_data_theme', 'tempo_studio_manager_header_background' );
+add_filter( 'wp_theme_json_data_theme', 'tempo_book_it_header_background' );
 
 /* -------------------------------------------------------------------------
  * Members-only gate — the whole front end requires login
  * ---------------------------------------------------------------------- */
 
-function tempo_studio_manager_require_login() {
+function tempo_book_it_require_login() {
 	if ( is_user_logged_in() ) {
 		return;
 	}
@@ -481,7 +481,7 @@ function tempo_studio_manager_require_login() {
 	 *
 	 * @param string[] $paths
 	 */
-	$public_paths = apply_filters( 'tempo_studio_manager_public_paths', array() );
+	$public_paths = apply_filters( 'tempo_book_it_public_paths', array() );
 	foreach ( $public_paths as $public_path ) {
 		if ( 0 === strpos( $request_path, $public_path ) ) {
 			return;
@@ -495,7 +495,7 @@ function tempo_studio_manager_require_login() {
 	wp_safe_redirect( wp_login_url( $requested ) );
 	exit;
 }
-add_action( 'template_redirect', 'tempo_studio_manager_require_login' );
+add_action( 'template_redirect', 'tempo_book_it_require_login' );
 
 /* -------------------------------------------------------------------------
  * Theme-owned sign-in experience.
