@@ -1,6 +1,6 @@
-# Tempo Studio Manager template overrides
+# Tempo Book It template overrides
 
-This directory is the Tempo Studio Manager plugin's template-override location
+This directory is the Tempo Book It plugin's template-override location
 (`{theme}/dsb/{path}`, resolved by the plugin's `Support\TemplateLoader`).
 
 It is intentionally empty. The plugin owns all booking-shaped UI and its

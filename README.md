@@ -1,7 +1,7 @@
-# Tempo Studio Manager — companion block theme
+# Tempo Book It Theme — companion block theme
 
 WordPress block theme providing the site chrome around the
-[Tempo Studio Manager](https://github.com/GarethCitcom/dance-school-booking-system)
+[Tempo Book It](https://github.com/GarethCitcom/tempo-book-it)
 booking plugin. The plugin owns all booking-shaped UI; this theme owns the
 header, orange portal strip, footer, 1140px shell, base typography, page
 background and login. It contains **no booking UI**.

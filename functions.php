@@ -1,9 +1,9 @@
 <?php
 /**
- * Tempo Studio Manager theme — setup, plugin bridge, members-only gate.
+ * Tempo Book It Theme — setup, plugin bridge, members-only gate.
  *
  * The theme owns the chrome (header, portal strip, footer, shell, base type).
- * All booking UI belongs to the Tempo Studio Manager plugin — every plugin
+ * All booking UI belongs to the Tempo Book It plugin — every plugin
  * call below is function_exists-guarded so the theme works standalone.
  *
  * @package tempo-studio-manager
@@ -107,7 +107,7 @@ function tempo_studio_manager_editor_assets() {
 add_action( 'enqueue_block_editor_assets', 'tempo_studio_manager_editor_assets' );
 
 /* -------------------------------------------------------------------------
- * Tempo Studio Manager bridge (all guarded — theme must work without plugin)
+ * Tempo Book It bridge (all guarded — theme must work without plugin)
  * ---------------------------------------------------------------------- */
 
 /**
@@ -310,7 +310,7 @@ function tempo_account_url() {
 /**
  * Tenant's custom header background colour, or the theme's own default
  * white — the approved chrome — when nothing has been set. Declared via
- * Settings → Branding → "Header background colour" (Tempo Studio Manager
+ * Settings → Branding → "Header background colour" (Tempo Book It
  * plugin), unlocked by this theme's `add_theme_support( 'dsb-header-background' )`.
  */
 function tempo_header_background_colour() {
@@ -375,7 +375,7 @@ function tempo_studio_manager_tint( $hex, $amount ) {
 }
 
 /**
- * Feed the tenant brand colours from Tempo Studio Manager settings into the
+ * Feed the tenant brand colours from Tempo Book It settings into the
  * theme.json palette, so the chrome, buttons, headings and links follow the
  * plugin's branding without any theme edits. The theme.json values remain
  * the defaults when the plugin is absent or a colour is unset.

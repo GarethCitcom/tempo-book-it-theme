@@ -1,7 +1,7 @@
-# Tempo Studio Manager theme — project memory
+# Tempo Book It Theme — project memory
 
-Companion theme for the Tempo Studio Manager plugin
-(github.com/GarethCitcom/dance-school-booking-system). The plugin repo is
+Companion theme for the Tempo Book It plugin
+(github.com/GarethCitcom/tempo-book-it). The plugin repo is
 the source of truth for the integration contract: its
 docs/13-developer-reference.md §6/6a and design/Plugin vs Theme Map.
 Add that repo to the session when building against it.
