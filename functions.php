@@ -25,6 +25,7 @@ function tempo_book_it_setup() {
 	// this — never hardcodes our theme's name — so a fork or rebrand of
 	// this theme keeps the setting simply by keeping this line.
 	add_theme_support( 'dsb-header-background' );
+	add_theme_support( 'dsb-body-background' );
 	add_theme_support( 'dsb-login-panel-image' );
 	add_theme_support( 'dsb-student-profile' );
 }
@@ -352,6 +353,25 @@ function tempo_header_logo_variant() {
 }
 
 /**
+ * Tenant's custom body (page) background colour, or '' when unset. Same
+ * handshake as the header colour: Settings → Branding → "Body background
+ * colour" (Tempo Book It plugin), unlocked by this theme's
+ * `add_theme_support( 'dsb-body-background' )`. The plugin's default
+ * white doubles as the "not set" sentinel — exactly like the header —
+ * so the theme's own page background (#F1F3F5) applies until the tenant
+ * picks a colour.
+ */
+function tempo_body_background_colour() {
+	if ( function_exists( 'dsb_body_background_colour' ) ) {
+		$hex = dsb_body_background_colour();
+		if ( '' !== $hex && '#FFFFFF' !== strtoupper( $hex ) ) {
+			return $hex;
+		}
+	}
+	return '';
+}
+
+/**
  * Mix a hex colour towards white — mirrors the plugin's tinted "brand subtle"
  * backgrounds (colour-mix at a small percentage over white).
  *
@@ -452,6 +472,42 @@ function tempo_book_it_header_background( $theme_json ) {
 	);
 }
 add_filter( 'wp_theme_json_data_theme', 'tempo_book_it_header_background' );
+
+/**
+ * Feed a custom body background into theme.json when the tenant has set
+ * one (Settings → Branding → "Body background colour"). Overrides the
+ * `page` palette colour, so everything that paints with
+ * var(--wp--preset--color--page) — the page canvas behind the booking
+ * surfaces — follows. Left untouched while the setting is at its white
+ * default, keeping the theme's own #F1F3F5.
+ */
+function tempo_book_it_body_background( $theme_json ) {
+	$hex = tempo_body_background_colour();
+	if ( '' === $hex ) {
+		return $theme_json;
+	}
+
+	// get_data() may key presets by origin ('theme' => [...]); unwrap to the flat authored shape.
+	$data    = $theme_json->get_data();
+	$palette = isset( $data['settings']['color']['palette'] ) ? $data['settings']['color']['palette'] : array();
+	if ( isset( $palette['theme'] ) && is_array( $palette['theme'] ) ) {
+		$palette = $palette['theme'];
+	}
+	foreach ( $palette as &$colour ) {
+		if ( isset( $colour['slug'] ) && 'page' === $colour['slug'] ) {
+			$colour['color'] = $hex;
+		}
+	}
+	unset( $colour );
+
+	return $theme_json->update_with(
+		array(
+			'version'  => 3,
+			'settings' => array( 'color' => array( 'palette' => $palette ) ),
+		)
+	);
+}
+add_filter( 'wp_theme_json_data_theme', 'tempo_book_it_body_background' );
 
 /* -------------------------------------------------------------------------
  * Members-only gate — the whole front end requires login
