@@ -44,13 +44,13 @@
 
 .tempo-header__logo img {
 	display: block;
-	height: var(--wp--custom--header--logo-height-mobile, 34px);
+	height: var(--wp--custom--header--logo-height-mobile, 46px);
 	width: auto;
 }
 
 @media (min-width: 1000px) {
 	.tempo-header__logo img {
-		height: var(--wp--custom--header--logo-height, 46px);
+		height: var(--wp--custom--header--logo-height, 60px);
 	}
 }
 

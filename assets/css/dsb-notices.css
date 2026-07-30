@@ -319,7 +319,7 @@ html.tempo-notices-js body.tempo-woo-notices .wc-block-components-notice-banner:
 	 * principle be taller than the logo, and the portal strip is absent for
 	 * logged-out users, where this over-clears by ~29px. */
 	--dsb-toast-top: calc(
-		var(--wp--custom--header--logo-height-mobile, 34px) + 24px +
+		var(--wp--custom--header--logo-height-mobile, 46px) + 24px +
 			var(--wp--custom--header--border-width, 5px) + 29px + 16px
 	);
 
@@ -336,7 +336,7 @@ html.tempo-notices-js body.tempo-woo-notices .wc-block-components-notice-banner:
 
 @media (min-width: 1000px) {
 	.dsb-toast-region {
-		--dsb-toast-top: calc(var(--wp--custom--header--logo-height, 46px) + 74px);
+		--dsb-toast-top: calc(var(--wp--custom--header--logo-height, 60px) + 74px);
 	}
 }
 

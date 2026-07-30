@@ -127,8 +127,8 @@
 			},
 			"header": {
 				"borderWidth": "5px",
-				"logoHeight": "46px",
-				"logoHeightMobile": "34px",
+				"logoHeight": "60px",
+				"logoHeightMobile": "46px",
 				"background": "#FFFFFF"
 			}
 		}
