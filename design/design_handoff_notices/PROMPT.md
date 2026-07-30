@@ -2,8 +2,8 @@
 
 You are working on two codebases that ship together:
 
-- **Theme** — the Tempo Studio Manager WordPress theme. Owns page chrome and, from now on, **how a notice looks and where it appears**.
-- **Plugin** — Tempo Studio Manager (`[dsb_booking]`, booking/holds/credit/My Account). Owns **what a notice says and how urgent it is**.
+- **Theme** — the Tempo Book It Theme (a WordPress block theme). Owns page chrome and, from now on, **how a notice looks and where it appears**.
+- **Plugin** — Tempo Book It (`[dsb_booking]`, booking/holds/credit/My Account). Owns **what a notice says and how urgent it is**.
 
 Read `README.md` in this folder before writing code. It carries the full visual spec, DOM structures, token values and QA list. The design source of truth is `Woo Notice Options.dc.html` (open it in a browser, it runs standalone) and the PNGs in `screens/`.
 

@@ -1,7 +1,7 @@
-# Tempo Studio Manager — companion block theme
+# Tempo Book It Theme — companion block theme
 
 WordPress block theme providing the site chrome around the
-[Tempo Studio Manager](https://github.com/GarethCitcom/dance-school-booking-system)
+[Tempo Book It](https://github.com/GarethCitcom/tempo-book-it)
 booking plugin. The plugin owns all booking-shaped UI; this theme owns the
 header, orange portal strip, footer, 1140px shell, base typography, page
 background and login. It contains **no booking UI**.
@@ -18,7 +18,7 @@ background and login. It contains **no booking UI**.
 ```bash
 npx @wp-playground/cli server \
   --blueprint=blueprint.json \
-  --mount=.:/wordpress/wp-content/themes/tempo-studio-manager
+  --mount=.:/wordpress/wp-content/themes/tempo-book-it-theme
 ```
 
 The blueprint installs WooCommerce, activates the theme, creates demo pages
@@ -76,11 +76,11 @@ set-password email only after the complete operation succeeds.
 
 | Filter | Default | Purpose |
 | --- | --- | --- |
-| `tempo_studio_manager_teacher_roles` | `['teacher']` | Roles that get the teacher chrome |
-| `tempo_studio_manager_book_url` | auto-detected, else `/book-classes/` | Page hosting `[dsb_booking]` |
-| `tempo_studio_manager_my_classes_url` | auto-detected, else `/my-classes/` | Page hosting `[dsb_register]` |
-| `tempo_studio_manager_public_paths` | `[]` | Path prefixes exempt from the login gate |
-| `tempo_studio_manager_login_path` | `/sign-in/` | Public path for the theme-owned authentication screen |
+| `tempo_book_it_teacher_roles` | `['teacher']` | Roles that get the teacher chrome |
+| `tempo_book_it_book_url` | auto-detected, else `/book-classes/` | Page hosting `[dsb_booking]` |
+| `tempo_book_it_my_classes_url` | auto-detected, else `/my-classes/` | Page hosting `[dsb_register]` |
+| `tempo_book_it_public_paths` | `[]` | Path prefixes exempt from the login gate |
+| `tempo_book_it_login_path` | `/sign-in/` | Public path for the theme-owned authentication screen |
 
 ## Structure
 

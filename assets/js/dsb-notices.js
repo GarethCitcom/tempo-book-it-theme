@@ -10,7 +10,7 @@
  * every notice stays inline and legible — that is the whole fallback story, so
  * keep it that way.
  *
- * @package tempo-studio-manager
+ * @package tempo-book-it-theme
  */
 
 ( function () {

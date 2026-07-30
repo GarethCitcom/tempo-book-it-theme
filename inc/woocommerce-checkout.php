@@ -7,7 +7,7 @@
  * ownership of booking context and its configured layout. This file only
  * exposes layout scopes and loads the theme's checkout stylesheet.
  *
- * @package tempo-studio-manager
+ * @package tempo-book-it-theme
  */
 
 defined( 'ABSPATH' ) || exit;
@@ -19,7 +19,7 @@ defined( 'ABSPATH' ) || exit;
  *
  * @return bool
  */
-function tempo_studio_manager_is_checkout_screen() {
+function tempo_book_it_is_checkout_screen() {
 	return function_exists( 'is_checkout' )
 		&& is_checkout()
 		&& ( ! function_exists( 'is_order_received_page' ) || ! is_order_received_page() );
@@ -28,8 +28,8 @@ function tempo_studio_manager_is_checkout_screen() {
 /**
  * Load the checkout presentation after theme chrome and Woo block styles.
  */
-function tempo_studio_manager_enqueue_checkout_styles() {
-	if ( ! tempo_studio_manager_is_checkout_screen() ) {
+function tempo_book_it_enqueue_checkout_styles() {
+	if ( ! tempo_book_it_is_checkout_screen() ) {
 		return;
 	}
 
@@ -38,7 +38,7 @@ function tempo_studio_manager_enqueue_checkout_styles() {
 	$boot_version = file_exists( $boot_file ) ? (string) filemtime( $boot_file ) : wp_get_theme()->get( 'Version' );
 
 	wp_enqueue_script(
-		'tempo-studio-manager-woocommerce-checkout-boot',
+		'tempo-book-it-theme-woocommerce-checkout-boot',
 		get_theme_file_uri( $boot_path ),
 		array(),
 		$boot_version,
@@ -50,9 +50,9 @@ function tempo_studio_manager_enqueue_checkout_styles() {
 	$style_version = file_exists( $style_file ) ? (string) filemtime( $style_file ) : wp_get_theme()->get( 'Version' );
 
 	wp_enqueue_style(
-		'tempo-studio-manager-woocommerce-checkout',
+		'tempo-book-it-theme-woocommerce-checkout',
 		get_theme_file_uri( $style_path ),
-		array( 'tempo-studio-manager-chrome' ),
+		array( 'tempo-book-it-theme-chrome' ),
 		$style_version
 	);
 
@@ -61,14 +61,14 @@ function tempo_studio_manager_enqueue_checkout_styles() {
 	$script_version = file_exists( $script_file ) ? (string) filemtime( $script_file ) : wp_get_theme()->get( 'Version' );
 
 	wp_enqueue_script(
-		'tempo-studio-manager-woocommerce-checkout',
+		'tempo-book-it-theme-woocommerce-checkout',
 		get_theme_file_uri( $script_path ),
 		array( 'wp-data' ),
 		$script_version,
 		true
 	);
 }
-add_action( 'wp_enqueue_scripts', 'tempo_studio_manager_enqueue_checkout_styles', 40 );
+add_action( 'wp_enqueue_scripts', 'tempo_book_it_enqueue_checkout_styles', 40 );
 
 /**
  * Add a theme-owned loading frame around Woo's rendered Checkout Block.
@@ -80,8 +80,8 @@ add_action( 'wp_enqueue_scripts', 'tempo_studio_manager_enqueue_checkout_styles'
  * @param string $block_content Rendered Checkout Block and plugin wrapper.
  * @return string
  */
-function tempo_studio_manager_wrap_checkout_loading_frame( $block_content ) {
-	if ( ! tempo_studio_manager_is_checkout_screen() ) {
+function tempo_book_it_wrap_checkout_loading_frame( $block_content ) {
+	if ( ! tempo_book_it_is_checkout_screen() ) {
 		return $block_content;
 	}
 
@@ -118,7 +118,7 @@ function tempo_studio_manager_wrap_checkout_loading_frame( $block_content ) {
 		: '';
 
 	$skeleton  = '<div class="tempo-checkout-skeleton" data-tempo-checkout-skeleton role="status" aria-live="polite">';
-	$skeleton .= '<span class="screen-reader-text">' . esc_html__( 'Loading secure checkout…', 'tempo-studio-manager' ) . '</span>';
+	$skeleton .= '<span class="screen-reader-text">' . esc_html__( 'Loading secure checkout…', 'tempo-book-it-theme' ) . '</span>';
 	$skeleton .= '<div class="tempo-checkout-skeleton__grid" aria-hidden="true">';
 	$skeleton .= '<div class="tempo-checkout-skeleton__column tempo-checkout-skeleton__column--main">';
 	$skeleton .= '<span class="tempo-checkout-skeleton__bar tempo-checkout-skeleton__bar--short"></span>';
@@ -143,7 +143,7 @@ function tempo_studio_manager_wrap_checkout_loading_frame( $block_content ) {
 		. '</div>'
 		. '</div>';
 }
-add_filter( 'render_block_woocommerce/checkout', 'tempo_studio_manager_wrap_checkout_loading_frame', 30, 1 );
+add_filter( 'render_block_woocommerce/checkout', 'tempo_book_it_wrap_checkout_loading_frame', 30, 1 );
 
 /**
  * Add a stable scope without coupling the theme to plugin internals.
@@ -154,11 +154,11 @@ add_filter( 'render_block_woocommerce/checkout', 'tempo_studio_manager_wrap_chec
  * @param string[] $classes Existing body classes.
  * @return string[]
  */
-function tempo_studio_manager_checkout_body_classes( $classes ) {
-	if ( tempo_studio_manager_is_checkout_screen() ) {
+function tempo_book_it_checkout_body_classes( $classes ) {
+	if ( tempo_book_it_is_checkout_screen() ) {
 		$classes[] = 'tempo-woo-checkout';
 	}
 
 	return $classes;
 }
-add_filter( 'body_class', 'tempo_studio_manager_checkout_body_classes' );
+add_filter( 'body_class', 'tempo_book_it_checkout_body_classes' );

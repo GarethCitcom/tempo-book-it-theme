@@ -38,17 +38,17 @@
 
 	registerStub(
 		'tempo/logo',
-		__( 'Portal logo', 'tempo-studio-manager' ),
-		__( 'rendered on the front end: tenant logo linked home', 'tempo-studio-manager' )
+		__( 'Portal logo', 'tempo-book-it-theme' ),
+		__( 'rendered on the front end: tenant logo linked home', 'tempo-book-it-theme' )
 	);
 	registerStub(
 		'tempo/header-nav',
-		__( 'Portal header nav', 'tempo-studio-manager' ),
-		__( 'rendered on the front end: basket pill + the role-aware Book classes / My classes link', 'tempo-studio-manager' )
+		__( 'Portal header nav', 'tempo-book-it-theme' ),
+		__( 'rendered on the front end: basket pill + the role-aware Book classes / My classes link', 'tempo-book-it-theme' )
 	);
 	registerStub(
 		'tempo/portal-strip',
-		__( 'Portal strip', 'tempo-studio-manager' ),
-		__( 'rendered on the front end: portal label, signed-in name, log out', 'tempo-studio-manager' )
+		__( 'Portal strip', 'tempo-book-it-theme' ),
+		__( 'rendered on the front end: portal label, signed-in name, log out', 'tempo-book-it-theme' )
 	);
 } )( window.wp.blocks, window.wp.element, window.wp.i18n );

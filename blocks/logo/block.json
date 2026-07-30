@@ -4,8 +4,8 @@
 	"name": "tempo/logo",
 	"title": "Portal logo",
 	"category": "theme",
-	"description": "The header logo, linked home. Uses the tenant logo from Tempo Studio Manager settings when set, otherwise the theme's bundled default logo.",
-	"textdomain": "tempo-studio-manager",
+	"description": "The header logo, linked home. Uses the tenant logo from Tempo Book It settings when set, otherwise the theme's bundled default logo.",
+	"textdomain": "tempo-book-it-theme",
 	"supports": {
 		"html": false,
 		"multiple": false,

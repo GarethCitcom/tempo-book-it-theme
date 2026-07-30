@@ -7,7 +7,7 @@
  * presentational markup through WooCommerce's public hooks and loads the
  * scoped account and order-received stylesheets.
  *
- * @package tempo-studio-manager
+ * @package tempo-book-it-theme
  */
 
 defined( 'ABSPATH' ) || exit;
@@ -15,7 +15,7 @@ defined( 'ABSPATH' ) || exit;
 /**
  * Load account presentation after the theme chrome and WooCommerce styles.
  */
-function tempo_studio_manager_enqueue_account_styles() {
+function tempo_book_it_enqueue_account_styles() {
 	if ( ! function_exists( 'is_account_page' ) || ! is_account_page() ) {
 		return;
 	}
@@ -25,18 +25,18 @@ function tempo_studio_manager_enqueue_account_styles() {
 	$version       = file_exists( $file_path ) ? (string) filemtime( $file_path ) : wp_get_theme()->get( 'Version' );
 
 	wp_enqueue_style(
-		'tempo-studio-manager-woocommerce-account',
+		'tempo-book-it-theme-woocommerce-account',
 		get_theme_file_uri( $relative_path ),
-		array( 'tempo-studio-manager-chrome' ),
+		array( 'tempo-book-it-theme-chrome' ),
 		$version
 	);
 }
-add_action( 'wp_enqueue_scripts', 'tempo_studio_manager_enqueue_account_styles', 30 );
+add_action( 'wp_enqueue_scripts', 'tempo_book_it_enqueue_account_styles', 30 );
 
 /**
  * Load the theme's receipt presentation on WooCommerce's order-received page.
  */
-function tempo_studio_manager_enqueue_order_received_styles() {
+function tempo_book_it_enqueue_order_received_styles() {
 	if ( ! function_exists( 'is_order_received_page' ) || ! is_order_received_page() ) {
 		return;
 	}
@@ -46,13 +46,13 @@ function tempo_studio_manager_enqueue_order_received_styles() {
 	$version       = file_exists( $file_path ) ? (string) filemtime( $file_path ) : wp_get_theme()->get( 'Version' );
 
 	wp_enqueue_style(
-		'tempo-studio-manager-woocommerce-order-received',
+		'tempo-book-it-theme-woocommerce-order-received',
 		get_theme_file_uri( $relative_path ),
-		array( 'tempo-studio-manager-chrome' ),
+		array( 'tempo-book-it-theme-chrome' ),
 		$version
 	);
 }
-add_action( 'wp_enqueue_scripts', 'tempo_studio_manager_enqueue_order_received_styles', 30 );
+add_action( 'wp_enqueue_scripts', 'tempo_book_it_enqueue_order_received_styles', 30 );
 
 /**
  * Add the theme scope used by every selector in the account stylesheet.
@@ -60,13 +60,13 @@ add_action( 'wp_enqueue_scripts', 'tempo_studio_manager_enqueue_order_received_s
  * @param string[] $classes Existing body classes.
  * @return string[]
  */
-function tempo_studio_manager_account_body_class( $classes ) {
+function tempo_book_it_account_body_class( $classes ) {
 	if ( function_exists( 'is_account_page' ) && is_account_page() ) {
 		$classes[] = 'tempo-woo-account';
 	}
 	return $classes;
 }
-add_filter( 'body_class', 'tempo_studio_manager_account_body_class' );
+add_filter( 'body_class', 'tempo_book_it_account_body_class' );
 
 /**
  * Add a separate scope for the block and classic order-confirmation templates.
@@ -74,13 +74,13 @@ add_filter( 'body_class', 'tempo_studio_manager_account_body_class' );
  * @param string[] $classes Existing body classes.
  * @return string[]
  */
-function tempo_studio_manager_order_received_body_class( $classes ) {
+function tempo_book_it_order_received_body_class( $classes ) {
 	if ( function_exists( 'is_order_received_page' ) && is_order_received_page() ) {
 		$classes[] = 'tempo-woo-order-received';
 	}
 	return $classes;
 }
-add_filter( 'body_class', 'tempo_studio_manager_order_received_body_class' );
+add_filter( 'body_class', 'tempo_book_it_order_received_body_class' );
 
 /**
  * Render the endpoint title above the plugin's greeting and account tabs.
@@ -89,7 +89,7 @@ add_filter( 'body_class', 'tempo_studio_manager_order_received_body_class' );
  * belongs to the surrounding theme shell and uses WooCommerce's own resolved
  * endpoint title so custom account endpoints remain compatible.
  */
-function tempo_studio_manager_account_page_title() {
+function tempo_book_it_account_page_title() {
 	if ( ! is_user_logged_in() || ! function_exists( 'WC' ) || ! WC()->query ) {
 		return;
 	}
@@ -105,7 +105,7 @@ function tempo_studio_manager_account_page_title() {
 
 	echo '<h1 class="tempo-woo-account__page-title">' . esc_html( $title ) . '</h1>';
 }
-add_action( 'woocommerce_account_navigation', 'tempo_studio_manager_account_page_title', 5 );
+add_action( 'woocommerce_account_navigation', 'tempo_book_it_account_page_title', 5 );
 
 /**
  * Shape the native orders table into the approved compact card fields.
@@ -113,30 +113,30 @@ add_action( 'woocommerce_account_navigation', 'tempo_studio_manager_account_page
  * @param array<string,string> $columns Native WooCommerce columns.
  * @return array<string,string>
  */
-function tempo_studio_manager_account_order_columns( $columns ) {
+function tempo_book_it_account_order_columns( $columns ) {
 	return array(
 		'order-number'  => __( 'Order', 'woocommerce' ),
-		'order-summary' => __( 'Order summary', 'tempo-studio-manager' ),
+		'order-summary' => __( 'Order summary', 'tempo-book-it-theme' ),
 		'order-status'  => __( 'Status', 'woocommerce' ),
 		'order-total'   => __( 'Total', 'woocommerce' ),
 		'order-actions' => __( 'Actions', 'woocommerce' ),
 	);
 }
-add_filter( 'woocommerce_account_orders_columns', 'tempo_studio_manager_account_order_columns' );
+add_filter( 'woocommerce_account_orders_columns', 'tempo_book_it_account_order_columns' );
 
 /**
  * Render the linked order number with the approved label.
  *
  * @param WC_Order $order Order represented by the current row.
  */
-function tempo_studio_manager_account_order_number_column( $order ) {
+function tempo_book_it_account_order_number_column( $order ) {
 	if ( ! $order instanceof WC_Order ) {
 		return;
 	}
 
 	$label = sprintf(
 		/* translators: %s: customer-facing order number. */
-		__( 'Order #%s', 'tempo-studio-manager' ),
+		__( 'Order #%s', 'tempo-book-it-theme' ),
 		$order->get_order_number()
 	);
 
@@ -144,14 +144,14 @@ function tempo_studio_manager_account_order_number_column( $order ) {
 		. esc_attr( sprintf( __( 'View order number %s', 'woocommerce' ), $order->get_order_number() ) )
 		. '">' . esc_html( $label ) . '</a>';
 }
-add_action( 'woocommerce_my_account_my_orders_column_order-number', 'tempo_studio_manager_account_order_number_column' );
+add_action( 'woocommerce_my_account_my_orders_column_order-number', 'tempo_book_it_account_order_number_column' );
 
 /**
  * Print a product-name summary without changing the underlying order query.
  *
  * @param WC_Order $order Order represented by the current row.
  */
-function tempo_studio_manager_account_order_summary_column( $order ) {
+function tempo_book_it_account_order_summary_column( $order ) {
 	if ( ! $order instanceof WC_Order ) {
 		return;
 	}
@@ -169,7 +169,7 @@ function tempo_studio_manager_account_order_summary_column( $order ) {
 	if ( count( $names ) > 2 ) {
 		$summary .= sprintf(
 			/* translators: %d: number of additional products in an order. */
-			_n( ' + %d more', ' + %d more', count( $names ) - 2, 'tempo-studio-manager' ),
+			_n( ' + %d more', ' + %d more', count( $names ) - 2, 'tempo-book-it-theme' ),
 			count( $names ) - 2
 		);
 	}
@@ -182,57 +182,57 @@ function tempo_studio_manager_account_order_summary_column( $order ) {
 		echo '<span aria-hidden="true"> · </span><span>' . esc_html( $summary ) . '</span>';
 	}
 }
-add_action( 'woocommerce_my_account_my_orders_column_order-summary', 'tempo_studio_manager_account_order_summary_column' );
+add_action( 'woocommerce_my_account_my_orders_column_order-summary', 'tempo_book_it_account_order_summary_column' );
 
 /**
  * Print the order status as a token-coloured badge.
  *
  * @param WC_Order $order Order represented by the current row.
  */
-function tempo_studio_manager_account_order_status_column( $order ) {
+function tempo_book_it_account_order_status_column( $order ) {
 	if ( ! $order instanceof WC_Order ) {
 		return;
 	}
 
 	$status = $order->get_status();
 	echo '<span class="tempo-woo-status tempo-woo-status--' . esc_attr( $status ) . '">'
-		. '<span class="tempo-woo-status__glyph" aria-hidden="true">' . esc_html( tempo_studio_manager_order_status_glyph( $status ) ) . '</span> '
+		. '<span class="tempo-woo-status__glyph" aria-hidden="true">' . esc_html( tempo_book_it_order_status_glyph( $status ) ) . '</span> '
 		. esc_html( wc_get_order_status_name( $status ) )
 		. '</span>';
 }
-add_action( 'woocommerce_my_account_my_orders_column_order-status', 'tempo_studio_manager_account_order_status_column' );
+add_action( 'woocommerce_my_account_my_orders_column_order-status', 'tempo_book_it_account_order_status_column' );
 
 /**
  * Keep the native formatted order amount while omitting Woo's item-count copy.
  *
  * @param WC_Order $order Order represented by the current row.
  */
-function tempo_studio_manager_account_order_total_column( $order ) {
+function tempo_book_it_account_order_total_column( $order ) {
 	if ( $order instanceof WC_Order ) {
 		echo wp_kses_post( $order->get_formatted_order_total() );
 	}
 }
-add_action( 'woocommerce_my_account_my_orders_column_order-total', 'tempo_studio_manager_account_order_total_column' );
+add_action( 'woocommerce_my_account_my_orders_column_order-total', 'tempo_book_it_account_order_total_column' );
 
 /**
  * Explain saved payment methods before WooCommerce renders the gateway data.
  *
  * @param bool $has_methods Whether the customer has saved methods.
  */
-function tempo_studio_manager_payment_methods_intro( $has_methods ) {
+function tempo_book_it_payment_methods_intro( $has_methods ) {
 	unset( $has_methods );
 	echo '<p class="tempo-woo-payment-intro">'
-		. esc_html__( 'Saved cards let you check out faster next term. Details are held securely by our payment provider — we never store your full card number.', 'tempo-studio-manager' )
+		. esc_html__( 'Saved cards let you check out faster next term. Details are held securely by our payment provider — we never store your full card number.', 'tempo-book-it-theme' )
 		. '</p>';
 }
-add_action( 'woocommerce_before_account_payment_methods', 'tempo_studio_manager_payment_methods_intro', 5 );
+add_action( 'woocommerce_before_account_payment_methods', 'tempo_book_it_payment_methods_intro', 5 );
 
 /**
  * Present a gateway's method data as a branded, readable row.
  *
  * @param array<string,mixed> $method Saved-method data supplied by WooCommerce.
  */
-function tempo_studio_manager_payment_method_column( $method ) {
+function tempo_book_it_payment_method_column( $method ) {
 	$details = isset( $method['method'] ) && is_array( $method['method'] ) ? $method['method'] : array();
 	$brand   = isset( $details['brand'] ) ? (string) $details['brand'] : '';
 	$last4   = isset( $details['last4'] ) ? (string) $details['last4'] : '';
@@ -247,33 +247,33 @@ function tempo_studio_manager_payment_method_column( $method ) {
 	echo '</span>';
 	if ( ! empty( $method['is_default'] ) ) {
 		echo '<span class="tempo-woo-status tempo-woo-status--default"><span aria-hidden="true">✓</span> '
-			. esc_html__( 'Default', 'tempo-studio-manager' )
+			. esc_html__( 'Default', 'tempo-book-it-theme' )
 			. '</span>';
 	}
 	echo '</span>';
 }
-add_action( 'woocommerce_account_payment_methods_column_method', 'tempo_studio_manager_payment_method_column' );
+add_action( 'woocommerce_account_payment_methods_column_method', 'tempo_book_it_payment_method_column' );
 
 /**
  * Add the human label used by the approved design to the expiry value.
  *
  * @param array<string,mixed> $method Saved-method data supplied by WooCommerce.
  */
-function tempo_studio_manager_payment_expires_column( $method ) {
+function tempo_book_it_payment_expires_column( $method ) {
 	if ( ! empty( $method['expires'] ) ) {
 		echo '<span class="tempo-woo-payment-method__expires">'
-			. esc_html( sprintf( __( 'Expires %s', 'tempo-studio-manager' ), $method['expires'] ) )
+			. esc_html( sprintf( __( 'Expires %s', 'tempo-book-it-theme' ), $method['expires'] ) )
 			. '</span>';
 	}
 }
-add_action( 'woocommerce_account_payment_methods_column_expires', 'tempo_studio_manager_payment_expires_column' );
+add_action( 'woocommerce_account_payment_methods_column_expires', 'tempo_book_it_payment_expires_column' );
 
 /**
  * Preserve every action a payment gateway supplies, adding only theme classes.
  *
  * @param array<string,mixed> $method Saved-method data supplied by WooCommerce.
  */
-function tempo_studio_manager_payment_actions_column( $method ) {
+function tempo_book_it_payment_actions_column( $method ) {
 	if ( empty( $method['actions'] ) || ! is_array( $method['actions'] ) ) {
 		return;
 	}
@@ -288,7 +288,7 @@ function tempo_studio_manager_payment_actions_column( $method ) {
 			. '</a>';
 	}
 }
-add_action( 'woocommerce_account_payment_methods_column_actions', 'tempo_studio_manager_payment_actions_column' );
+add_action( 'woocommerce_account_payment_methods_column_actions', 'tempo_book_it_payment_actions_column' );
 
 /**
  * Map WooCommerce order statuses to the approved unicode status language.
@@ -296,7 +296,7 @@ add_action( 'woocommerce_account_payment_methods_column_actions', 'tempo_studio_
  * @param string $status WooCommerce order status slug without the wc- prefix.
  * @return string
  */
-function tempo_studio_manager_order_status_glyph( $status ) {
+function tempo_book_it_order_status_glyph( $status ) {
 	if ( in_array( $status, array( 'completed', 'refunded' ), true ) ) {
 		return '✓';
 	}
@@ -315,7 +315,7 @@ function tempo_studio_manager_order_status_glyph( $status ) {
  * @param string $status WooCommerce order status slug without the wc- prefix.
  * @return string
  */
-function tempo_studio_manager_order_status_tone( $status ) {
+function tempo_book_it_order_status_tone( $status ) {
 	if ( in_array( $status, array( 'completed', 'refunded' ), true ) ) {
 		return 'success';
 	}

@@ -15,7 +15,7 @@
  * in the normal case the class persists and notices injected later by the
  * plugin's REST steps are pre-hidden too.
  *
- * @package tempo-studio-manager
+ * @package tempo-book-it-theme
  */
 
 ( function () {

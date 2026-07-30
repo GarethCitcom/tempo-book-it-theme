@@ -3,7 +3,7 @@
  * Portal logo — colour-primary logo on the white header bar, linked home.
  * 46px tall on desktop, 34px on mobile (see chrome.css).
  *
- * @package tempo-studio-manager
+ * @package tempo-book-it-theme
  */
 
 defined( 'ABSPATH' ) || exit;

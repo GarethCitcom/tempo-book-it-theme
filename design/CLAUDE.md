@@ -1,6 +1,6 @@
-# Tempo Studio Manager — Frontend Redesign (project decisions)
+# Tempo Book It — Frontend Redesign (project decisions)
 
-WordPress + WooCommerce plugin ("Tempo Studio Manager", shortcode `[dsb_booking]`) for dance/theatre schools. First tenant: SJP Theatre Arts. Plugin will be sold to other schools. Bound design system: SJP Theatre Arts Design System (`_ds/…175e544c…/`) — always load its bundle + token CSS; compose with its Button/StatusBadge; unicode status glyphs (✓ ! × i •), no emoji, no icon library (numbered discs stand in for step "icons").
+WordPress + WooCommerce plugin ("Tempo Book It", shortcode `[dsb_booking]`) for dance/theatre schools. First tenant: SJP Theatre Arts. Plugin will be sold to other schools. Bound design system: SJP Theatre Arts Design System (`_ds/…175e544c…/`) — always load its bundle + token CSS; compose with its Button/StatusBadge; unicode status glyphs (✓ ! × i •), no emoji, no icon library (numbered discs stand in for step "icons").
 
 ## Files
 - `Tempo Booking Prototype.dc.html` — main interactive prototype (approved).
