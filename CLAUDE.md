@@ -10,7 +10,9 @@ Add that repo to the session when building against it.
 
 - THEME owns: header/nav/footer, the orange "Booking portal" strip, page
   width, base font, page BACKGROUND (#F1F3F5 behind booking surfaces —
-  the plugin deliberately doesn't paint it), login/registration.
+  the plugin deliberately doesn't paint it; tenants may recolour it via
+  the plugin's "Body background colour" setting, unlocked by our
+  `add_theme_support( 'dsb-body-background' )`), login/registration.
 - PLUGIN owns: all booking-shaped UI, checkout decoration, My Account
   tabs, teacher register. Never restyle .dsb-\* internals from the theme;
   template overrides at {theme}/dsb/ only as a last resort.
@@ -24,6 +26,7 @@ Add that repo to the session when building against it.
 - PHP: dsb_logo_url(), dsb_login_panel_image_url(),
   dsb_brand_colour('primary'|'secondary'),
   dsb_vocab('class'|'classes'|'student'|…),
+  dsb_business_type('singular'|'plural'), dsb_business_name(),
   dsb_registration_available(), dsb_register_member(),
   dsb_booking()/dsb_register()
   template functions.
