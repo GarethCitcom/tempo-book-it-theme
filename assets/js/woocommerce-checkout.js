@@ -332,12 +332,16 @@
 				}
 			} );
 
-			resetPositionedElement(
-				checkout.querySelector( '.wc-block-components-express-payment' )
-			);
-			resetPositionedElement(
-				checkout.querySelector( '.wc-block-components-express-payment-continue-rule' )
-			);
+			[
+				'.wc-block-components-express-payment',
+				'.wc-block-components-express-payment-continue-rule',
+				'.wp-block-woocommerce-checkout-payment-block',
+				'.wp-block-woocommerce-checkout-order-note-block',
+				'.wp-block-woocommerce-checkout-terms-block',
+				'.wp-block-woocommerce-checkout-actions-block',
+			].forEach( function ( selector ) {
+				resetPositionedElement( checkout.querySelector( selector ) );
+			} );
 			findCouponContents().forEach(
 				function ( coupon, index ) {
 					const couponBlock = coupon.closest(
@@ -371,7 +375,7 @@
 				actions.style.removeProperty( 'margin-top' );
 			}
 
-			grid.style.setProperty( '--tempo-checkout-express-offset', '0px' );
+			grid.style.removeProperty( '--tempo-checkout-rail-height' );
 			grid.removeAttribute( 'data-tempo-express-positioned' );
 			grid.setAttribute( 'data-tempo-checkout-flow', 'mobile' );
 			return positionCouponInTotals();
@@ -530,6 +534,16 @@
 			flattenWooLayoutWrappers();
 			grid.setAttribute( 'data-tempo-checkout-flow', 'desktop' );
 
+			/*
+			 * Stack the whole payment rail down the right-hand column with the
+			 * absolute-position technique. Grid rows are shared between the two
+			 * columns, so leaving these blocks as row-placed grid items tied the
+			 * left column's flow to the rail's height and opened a rail-sized gap
+			 * above "Contact information" whenever the payment side was taller
+			 * than the booking panel. Out of flow, each column scrolls its own
+			 * natural height; the measured rail height is handed back to the grid
+			 * so the page never ends above the rail.
+			 */
 			const expressContent = checkout.querySelector(
 				'.wc-block-components-express-payment'
 			);
@@ -544,27 +558,49 @@
 				|| paymentContent
 			);
 
-			if ( ! expressContent || ! payment ) {
-				grid.style.setProperty( '--tempo-checkout-express-offset', '0px' );
+			if ( ! payment ) {
 				grid.setAttribute(
 					'data-tempo-express-status',
-					'express:' + Boolean( expressContent ) + ';payment:' + Boolean( paymentContent )
+					'express:' + Boolean( expressContent ) + ';payment:false'
 				);
 				return;
 			}
 
-			const expressHeight = positionRailElement( expressContent, 0 );
-			const continueTop = expressHeight + 10;
-			const continueHeight = continueRule
-				? positionRailElement( continueRule, continueTop )
-				: 0;
-			const offset = continueTop + continueHeight + 18;
+			const railParts = [];
 
-			payment.style.setProperty( 'margin-top', offset + 'px', 'important' );
+			if ( expressContent ) {
+				railParts.push( { element: expressContent, gapBefore: 0 } );
+
+				if ( continueRule ) {
+					railParts.push( { element: continueRule, gapBefore: 10 } );
+				}
+			}
+
+			railParts.push( {
+				element: payment,
+				gapBefore: expressContent ? 18 : 0,
+			} );
+
+			[
+				checkout.querySelector( '.wp-block-woocommerce-checkout-order-note-block' ),
+				checkout.querySelector( '.wp-block-woocommerce-checkout-terms-block' ),
+				checkout.querySelector( '.wp-block-woocommerce-checkout-actions-block' ),
+			].forEach( function ( element ) {
+				if ( element ) {
+					railParts.push( { element: element, gapBefore: 18 } );
+				}
+			} );
+
+			let railBottom = 0;
+
+			railParts.forEach( function ( part ) {
+				railBottom += part.gapBefore;
+				railBottom += positionRailElement( part.element, railBottom );
+			} );
 
 			grid.style.setProperty(
-				'--tempo-checkout-express-offset',
-				offset + 'px'
+				'--tempo-checkout-rail-height',
+				Math.ceil( railBottom ) + 'px'
 			);
 			grid.setAttribute( 'data-tempo-express-positioned', 'true' );
 			grid.removeAttribute( 'data-tempo-express-status' );
@@ -684,13 +720,26 @@
 		} );
 
 		if ( 'ResizeObserver' in window ) {
-			const express = checkout.querySelector(
-				'.wp-block-woocommerce-checkout-express-payment-block'
-			);
+			/*
+			 * Every rail member is height-watched: the stack is positioned, so a
+			 * block growing (an expanded payment method, a validation message,
+			 * the order-note textarea) must re-run the stacking pass.
+			 */
+			const railObserver = new ResizeObserver( scheduleMirror );
 
-			if ( express ) {
-				new ResizeObserver( scheduleMirror ).observe( express );
-			}
+			[
+				'.wp-block-woocommerce-checkout-express-payment-block',
+				'.wp-block-woocommerce-checkout-payment-block',
+				'.wp-block-woocommerce-checkout-order-note-block',
+				'.wp-block-woocommerce-checkout-terms-block',
+				'.wp-block-woocommerce-checkout-actions-block',
+			].forEach( function ( selector ) {
+				const element = checkout.querySelector( selector );
+
+				if ( element ) {
+					railObserver.observe( element );
+				}
+			} );
 		}
 
 		window.addEventListener( 'resize', scheduleMirror, { passive: true } );
