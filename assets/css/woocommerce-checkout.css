@@ -1092,21 +1092,31 @@
 	/*
 	 * Booking panel main:
 	 * The wrapper chain becomes layout-transparent, then each native Woo block
-	 * is assigned to the approved column. The booking panel spans the payment
-	 * rail's five functional rows, so contact/billing begin after the booking
-	 * context without moving any React-controlled DOM. The native coupon is
-	 * visually appended to the booking totals; Woo's live total remains in the
-	 * DOM as the value source for the visible "To pay today" amount.
+	 * is assigned to the approved column. The left column is pure document
+	 * flow — booking panel, then contact/billing on their own grid rows — so
+	 * contact always begins directly under the booking context. The whole
+	 * payment rail (express, payment, note, terms, place-order) is stacked
+	 * down the right by the checkout script with the same absolute-position
+	 * technique already used for Express Checkout; the rail therefore never
+	 * shares grid rows with the left column, which is what used to open a
+	 * rail-height gap above "Contact information" whenever the payment side
+	 * was taller than the booking panel. The script reports the rail's height
+	 * back through --tempo-checkout-rail-height so the grid never ends above
+	 * the rail. The native coupon is visually appended to the booking totals;
+	 * Woo's live total remains in the DOM as the value source for the visible
+	 * "To pay today" amount.
 	 */
 	.tempo-woo-checkout .dsb-checkout:not(.dsb-checkout--swap):not(.dsb-checkout--inline) .dsb-checkout__grid {
-		--tempo-checkout-express-offset: 0px;
-
 		position: relative;
 		display: grid;
 		grid-template-columns: minmax(0, 1fr) var(--tempo-checkout-payment-rail);
 		grid-auto-rows: auto;
 		gap: 0 var(--tempo-checkout-gap);
 		align-items: start;
+		/* start, or the rail-height minimum would be shared out between the
+		   rows as stray gaps whenever the left column is the shorter one. */
+		align-content: start;
+		min-height: var(--tempo-checkout-rail-height, 0px);
 	}
 
 	.tempo-woo-checkout .dsb-checkout:not(.dsb-checkout--swap):not(.dsb-checkout--inline) .dsb-checkout__main {
@@ -1114,7 +1124,7 @@
 		z-index: 1;
 		width: auto;
 		grid-column: 1;
-		grid-row: 1 / span 5;
+		grid-row: 1;
 	}
 
 	.tempo-woo-checkout .dsb-checkout:not(.dsb-checkout--swap):not(.dsb-checkout--inline) .dsb-checkout__pay,
@@ -1175,10 +1185,13 @@
 		box-shadow: none;
 	}
 
+	/*
+	 * Rail members keep a column hint for the moment between React's render
+	 * and the script's stacking pass (the loading frame covers it); their
+	 * real position is applied by the script.
+	 */
 	.tempo-woo-checkout .dsb-checkout:not(.dsb-checkout--swap):not(.dsb-checkout--inline) .wp-block-woocommerce-checkout-payment-block {
 		grid-column: 2 !important;
-		grid-row: 2 !important;
-		margin-top: var(--tempo-checkout-express-offset) !important;
 	}
 
 	.tempo-woo-checkout .dsb-checkout:not(.dsb-checkout--swap):not(.dsb-checkout--inline) .wp-block-woocommerce-checkout-payment-block .wc-block-components-checkout-step__title {
@@ -1192,17 +1205,14 @@
 
 	.tempo-woo-checkout .dsb-checkout:not(.dsb-checkout--swap):not(.dsb-checkout--inline) .wp-block-woocommerce-checkout-order-note-block {
 		grid-column: 2 !important;
-		grid-row: 3 !important;
 	}
 
 	.tempo-woo-checkout .dsb-checkout:not(.dsb-checkout--swap):not(.dsb-checkout--inline) .wp-block-woocommerce-checkout-terms-block {
 		grid-column: 2 !important;
-		grid-row: 4 !important;
 	}
 
 	.tempo-woo-checkout .dsb-checkout:not(.dsb-checkout--inline) .wp-block-woocommerce-checkout-actions-block {
 		grid-column: 2 !important;
-		grid-row: 5 !important;
 		padding: 16px;
 	}
 	.tempo-woo-checkout .dsb-checkout:not(.dsb-checkout--inline) .wp-block-woocommerce-checkout-actions-block .wc-block-components-checkout-place-order-button {
