@@ -391,7 +391,6 @@ body.tempo-login {
 	margin: 22px 0 0;
 	color: var(--tempo-muted);
 	font-size: 13px;
-	text-align: center;
 }
 
 .tempo-login__register-prompt a {
