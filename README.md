@@ -87,10 +87,18 @@ set-password email only after the complete operation succeeds.
 - `theme.json` — design-system tokens (colours, type scale, spacing,
   radii, shadows) mapped verbatim from `design/_ds/…/fig-tokens.css`;
   `wideSize: 1140px` (the plugin's desktop layouts assume it).
-- `blocks/` — three tiny PHP-rendered blocks (no build step):
+- `blocks/` — four tiny PHP-rendered blocks (no build step):
   `tempo/logo`, `tempo/header-nav` (role-aware links + plugin pill),
-  `tempo/portal-strip`. `assets/js/editor-stub.js` gives them Site Editor
-  placeholders.
+  `tempo/classic-nav` (the registered header menu), `tempo/portal-strip`.
+  `assets/js/editor-stub.js` gives them Site Editor placeholders.
+- `inc/nav-menu.php` — classic header menu: registers the `header` menu
+  location (edited under Appearance → Menus, seeded with "My account" on
+  activation), strips WooCommerce's auto-hooked account/mini-cart icon
+  blocks from any Navigation block, and provides the display settings in
+  **Customize → Header navigation**: show icons & text on links (each
+  item picks a built-in icon or uploads its own image on the Menus
+  screen), and mobile behaviour — collapse behind a menu button, or keep
+  links inline as icons only.
 - `parts/`, `templates/`, `patterns/` — chrome parts and page templates.
 - `inc/woocommerce-account.php`, `inc/woocommerce-checkout.php`,
   `assets/css/woocommerce-account.css`, `assets/css/woocommerce-checkout.css`,

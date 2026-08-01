@@ -78,30 +78,190 @@
 	opacity: 0.7;
 }
 
-/* Editable Navigation block (parts/header.html) — matched to the pinned
- * link above so both read as one nav, and kept contrast-aware for a
- * custom header background the same way. */
+/* Classic header menu (tempo/classic-nav, Appearance → Menus) — matched
+ * to the pinned link above so both read as one nav, and kept
+ * contrast-aware for a custom header background the same way. */
 
-.tempo-header__nav-cluster .wp-block-navigation {
-	--wp--style--root--padding-top: 0;
-	min-height: 0;
+.tempo-classic-nav {
+	position: relative;
+	display: flex;
+	align-items: center;
 }
 
-.tempo-header__nav-cluster .wp-block-navigation .wp-block-navigation-item__content {
+.tempo-classic-nav__list {
+	display: flex;
+	align-items: center;
+	gap: 20px;
+	margin: 0;
+	padding: 0;
+	list-style: none;
+}
+
+.tempo-classic-nav__list li {
+	position: relative;
+}
+
+.tempo-classic-nav__list a {
+	display: inline-flex;
+	align-items: center;
+	gap: 6px;
 	color: var(--wp--custom--header--foreground, var(--wp--preset--color--brand-secondary, #330164));
 	font-family: var(--wp--preset--font-family--body, Montserrat, sans-serif);
 	font-size: 11px;
 	font-weight: 600;
 	line-height: 1.4;
+	text-decoration: none;
+	white-space: nowrap;
 }
 
-.tempo-header__nav-cluster .wp-block-navigation .wp-block-navigation-item__content:hover {
+.tempo-classic-nav__list a:hover,
+.tempo-classic-nav__list a:focus {
 	color: var(--wp--custom--header--foreground, var(--wp--preset--color--brand-secondary, #330164));
 	opacity: 0.7;
 }
 
-.tempo-header__nav-cluster .wp-block-navigation .wp-block-navigation__responsive-container-open svg {
-	fill: var(--wp--custom--header--foreground, var(--wp--preset--color--brand-secondary, #330164));
+/* Per-link icons (Customize → Header navigation + Appearance → Menus). */
+
+.tempo-nav-icon {
+	display: inline-flex;
+	line-height: 0;
+	flex: none;
+}
+
+.tempo-nav-icon svg {
+	width: 15px;
+	height: 15px;
+}
+
+.tempo-nav-icon .tempo-nav-icon__img {
+	display: block;
+	width: 16px;
+	height: 16px;
+	object-fit: contain;
+}
+
+/* Dropdown for second-level items. */
+
+.tempo-classic-nav__list .sub-menu {
+	display: none;
+	position: absolute;
+	top: 100%;
+	left: 0;
+	z-index: 30;
+	flex-direction: column;
+	gap: 2px;
+	min-width: 170px;
+	margin: 4px 0 0;
+	padding: 6px;
+	list-style: none;
+	background: var(--wp--custom--header--background, var(--wp--preset--color--base, #ffffff));
+	border: 1px solid var(--wp--preset--color--border, #e5e7eb);
+	border-radius: 8px;
+	box-shadow: 0 8px 24px rgba(0, 0, 0, 0.08);
+}
+
+.tempo-classic-nav__list li:hover > .sub-menu,
+.tempo-classic-nav__list li:focus-within > .sub-menu {
+	display: flex;
+}
+
+.tempo-classic-nav__list .sub-menu a {
+	width: 100%;
+	padding: 6px 10px;
+	border-radius: 6px;
+	white-space: normal;
+}
+
+/* Mobile toggle button — hidden on desktop, shown by collapse mode. */
+
+.tempo-classic-nav__toggle {
+	display: none;
+	align-items: center;
+	padding: 4px;
+	background: none;
+	border: 0;
+	line-height: 0;
+	color: var(--wp--custom--header--foreground, var(--wp--preset--color--brand-secondary, #330164));
+	cursor: pointer;
+}
+
+.tempo-classic-nav__toggle svg {
+	width: 22px;
+	height: 22px;
+}
+
+.tempo-classic-nav__toggle-close,
+.tempo-classic-nav.is-open .tempo-classic-nav__toggle-open {
+	display: none;
+}
+
+.tempo-classic-nav.is-open .tempo-classic-nav__toggle-close {
+	display: block;
+}
+
+@media (max-width: 999px) {
+	/* Collapse mode: menu button opening a dropdown panel. */
+	.tempo-classic-nav--m-collapse .tempo-classic-nav__toggle {
+		display: inline-flex;
+	}
+
+	.tempo-classic-nav--m-collapse .tempo-classic-nav__list {
+		display: none;
+		position: absolute;
+		top: calc(100% + 10px);
+		right: 0;
+		z-index: 40;
+		flex-direction: column;
+		align-items: stretch;
+		gap: 2px;
+		min-width: 200px;
+		padding: 8px;
+		background: var(--wp--custom--header--background, var(--wp--preset--color--base, #ffffff));
+		border: 1px solid var(--wp--preset--color--border, #e5e7eb);
+		border-radius: 8px;
+		box-shadow: 0 8px 24px rgba(0, 0, 0, 0.12);
+	}
+
+	.tempo-classic-nav--m-collapse.is-open .tempo-classic-nav__list {
+		display: flex;
+	}
+
+	.tempo-classic-nav--m-collapse .tempo-classic-nav__list a {
+		padding: 8px 10px;
+		border-radius: 6px;
+		white-space: normal;
+	}
+
+	/* Submenus render inline (indented) inside the panel. */
+	.tempo-classic-nav--m-collapse .tempo-classic-nav__list .sub-menu {
+		display: flex;
+		position: static;
+		min-width: 0;
+		margin: 0;
+		padding: 0 0 0 14px;
+		border: 0;
+		box-shadow: none;
+	}
+
+	/* Icons-only mode: links stay inline; labels of links that have an
+	 * icon are visually hidden but stay readable to assistive tech. */
+	.tempo-classic-nav--m-icons .tempo-nav-icon svg,
+	.tempo-classic-nav--m-icons .tempo-nav-icon .tempo-nav-icon__img {
+		width: 20px;
+		height: 20px;
+	}
+
+	.tempo-classic-nav--m-icons .tempo-nav-icon + .tempo-nav-label {
+		position: absolute;
+		width: 1px;
+		height: 1px;
+		margin: -1px;
+		padding: 0;
+		overflow: hidden;
+		clip: rect(0, 0, 0, 0);
+		white-space: nowrap;
+		border: 0;
+	}
 }
 
 /* -------------------------------------------------------------------------

@@ -47,6 +47,11 @@
 		__( 'rendered on the front end: basket pill + the role-aware Book classes / My classes link', 'tempo-book-it-theme' )
 	);
 	registerStub(
+		'tempo/classic-nav',
+		__( 'Header menu', 'tempo-book-it-theme' ),
+		__( 'rendered on the front end: the Appearance → Menus header menu, with icon and mobile options in Customize → Header navigation', 'tempo-book-it-theme' )
+	);
+	registerStub(
 		'tempo/portal-strip',
 		__( 'Portal strip', 'tempo-book-it-theme' ),
 		__( 'rendered on the front end: portal label, signed-in name, log out', 'tempo-book-it-theme' )

@@ -31,52 +31,10 @@ function tempo_book_it_setup() {
 }
 add_action( 'after_setup_theme', 'tempo_book_it_setup' );
 
-/**
- * Seed a starter header navigation menu so the editable Navigation block
- * (parts/header.html) isn't empty on a fresh install, and — more
- * importantly — doesn't fall back to WordPress's own default of "every
- * top-level page", which would duplicate the pinned Book classes/My
- * classes link (those pages are top-level too). Never runs again once any
- * navigation menu exists, so it can't clobber a school's own editing.
- */
-function tempo_book_it_seed_navigation() {
-	if ( ! post_type_exists( 'wp_navigation' ) ) {
-		return;
-	}
-
-	$existing = new WP_Query(
-		array(
-			'post_type'      => 'wp_navigation',
-			'post_status'    => 'publish',
-			'posts_per_page' => 1,
-			'fields'         => 'ids',
-			'no_found_rows'  => true,
-		)
-	);
-	if ( $existing->have_posts() ) {
-		return;
-	}
-
-	wp_insert_post(
-		array(
-			'post_type'    => 'wp_navigation',
-			'post_status'  => 'publish',
-			'post_title'   => __( 'Header navigation', 'tempo-book-it-theme' ),
-			'post_content' => '<!-- wp:navigation-link ' . wp_json_encode(
-				array(
-					'label' => __( 'My account', 'tempo-book-it-theme' ),
-					'url'   => tempo_account_url(),
-					'kind'  => 'custom',
-				)
-			) . ' /-->',
-		)
-	);
-}
-add_action( 'after_switch_theme', 'tempo_book_it_seed_navigation' );
-
 function tempo_book_it_register_blocks() {
 	register_block_type( get_theme_file_path( 'blocks/logo' ) );
 	register_block_type( get_theme_file_path( 'blocks/header-nav' ) );
+	register_block_type( get_theme_file_path( 'blocks/classic-nav' ) );
 	register_block_type( get_theme_file_path( 'blocks/portal-strip' ) );
 }
 add_action( 'init', 'tempo_book_it_register_blocks' );
@@ -557,6 +515,7 @@ add_action( 'template_redirect', 'tempo_book_it_require_login' );
  * Theme-owned sign-in experience.
  * ---------------------------------------------------------------------- */
 
+require_once get_theme_file_path( 'inc/nav-menu.php' );
 require_once get_theme_file_path( 'inc/custom-login.php' );
 require_once get_theme_file_path( 'inc/woocommerce-account.php' );
 require_once get_theme_file_path( 'inc/woocommerce-checkout.php' );
