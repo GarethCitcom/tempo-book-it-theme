@@ -23,17 +23,41 @@
 defined( 'ABSPATH' ) || exit;
 
 /* -------------------------------------------------------------------------
- * Menu location + WooCommerce nav-icon removal
+ * Menu locations + WooCommerce nav-icon removal
  * ---------------------------------------------------------------------- */
 
-function tempo_book_it_register_menus() {
-	register_nav_menus(
-		array(
-			'header' => __( 'Header navigation', 'tempo-book-it-theme' ),
-		)
+/**
+ * The three header menu locations, one per audience. Each viewer sees only
+ * the menu for their own role: students/parents get `header`, teachers get
+ * `header-teacher`, school admins get `header-admin` (see
+ * tempo_nav_menu_location() for the role mapping).
+ */
+function tempo_book_it_nav_locations() {
+	return array(
+		'header'         => __( 'Header (students & parents)', 'tempo-book-it-theme' ),
+		'header-teacher' => __( 'Header (teachers)', 'tempo-book-it-theme' ),
+		'header-admin'   => __( 'Header (school admins)', 'tempo-book-it-theme' ),
 	);
 }
+
+function tempo_book_it_register_menus() {
+	register_nav_menus( tempo_book_it_nav_locations() );
+}
 add_action( 'after_setup_theme', 'tempo_book_it_register_menus' );
+
+/**
+ * The menu location for the current viewer's role. Admin wins over
+ * teacher (a school admin who also teaches sees the admin menu).
+ */
+function tempo_nav_menu_location() {
+	if ( tempo_is_school_admin() ) {
+		return 'header-admin';
+	}
+	if ( tempo_is_teacher() ) {
+		return 'header-teacher';
+	}
+	return 'header';
+}
 
 /**
  * WooCommerce auto-inserts its Customer Account and Mini-Cart icon blocks
@@ -56,43 +80,11 @@ function tempo_book_it_unhook_woo_nav_icons( $hooked_block_types, $relative_posi
 add_filter( 'hooked_block_types', 'tempo_book_it_unhook_woo_nav_icons', 10, 3 );
 
 /**
- * Seed the header menu on activation so the location isn't empty: a
- * "Header navigation" menu with the My account link. Never touches an
- * existing assignment, so it can't clobber a school's own menu.
+ * Menu output while the viewer's location has no menu assigned. No menu is
+ * seeded on activation on purpose: assigning a menu to a location replaces
+ * that role's pinned tempo/header-nav links (basket pill included), so
+ * taking over the header must be a school's own deliberate step.
  */
-function tempo_book_it_seed_menu() {
-	$locations = get_nav_menu_locations();
-	if ( ! empty( $locations['header'] ) && wp_get_nav_menu_object( $locations['header'] ) ) {
-		return;
-	}
-
-	$menu    = wp_get_nav_menu_object( 'Header navigation' );
-	$menu_id = $menu ? (int) $menu->term_id : 0;
-
-	if ( ! $menu_id ) {
-		$menu_id = wp_create_nav_menu( __( 'Header navigation', 'tempo-book-it-theme' ) );
-		if ( is_wp_error( $menu_id ) ) {
-			return;
-		}
-		wp_update_nav_menu_item(
-			$menu_id,
-			0,
-			array(
-				'menu-item-title'  => __( 'My account', 'tempo-book-it-theme' ),
-				'menu-item-url'    => tempo_account_url(),
-				'menu-item-type'   => 'custom',
-				'menu-item-status' => 'publish',
-			)
-		);
-	}
-
-	$locations           = array_filter( (array) get_theme_mod( 'nav_menu_locations', array() ) );
-	$locations['header'] = $menu_id;
-	set_theme_mod( 'nav_menu_locations', $locations );
-}
-add_action( 'after_switch_theme', 'tempo_book_it_seed_menu' );
-
-/** Menu output when no menu is assigned to the header location yet. */
 function tempo_book_it_nav_fallback() {
 	echo '<ul id="tempo-classic-nav-list" class="tempo-classic-nav__list"><li class="menu-item"><a href="'
 		. esc_url( tempo_account_url() ) . '">'
@@ -281,7 +273,10 @@ function tempo_book_it_nav_item_icon_html( $item_id ) {
  * icons-only mobile CSS can hide text without losing the accessible name.
  */
 function tempo_book_it_nav_item_title( $title, $item, $args ) {
-	if ( empty( $args->theme_location ) || 'header' !== $args->theme_location || ! tempo_nav_show_icons() ) {
+	if ( empty( $args->theme_location )
+		|| ! array_key_exists( $args->theme_location, tempo_book_it_nav_locations() )
+		|| ! tempo_nav_show_icons()
+	) {
 		return $title;
 	}
 	$label = '<span class="tempo-nav-label">' . $title . '</span>';

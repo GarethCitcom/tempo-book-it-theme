@@ -198,6 +198,25 @@ function tempo_is_teacher( $user = null ) {
 }
 
 /**
+ * Whether a user gets the school-admin chrome (the admin header menu).
+ * Administrators qualify by default; the filter lets a site map the
+ * plugin's own school-admin role (or any other) without touching the theme.
+ *
+ * @param WP_User|null $user Defaults to the current user.
+ */
+function tempo_is_school_admin( $user = null ) {
+	$user = $user instanceof WP_User ? $user : wp_get_current_user();
+	if ( ! $user->exists() ) {
+		return false;
+	}
+	$admin_roles = apply_filters( 'tempo_book_it_admin_roles', array( 'administrator' ) );
+	if ( array_intersect( $admin_roles, (array) $user->roles ) ) {
+		return true;
+	}
+	return user_can( $user, 'manage_options' );
+}
+
+/**
  * Permalink of the first published page containing a shortcode, cached for a
  * day. Falls back when the plugin (and so the shortcode) isn't registered.
  *

@@ -77,6 +77,7 @@ set-password email only after the complete operation succeeds.
 | Filter | Default | Purpose |
 | --- | --- | --- |
 | `tempo_book_it_teacher_roles` | `['teacher']` | Roles that get the teacher chrome |
+| `tempo_book_it_admin_roles` | `['administrator']` | Roles that get the school-admin header menu (`manage_options` also qualifies) |
 | `tempo_book_it_book_url` | auto-detected, else `/book-classes/` | Page hosting `[dsb_booking]` |
 | `tempo_book_it_my_classes_url` | auto-detected, else `/my-classes/` | Page hosting `[dsb_register]` |
 | `tempo_book_it_public_paths` | `[]` | Path prefixes exempt from the login gate |
@@ -91,14 +92,20 @@ set-password email only after the complete operation succeeds.
   `tempo/logo`, `tempo/header-nav` (role-aware links + plugin pill),
   `tempo/classic-nav` (the registered header menu), `tempo/portal-strip`.
   `assets/js/editor-stub.js` gives them Site Editor placeholders.
-- `inc/nav-menu.php` — classic header menu: registers the `header` menu
-  location (edited under Appearance → Menus, seeded with "My account" on
-  activation), strips WooCommerce's auto-hooked account/mini-cart icon
-  blocks from any Navigation block, and provides the display settings in
-  **Customize → Header navigation**: show icons & text on links (each
-  item picks a built-in icon or uploads its own image on the Menus
-  screen), and mobile behaviour — collapse behind a menu button, or keep
-  links inline as icons only.
+- `inc/nav-menu.php` — classic header menus: registers three role-scoped
+  menu locations (edited under Appearance → Menus) — `header` (students &
+  parents), `header-teacher` (teachers), `header-admin` (school admins) —
+  each visible only to its own audience. Assigning a menu to a role's
+  location hands that role's header links entirely to the menu: the
+  pinned `tempo/header-nav` block (basket pill + Book classes / My
+  classes) stops rendering for that role. Until then the pinned links
+  stay and the menu area falls back to a bare "My account" link. Also
+  strips WooCommerce's auto-hooked account/mini-cart icon blocks from any
+  Navigation block, and provides the display settings in **Customize →
+  Header navigation**: show icons & text on links (each item picks a
+  built-in icon or uploads its own image on the Menus screen), and mobile
+  behaviour — collapse behind a menu button, or keep links inline as
+  icons only.
 - `parts/`, `templates/`, `patterns/` — chrome parts and page templates.
 - `inc/woocommerce-account.php`, `inc/woocommerce-checkout.php`,
   `assets/css/woocommerce-account.css`, `assets/css/woocommerce-checkout.css`,

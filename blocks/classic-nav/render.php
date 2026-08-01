@@ -1,21 +1,25 @@
 <?php
 /**
- * Header menu — renders the classic `header` menu location (Appearance →
- * Menus). Display options live in Customize → Header navigation:
+ * Header menu — renders the classic menu location for the viewer's role
+ * (Appearance → Menus): students/parents, teachers, or school admins —
+ * see tempo_nav_menu_location(). Display options live in Customize →
+ * Header navigation:
  *
  * - icons & text on each link (per-item icon chosen on the Menus screen),
  * - mobile behaviour: collapse behind a toggle button, or stay inline
  *   showing icons only.
  *
- * The role-aware Book classes / My classes link and the basket pill are
- * the tempo/header-nav block, not menu items.
+ * While a role's location has no menu assigned, the tempo/header-nav
+ * block provides that role's pinned links and this block falls back to a
+ * bare My account link; assigning a menu hands the whole nav to it.
  *
  * @package tempo-book-it-theme
  */
 
 defined( 'ABSPATH' ) || exit;
 
-$tempo_nav_mobile  = tempo_nav_mobile_style();
+$tempo_nav_location = tempo_nav_menu_location();
+$tempo_nav_mobile   = tempo_nav_mobile_style();
 $tempo_nav_classes = 'tempo-classic-nav tempo-classic-nav--m-' . $tempo_nav_mobile;
 if ( tempo_nav_show_icons() ) {
 	$tempo_nav_classes .= ' tempo-classic-nav--has-icons';
@@ -42,7 +46,7 @@ if ( 'collapse' === $tempo_nav_mobile ) {
 	<?php
 	wp_nav_menu(
 		array(
-			'theme_location' => 'header',
+			'theme_location' => $tempo_nav_location,
 			'container'      => false,
 			'menu_id'        => 'tempo-classic-nav-list',
 			'menu_class'     => 'tempo-classic-nav__list',
