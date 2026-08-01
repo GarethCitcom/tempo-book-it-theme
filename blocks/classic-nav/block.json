@@ -1,0 +1,15 @@
+{
+	"$schema": "https://schemas.wp.org/trunk/block.json",
+	"apiVersion": 3,
+	"name": "tempo/classic-nav",
+	"title": "Header menu",
+	"category": "theme",
+	"description": "The classic registered header menu for the viewer's role — students & parents, teachers, or school admins (Appearance → Menus) — with optional per-link icons and configurable mobile behaviour (Customize → Header navigation).",
+	"textdomain": "tempo-book-it-theme",
+	"supports": {
+		"html": false,
+		"multiple": false,
+		"reusable": false
+	},
+	"render": "file:./render.php"
+}

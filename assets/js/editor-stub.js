@@ -44,7 +44,12 @@
 	registerStub(
 		'tempo/header-nav',
 		__( 'Portal header nav', 'tempo-book-it-theme' ),
-		__( 'rendered on the front end: basket pill + the role-aware Book classes / My classes link', 'tempo-book-it-theme' )
+		__( 'rendered on the front end: basket pill + the role-aware Book classes / My classes link; hidden once a menu is assigned to the viewer’s header location', 'tempo-book-it-theme' )
+	);
+	registerStub(
+		'tempo/classic-nav',
+		__( 'Header menu', 'tempo-book-it-theme' ),
+		__( 'rendered on the front end: the Appearance → Menus header menu for the viewer’s role (students & parents / teachers / school admins), with icon and mobile options in Customize → Header navigation', 'tempo-book-it-theme' )
 	);
 	registerStub(
 		'tempo/portal-strip',

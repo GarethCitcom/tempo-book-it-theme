@@ -4,7 +4,7 @@
 	"name": "tempo/header-nav",
 	"title": "Portal header nav",
 	"category": "theme",
-	"description": "Role-aware header navigation: basket pill (customers, plugin-rendered) plus Book classes / My classes and My account links.",
+	"description": "Role-aware pinned header navigation: basket pill (customers, plugin-rendered) plus the Book classes / My classes link. Renders nothing once a menu is assigned to the viewer's header location.",
 	"textdomain": "tempo-book-it-theme",
 	"supports": {
 		"html": false,
