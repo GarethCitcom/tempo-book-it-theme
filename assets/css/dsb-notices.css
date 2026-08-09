@@ -310,10 +310,11 @@ html.tempo-notices-js body.tempo-woo-notices .wc-block-components-notice-banner:
  * ---------------------------------------------------------------------- */
 
 .dsb-toast-region {
-	/* The theme has no header-height variable and the header is not sticky, so
-	 * the offset is derived from the tokens that do exist: logo + the header's
-	 * 24px vertical padding + its bottom border + the portal strip + a gap.
-	 * A tenant raising logoHeight moves the toasts with it.
+	/* The theme has no header-height variable, so the offset is derived from
+	 * the tokens that do exist: logo + the header's 24px vertical padding +
+	 * its bottom border + the portal strip + a gap. A tenant raising
+	 * logoHeight moves the toasts with it. Below 767px the header is sticky
+	 * (chrome.css), so this lands the toasts just clear of it.
 	 *
 	 * Two known imprecisions, both harmless: the plugin's basket pill could in
 	 * principle be taller than the logo, and the portal strip is absent for
