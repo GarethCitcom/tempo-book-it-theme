@@ -245,14 +245,63 @@ function tempo_book_it_record_login_failure($username, $error = null)
 add_action('wp_login_failed', 'tempo_book_it_record_login_failure', 10, 2);
 
 /**
+ * Every counter that could be holding a sign-in block for one person.
+ *
+ * Failures are counted against whatever the member typed, and the form asks
+ * for "Email address or username", so the count usually sits under an email
+ * address rather than a login name. Anything that wants to clear a block has
+ * to clear both forms, or it will clear a counter that was never used and
+ * leave the real one standing.
+ *
+ * The typed string is always included whether or not it matches an account:
+ * someone hammering a name that does not exist still builds up a counter under
+ * it, and that counter has to be reachable too.
+ *
+ * Only the per-account counters are returned. A connection is never included —
+ * knowing a member's name should not let anyone lift a block on a connection
+ * they can only guess at.
+ *
+ * @param string $login Username or email address.
+ * @return string[]
+ */
+function tempo_book_it_login_counter_keys($login)
+{
+	$normalized = tempo_book_it_normalize_login($login);
+	if ('' === $normalized) {
+		return array();
+	}
+
+	$keys = array(tempo_book_it_rate_limit_key('login_user', $normalized));
+
+	$user = get_user_by('login', $normalized);
+	if (! $user) {
+		$user = get_user_by('email', $normalized);
+	}
+	if ($user instanceof WP_User) {
+		$keys[] = tempo_book_it_rate_limit_key('login_user', tempo_book_it_normalize_login($user->user_login));
+		$keys[] = tempo_book_it_rate_limit_key('login_user', tempo_book_it_normalize_login($user->user_email));
+	}
+
+	return array_values(array_unique($keys));
+}
+
+/**
  * Clear the counters once someone signs in successfully.
+ *
+ * Both forms of the member's identity are cleared, not just the login name
+ * core hands us. Someone who signs in with their email address is counted
+ * under that address, and clearing only the login name would leave the real
+ * count standing — enough that one more slip minutes later could lock them out
+ * immediately after signing in perfectly well.
  *
  * @param string  $user_login Login of the user who signed in.
  * @param WP_User $user       The user who signed in.
  */
 function tempo_book_it_clear_login_failures($user_login, $user = null)
 {
-	tempo_book_it_rate_limit_clear(tempo_book_it_rate_limit_key('login_user', tempo_book_it_normalize_login($user_login)));
+	foreach (tempo_book_it_login_counter_keys($user_login) as $key) {
+		tempo_book_it_rate_limit_clear($key);
+	}
 	tempo_book_it_rate_limit_clear(tempo_book_it_rate_limit_key('login_ip', tempo_book_it_client_ip()));
 }
 add_action('wp_login', 'tempo_book_it_clear_login_failures', 10, 2);
