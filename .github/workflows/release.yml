@@ -1,4 +1,11 @@
-# Publishes a theme release when a v* tag is pushed.
+# Publishes a theme release.
+#
+# Two ways in, one code path:
+#
+#   push a v* tag       the usual route — tag the merge commit and push.
+#   run it by hand      Actions → Release → Run workflow, on main. The tag is
+#                       derived from style.css and created by the release step,
+#                       so there is nothing to type and nothing to mistype.
 #
 # Two artifacts, both attached to the GitHub release:
 #
@@ -19,6 +26,7 @@ on:
   push:
     tags:
       - 'v*'
+  workflow_dispatch:
 
 permissions:
   contents: write
@@ -28,7 +36,7 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
-      - name: Check out the tag
+      - name: Check out the commit being released
         uses: actions/checkout@v4
 
       - name: Read the theme headers
@@ -45,14 +53,44 @@ jobs:
             echo "tested=$(header 'Tested up to')"
           } >> "$GITHUB_OUTPUT"
 
-      - name: Fail if the tag and the theme version disagree
+      - name: Settle on the tag
+        id: tag
         env:
           VERSION: ${{ steps.theme.outputs.version }}
         run: |
           set -euo pipefail
-          if [ "${GITHUB_REF_NAME#v}" != "$VERSION" ]; then
-            echo "Tag $GITHUB_REF_NAME does not match style.css Version $VERSION." >&2
-            echo "Bump the header and retag, so sites are never offered a version they already run." >&2
+          if [ -z "$VERSION" ]; then
+            echo "No Version header in style.css." >&2
+            exit 1
+          fi
+
+          if [ "$GITHUB_REF_TYPE" = "tag" ]; then
+            # Tag route: the tag is authoritative, and must match the header —
+            # a release announcing a version the theme does not carry would
+            # leave every site re-offered an update it already installed.
+            if [ "${GITHUB_REF_NAME#v}" != "$VERSION" ]; then
+              echo "Tag $GITHUB_REF_NAME does not match style.css Version $VERSION." >&2
+              echo "Bump the header and retag." >&2
+              exit 1
+            fi
+            tag="$GITHUB_REF_NAME"
+          else
+            # Manual route: the header is authoritative and the release step
+            # creates the tag at this commit.
+            tag="v$VERSION"
+          fi
+
+          echo "tag=$tag" >> "$GITHUB_OUTPUT"
+          echo "Releasing $tag"
+
+      - name: Refuse to republish an existing release
+        env:
+          GH_TOKEN: ${{ github.token }}
+          TAG: ${{ steps.tag.outputs.tag }}
+        run: |
+          set -euo pipefail
+          if gh release view "$TAG" >/dev/null 2>&1; then
+            echo "Release $TAG already exists. Bump the Version header first." >&2
             exit 1
           fi
 
@@ -66,6 +104,7 @@ jobs:
       - name: Write the update manifest
         env:
           REPO: ${{ github.repository }}
+          TAG: ${{ steps.tag.outputs.tag }}
           VERSION: ${{ steps.theme.outputs.version }}
           REQUIRES: ${{ steps.theme.outputs.requires }}
           REQUIRES_PHP: ${{ steps.theme.outputs.requires_php }}
@@ -77,8 +116,8 @@ jobs:
             --arg requires "$REQUIRES" \
             --arg requires_php "$REQUIRES_PHP" \
             --arg tested "$TESTED" \
-            --arg url "https://github.com/$REPO/releases/tag/$GITHUB_REF_NAME" \
-            --arg download_url "https://github.com/$REPO/releases/download/$GITHUB_REF_NAME/tempo-book-it-theme.zip" \
+            --arg url "https://github.com/$REPO/releases/tag/$TAG" \
+            --arg download_url "https://github.com/$REPO/releases/download/$TAG/tempo-book-it-theme.zip" \
             '{
                name: "Tempo Book It Theme",
                theme: "tempo-book-it-theme",
@@ -94,10 +133,12 @@ jobs:
       - name: Publish the release
         env:
           GH_TOKEN: ${{ github.token }}
+          TAG: ${{ steps.tag.outputs.tag }}
         run: |
           set -euo pipefail
-          gh release create "$GITHUB_REF_NAME" \
+          gh release create "$TAG" \
             tempo-book-it-theme.zip \
             update.json \
-            --title "$GITHUB_REF_NAME" \
+            --target "$GITHUB_SHA" \
+            --title "$TAG" \
             --generate-notes

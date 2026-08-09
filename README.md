@@ -67,10 +67,14 @@ the mechanism travels inside the theme.
 1. Merge `development` into `main`.
 2. Bump `Version:` in `style.css`. This is the number every site
    compares against, so nothing ships without it.
-3. Tag the merge commit `vX.Y.Z` and push the tag.
+3. Either tag the merge commit `vX.Y.Z` and push the tag, or run
+   **Actions → Release → Run workflow** against `main` — the manual route
+   derives the tag from the header and creates it, so there is nothing to
+   type.
 
-`.github/workflows/release.yml` does the rest: it refuses the tag if it
-disagrees with the header, builds `tempo-book-it-theme.zip` (unpacking to
+`.github/workflows/release.yml` does the rest: it refuses a tag that
+disagrees with the header, refuses to republish a version that already
+has a release, builds `tempo-book-it-theme.zip` (unpacking to
 a folder named exactly `tempo-book-it-theme/`, which is what lets
 WordPress update in place — GitHub's own source zip unpacks to a
 versioned folder and cannot), writes `update.json` from the theme
