@@ -11,7 +11,8 @@
  *
  * While a role's location has no menu assigned, the tempo/header-nav
  * block provides that role's pinned links and this block falls back to a
- * bare My account link; assigning a menu hands the whole nav to it.
+ * bare My account link; assigning a menu hands the nav to it — all but
+ * the basket pill, which tempo/header-nav keeps rendering either way.
  *
  * @package tempo-book-it-theme
  */

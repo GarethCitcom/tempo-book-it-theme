@@ -15,7 +15,8 @@
  *   (labels stay available to screen readers).
  *
  * The role-aware "Book classes / My classes" link and the basket pill stay
- * in the tempo/header-nav block — they can't live in a static menu.
+ * in the tempo/header-nav block — they can't live in a static menu. An
+ * assigned menu takes over the link; the basket pill stays regardless.
  *
  * @package tempo-book-it-theme
  */
@@ -82,8 +83,9 @@ add_filter( 'hooked_block_types', 'tempo_book_it_unhook_woo_nav_icons', 10, 3 );
 /**
  * Menu output while the viewer's location has no menu assigned. No menu is
  * seeded on activation on purpose: assigning a menu to a location replaces
- * that role's pinned tempo/header-nav links (basket pill included), so
- * taking over the header must be a school's own deliberate step.
+ * that role's pinned tempo/header-nav links, so taking over the header must
+ * be a school's own deliberate step. The basket pill is never replaced —
+ * it holds the checkout countdown and the only route back to a held basket.
  */
 function tempo_book_it_nav_fallback() {
 	echo '<ul id="tempo-classic-nav-list" class="tempo-classic-nav__list"><li class="menu-item"><a href="'
