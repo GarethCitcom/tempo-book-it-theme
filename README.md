@@ -49,9 +49,12 @@ the mechanism travels inside the theme.
 - On each update check the theme reads a manifest published as a release
   asset, at
   `releases/latest/download/update.json` — a URL that always resolves to
-  the newest release. The result is cached for twelve hours (one hour
-  after a failure), and "Check again" on Dashboard → Updates bypasses the
-  cache.
+  the newest release. The result is cached for five minutes only (fifteen
+  after a failure): WordPress already decides how often a site checks —
+  twice daily on cron, hourly on the themes screen, every minute on
+  Dashboard → Updates — and a longer cache on top of that buys nothing
+  except the risk of reporting "up to date" hours after a release. "Check
+  again" clears the cache outright.
 - If the manifest names a higher version than `style.css`, WordPress
   shows the usual update notice on Appearance → Themes and Dashboard →
   Updates, with one-click update and auto-update support. Anything
