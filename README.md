@@ -54,7 +54,11 @@ the mechanism travels inside the theme.
   twice daily on cron, hourly on the themes screen, every minute on
   Dashboard → Updates — and a longer cache on top of that buys nothing
   except the risk of reporting "up to date" hours after a release. "Check
-  again" clears the cache outright.
+  again" clears the cache outright. The cached entry is stamped with the
+  theme version that wrote it and ignored if that is not the running one:
+  an entry written by an older copy carries whatever expiry *that* copy
+  chose, and updating the theme cannot shorten it. It is also dropped
+  outright whenever an upgrade completes.
 - If the manifest names a higher version than `style.css`, WordPress
   shows the usual update notice on Appearance → Themes and Dashboard →
   Updates, with one-click update and auto-update support. Anything
