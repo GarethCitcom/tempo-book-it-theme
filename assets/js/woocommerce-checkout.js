@@ -607,6 +607,45 @@
 			ready = positionCouponInTotals();
 		}
 
+		/**
+		 * What the selected payment method renames the place-order button to
+		 * ( '' when it leaves WooCommerce's default alone ).
+		 *
+		 * placeOrderButtonLabel is the block API's supported way for a gateway
+		 * to say its button does something other than place an order — PayPal
+		 * sets "Proceed to PayPal" because it redirects offsite. The card below
+		 * paints its own wording over that button ( the real text is shrunk to
+		 * font-size: 0 and replaced by an ::after ), so the gateway's label is
+		 * invisible unless it is asked for here, and the parent is promised a
+		 * payment and handed to PayPal instead.
+		 */
+		function gatewayPayLabel() {
+			try {
+				const payment = window.wp && window.wp.data
+					? window.wp.data.select( 'wc/store/payment' )
+					: null;
+				const active = payment && payment.getActivePaymentMethod
+					? payment.getActivePaymentMethod()
+					: '';
+
+				if ( ! active ) {
+					return '';
+				}
+
+				const registry = window.wc && window.wc.wcBlocksRegistry;
+				const methods = registry && registry.getPaymentMethods
+					? registry.getPaymentMethods()
+					: null;
+				const label = methods && methods[ active ]
+					? methods[ active ].placeOrderButtonLabel
+					: '';
+
+				return typeof label === 'string' ? label.trim() : '';
+			} catch ( error ) {
+				return ''; // No block payment store on this page.
+			}
+		}
+
 		function updateDesktopPayCard( button, formattedTotal, free ) {
 			const actionsBlock = button.closest(
 				'.wp-block-woocommerce-checkout-actions-block'
@@ -619,9 +658,11 @@
 				return;
 			}
 
+			// Nothing-to-pay wins outright: a £0 order goes to no gateway.
+			const gatewayLabel = free ? '' : gatewayPayLabel();
 			const payLabel = free
 				? 'Place order — nothing to pay today'
-				: 'Pay ' + formattedTotal + ' securely';
+				: gatewayLabel || 'Pay ' + formattedTotal + ' securely';
 
 			button.setAttribute( 'data-tempo-total', formattedTotal );
 			button.setAttribute( 'aria-label', payLabel );
@@ -689,15 +730,12 @@
 				const cartStore = window.wp.data.select( 'wc/store/cart' );
 				const totals = cartStore && cartStore.getCartTotals ? cartStore.getCartTotals() : null;
 
+				// The booking plugin's own sticky pay bar is left alone. This
+				// used to reach into it and toggle hidden on its label spans,
+				// which fought the plugin for the last word on its own button
+				// — and won, since this runs on every checkout mutation.
 				if ( totals && Object.prototype.hasOwnProperty.call( totals, 'total_price' ) ) {
 					free = Number( totals.total_price ) <= 0;
-
-					shell.querySelectorAll( '[data-dsb-pay-full]' ).forEach( function ( target ) {
-						target.hidden = free;
-					} );
-					shell.querySelectorAll( '[data-dsb-pay-free]' ).forEach( function ( target ) {
-						target.hidden = ! free;
-					} );
 				}
 			}
 
