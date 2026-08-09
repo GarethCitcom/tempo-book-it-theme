@@ -102,13 +102,11 @@ function tempo_book_it_registration_attempt_allowed()
 {
 	$limit  = max(1, (int) apply_filters('tempo_book_it_registration_attempt_limit', 5));
 	$window = max(MINUTE_IN_SECONDS, (int) apply_filters('tempo_book_it_registration_attempt_window', 15 * MINUTE_IN_SECONDS));
-	$remote = isset($_SERVER['REMOTE_ADDR']) ? sanitize_text_field(wp_unslash($_SERVER['REMOTE_ADDR'])) : 'unknown';
-	$key    = 'tempo_reg_' . substr(hash_hmac('sha256', $remote, wp_salt('nonce')), 0, 32);
-	$count  = (int) get_transient($key);
-	if ($count >= $limit) {
+	$key    = tempo_book_it_rate_limit_key('reg_ip', tempo_book_it_client_ip());
+	if (tempo_book_it_rate_limit_count($key) >= $limit) {
 		return false;
 	}
-	set_transient($key, $count + 1, $window);
+	tempo_book_it_rate_limit_hit($key, $window);
 	return true;
 }
 
