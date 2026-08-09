@@ -930,3 +930,20 @@ body.login .button-primary {
 		transition-duration: 0.01ms !important;
 	}
 }
+
+/* -------------------------------------------------------------------------
+   Security check (ALTCHA widget)
+   ---------------------------------------------------------------------- */
+
+.tempo-field--altcha altcha-widget {
+	display: block;
+	--altcha-border-color: var(--tempo-border);
+	--altcha-border-radius: 12px;
+	--altcha-border-width: 1px;
+	--altcha-color-base: #fff;
+	--altcha-color-base-content: var(--tempo-ink);
+	--altcha-color-primary: var(--tempo-brand-primary);
+	--altcha-color-primary-content: var(--tempo-brand-on-primary);
+	--altcha-checkbox-outline-color: var(--tempo-brand-primary);
+	--altcha-max-width: 100%;
+}

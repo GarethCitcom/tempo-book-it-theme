@@ -313,6 +313,8 @@ function tempo_book_it_custom_login()
 			$user_login = isset($_POST['log']) ? sanitize_text_field(wp_unslash($_POST['log'])) : '';
 			if (! isset($_POST['tempo_login_nonce']) || ! wp_verify_nonce(sanitize_text_field(wp_unslash($_POST['tempo_login_nonce'])), 'tempo_login')) {
 				$errors->add('invalid_nonce', __('Your session expired. Refresh the page and try again.', 'tempo-book-it-theme'));
+			} elseif (tempo_book_it_altcha_required_for_login() && ! tempo_book_it_check_altcha()) {
+				$errors->add('tempo_altcha', __('Please complete the security check and try again.', 'tempo-book-it-theme'));
 			} else {
 				$user = wp_signon(
 					array(
@@ -339,6 +341,8 @@ function tempo_book_it_custom_login()
 			} elseif ('' !== $honeypot) {
 				wp_safe_redirect(tempo_book_it_login_url($redirect_to, 'registered'));
 				exit;
+			} elseif (! tempo_book_it_check_altcha()) {
+				$errors->add('tempo_altcha', __('Please complete the security check and try again.', 'tempo-book-it-theme'));
 			} elseif (! tempo_book_it_registration_attempt_allowed()) {
 				$errors->add('registration_rate_limit', __('Too many registration attempts were made from this connection. Wait 15 minutes and try again.', 'tempo-book-it-theme'));
 			} elseif (! tempo_book_it_registration_available() || ! function_exists('dsb_register_member')) {
@@ -356,6 +360,8 @@ function tempo_book_it_custom_login()
 			$user_login = isset($_POST['user_login']) ? sanitize_text_field(wp_unslash($_POST['user_login'])) : '';
 			if (! isset($_POST['tempo_lostpassword_nonce']) || ! wp_verify_nonce(sanitize_text_field(wp_unslash($_POST['tempo_lostpassword_nonce'])), 'tempo_lostpassword')) {
 				$errors->add('invalid_nonce', __('Your session expired. Refresh the page and try again.', 'tempo-book-it-theme'));
+			} elseif (! tempo_book_it_check_altcha()) {
+				$errors->add('tempo_altcha', __('Please complete the security check and try again.', 'tempo-book-it-theme'));
 			} else {
 				$result = retrieve_password($user_login);
 				if (! is_wp_error($result) || array_intersect(array('invalid_email', 'invalidcombo', 'invalid_username'), $result->get_error_codes())) {
@@ -533,6 +539,9 @@ function tempo_book_it_render_login($action, $errors, $redirect_to, $user_login,
 							<?php wp_nonce_field('tempo_login', 'tempo_login_nonce'); ?>
 							<input type="hidden" name="redirect_to" value="<?php echo esc_attr($redirect_to); ?>">
 							<?php do_action('login_form'); ?>
+							<?php if (tempo_book_it_altcha_required_for_login()) : ?>
+								<?php tempo_book_it_altcha_field(); ?>
+							<?php endif; ?>
 							<button class="tempo-login__submit" type="submit"><?php esc_html_e('Sign in', 'tempo-book-it-theme'); ?><span aria-hidden="true">&rarr;</span></button>
 						</form>
 						<?php if (tempo_book_it_registration_available()) : ?>
@@ -589,6 +598,7 @@ function tempo_book_it_render_login($action, $errors, $redirect_to, $user_login,
 							<?php wp_nonce_field('tempo_register', 'tempo_register_nonce'); ?>
 							<input type="hidden" name="redirect_to" value="<?php echo esc_attr($redirect_to); ?>">
 							<?php do_action('register_form'); ?>
+							<?php tempo_book_it_altcha_field(); ?>
 							<button class="tempo-login__submit" type="submit"><?php esc_html_e('Create account', 'tempo-book-it-theme'); ?><span aria-hidden="true">&rarr;</span></button>
 						</form>
 						<a class="tempo-login__back" href="<?php echo esc_url(tempo_book_it_login_url($redirect_to)); ?>">&larr; <?php esc_html_e('Back to sign in', 'tempo-book-it-theme'); ?></a>
@@ -602,6 +612,7 @@ function tempo_book_it_render_login($action, $errors, $redirect_to, $user_login,
 							<?php wp_nonce_field('tempo_lostpassword', 'tempo_lostpassword_nonce'); ?>
 							<input type="hidden" name="redirect_to" value="<?php echo esc_attr($redirect_to); ?>">
 							<?php do_action('lostpassword_form'); ?>
+							<?php tempo_book_it_altcha_field(); ?>
 							<button class="tempo-login__submit" type="submit"><?php esc_html_e('Send reset link', 'tempo-book-it-theme'); ?><span aria-hidden="true">&rarr;</span></button>
 						</form>
 						<a class="tempo-login__back" href="<?php echo esc_url(tempo_book_it_login_url($redirect_to)); ?>">&larr; <?php esc_html_e('Back to sign in', 'tempo-book-it-theme'); ?></a>
