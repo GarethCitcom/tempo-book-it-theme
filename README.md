@@ -133,7 +133,8 @@ set-password email only after the complete operation succeeds.
   account, coupon or order logic.
 - `assets/fonts/` — Poppins 600/700 + Montserrat variable, bundled locally
   (no Google Fonts requests).
-- `screenshot.png` — 1200×900 theme preview for Appearance → Themes,
-  rendered from the theme's own stylesheets, fonts and tokens.
+- `screenshot.png` — 1200×900 brand card for Appearance → Themes: the
+  Tempo Book It logo on the brand navy, with the product greens and the
+  theme's bundled Poppins/Montserrat faces.
 - `design/` — design sources (prototypes, tokens). On the `development`
   branch only; never shipped to tenants.
