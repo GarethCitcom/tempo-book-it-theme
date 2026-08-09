@@ -235,6 +235,59 @@ function tempo_book_it_clear_login_failures($user_login, $user = null)
 add_action('wp_login', 'tempo_book_it_clear_login_failures', 10, 2);
 
 /* -------------------------------------------------------------------------
+ * Password recovery
+ * ---------------------------------------------------------------------- */
+
+/**
+ * Limit how often password reset emails can be requested.
+ *
+ * Without a limit the recovery form is a way to bomb someone's inbox and to
+ * burn the site's sending reputation. Core fires this action inside
+ * retrieve_password() before any mail goes out and abandons the request when
+ * the error object is not empty, so adding an error here is enough to stop the
+ * email — for the theme route and for wp-login.php alike.
+ *
+ * @param WP_Error         $errors    Errors gathered so far.
+ * @param WP_User|WP_Error $user_data The account the request resolved to.
+ */
+function tempo_book_it_limit_lostpassword($errors, $user_data = false)
+{
+	if (! $errors instanceof WP_Error) {
+		return;
+	}
+	if (in_array('tempo_too_many_attempts', $errors->get_error_codes(), true)) {
+		return;
+	}
+
+	$message = __('Too many password reset requests. Please wait a while and try again.', 'tempo-book-it-theme');
+
+	$ip_limit  = max(1, (int) apply_filters('tempo_book_it_lostpassword_ip_limit', 5));
+	$ip_window = max(MINUTE_IN_SECONDS, (int) apply_filters('tempo_book_it_lostpassword_window', 15 * MINUTE_IN_SECONDS));
+	$ip_key    = tempo_book_it_rate_limit_key('lost_ip', tempo_book_it_client_ip());
+	if (tempo_book_it_rate_limit_count($ip_key) >= $ip_limit) {
+		$errors->add('tempo_too_many_attempts', $message);
+		return;
+	}
+
+	$user_key = '';
+	if ($user_data instanceof WP_User) {
+		$user_limit  = max(1, (int) apply_filters('tempo_book_it_lostpassword_user_limit', 3));
+		$user_window = max(MINUTE_IN_SECONDS, (int) apply_filters('tempo_book_it_lostpassword_user_window', HOUR_IN_SECONDS));
+		$user_key    = tempo_book_it_rate_limit_key('lost_user', (string) $user_data->ID);
+		if (tempo_book_it_rate_limit_count($user_key) >= $user_limit) {
+			$errors->add('tempo_too_many_attempts', $message);
+			return;
+		}
+	}
+
+	tempo_book_it_rate_limit_hit($ip_key, $ip_window);
+	if ($user_key) {
+		tempo_book_it_rate_limit_hit($user_key, $user_window);
+	}
+}
+add_action('lostpassword_post', 'tempo_book_it_limit_lostpassword', 10, 2);
+
+/* -------------------------------------------------------------------------
  * XML-RPC
  * ---------------------------------------------------------------------- */
 
