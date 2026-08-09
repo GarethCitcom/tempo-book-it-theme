@@ -215,9 +215,32 @@ function tempo_book_it_record_login_failure($username, $error = null)
 		return;
 	}
 
-	$limits = tempo_book_it_login_limits();
-	tempo_book_it_rate_limit_hit(tempo_book_it_rate_limit_key('login_ip', tempo_book_it_client_ip()), $limits['window']);
-	tempo_book_it_rate_limit_hit(tempo_book_it_rate_limit_key('login_user', tempo_book_it_normalize_login($username)), $limits['window']);
+	$limits   = tempo_book_it_login_limits();
+	$account  = tempo_book_it_normalize_login($username);
+	$ip_key   = tempo_book_it_rate_limit_key('login_ip', tempo_book_it_client_ip());
+	$user_key = tempo_book_it_rate_limit_key('login_user', $account);
+
+	// Recording the attempt that reaches the limit, rather than every attempt
+	// refused afterwards, gives one line per block instead of one per knock.
+	if (tempo_book_it_rate_limit_hit($ip_key, $limits['window']) === $limits['ip_limit']) {
+		tempo_book_it_security_log_record(
+			'login_lockout_connection',
+			array(
+				'keys'       => array($ip_key),
+				'expires_at' => time() + $limits['window'],
+			)
+		);
+	}
+	if (tempo_book_it_rate_limit_hit($user_key, $limits['window']) === $limits['user_limit']) {
+		tempo_book_it_security_log_record(
+			'login_lockout_account',
+			array(
+				'subject'    => $account,
+				'keys'       => array($user_key),
+				'expires_at' => time() + $limits['window'],
+			)
+		);
+	}
 }
 add_action('wp_login_failed', 'tempo_book_it_record_login_failure', 10, 2);
 
@@ -280,9 +303,28 @@ function tempo_book_it_limit_lostpassword($errors, $user_data = false)
 		}
 	}
 
-	tempo_book_it_rate_limit_hit($ip_key, $ip_window);
-	if ($user_key) {
-		tempo_book_it_rate_limit_hit($user_key, $user_window);
+	if (tempo_book_it_rate_limit_hit($ip_key, $ip_window) === $ip_limit) {
+		tempo_book_it_security_log_record(
+			'lostpassword_limit_connection',
+			array(
+				'keys'       => array($ip_key),
+				'expires_at' => time() + $ip_window,
+			)
+		);
+	}
+	if ($user_key && $user_data instanceof WP_User) {
+		if (tempo_book_it_rate_limit_hit($user_key, $user_window) === $user_limit) {
+			// The counter is keyed on the account's ID; the history shows the
+			// login, which is what an administrator would recognise.
+			tempo_book_it_security_log_record(
+				'lostpassword_limit_account',
+				array(
+					'subject'    => $user_data->user_login,
+					'keys'       => array($user_key),
+					'expires_at' => time() + $user_window,
+				)
+			);
+		}
 	}
 }
 add_action('lostpassword_post', 'tempo_book_it_limit_lostpassword', 10, 2);

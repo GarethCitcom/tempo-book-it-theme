@@ -536,6 +536,7 @@ add_action( 'template_redirect', 'tempo_book_it_require_login' );
 
 require_once get_theme_file_path( 'inc/nav-menu.php' );
 require_once get_theme_file_path( 'inc/custom-login.php' );
+require_once get_theme_file_path( 'inc/login-security-log.php' );
 require_once get_theme_file_path( 'inc/login-security.php' );
 require_once get_theme_file_path( 'inc/altcha.php' );
 require_once get_theme_file_path( 'inc/woocommerce-account.php' );

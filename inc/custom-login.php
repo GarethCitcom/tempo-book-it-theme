@@ -106,7 +106,16 @@ function tempo_book_it_registration_attempt_allowed()
 	if (tempo_book_it_rate_limit_count($key) >= $limit) {
 		return false;
 	}
-	tempo_book_it_rate_limit_hit($key, $window);
+	// This attempt is still allowed; the block starts with the next one.
+	if (tempo_book_it_rate_limit_hit($key, $window) === $limit) {
+		tempo_book_it_security_log_record(
+			'registration_limit_connection',
+			array(
+				'keys'       => array($key),
+				'expires_at' => time() + $window,
+			)
+		);
+	}
 	return true;
 }
 
