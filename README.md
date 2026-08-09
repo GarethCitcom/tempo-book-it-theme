@@ -15,12 +15,14 @@ background and login. It contains **no booking UI**.
 
 ## Branches
 
-- **`main`** — what tenants install. Runtime files only: no design sources,
-  no project-memory file, no Playground blueprint.
-- **`development`** — where the work happens. Everything on `main` plus
-  `design/` (prototypes and design-system tokens), `CLAUDE.md` (the
-  responsibility split between theme and plugin) and `blueprint.json`
-  (the Playground preview below).
+- **`main`** — what tenants install: the files WordPress loads, and
+  nothing else. No design sources, no documentation (this README
+  included), no project-memory file, no Playground blueprint.
+- **`development`** — where the work happens, and the only place the
+  project is documented. Everything on `main` plus `design/` (prototypes
+  and design-system tokens), `README.md`, `dsb/README.md`, `CLAUDE.md`
+  (the responsibility split between theme and plugin) and
+  `blueprint.json` (the Playground preview below).
 
 Develop on `development`, then merge it into `main` to release. Git keeps
 the development-only paths deleted on `main` on its own: `development`
@@ -74,6 +76,9 @@ chrome, or `teacher` / `password` for the teacher chrome.
   and order templates rather than replacing their behaviour.
 - **Template overrides**: `dsb/` is the plugin's override location — see
   `dsb/README.md`. Last resort only; never restyle `.dsb-*` internals.
+  The directory is documentation, not machinery: it ships empty here and
+  not at all on `main`, and the plugin's loader simply finds no override
+  until someone creates the path.
 
 ## Members-only
 
