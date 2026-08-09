@@ -313,6 +313,31 @@
 }
 
 /* -------------------------------------------------------------------------
+ * Sticky header on mobile — below 767px the whole chrome (white bar plus
+ * portal strip) pins to the top of the viewport, so the nav and the basket
+ * pill stay reachable while scrolling a long list of classes.
+ * ---------------------------------------------------------------------- */
+
+@media (max-width: 767px) {
+	header.wp-block-template-part {
+		position: sticky;
+		top: 0;
+		/* Above page content and the nav's own dropdown panel (z-index 40),
+		 * below the plugin's toast and popup layer (9000+). */
+		z-index: 100;
+	}
+}
+
+/* WordPress keeps its 46px admin bar fixed to the top from 601px up; at
+ * 600px and below core switches it to absolute so it scrolls away, and
+ * top: 0 above is already right. */
+@media (min-width: 601px) and (max-width: 767px) {
+	.admin-bar header.wp-block-template-part {
+		top: 46px;
+	}
+}
+
+/* -------------------------------------------------------------------------
  * Footer — minimal light strip
  * ---------------------------------------------------------------------- */
 
