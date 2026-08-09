@@ -30,6 +30,55 @@ never touches those files after the split, so a merge has nothing to
 reintroduce. If one of them is ever edited on `development`, the merge
 raises a modify/delete conflict — resolve it by deleting on `main`.
 
+`.gitattributes` marks the same paths `export-ignore`, so a zip built by
+`git archive` — or downloaded from GitHub with "Download ZIP" — contains
+only the theme, whichever branch it came from. The branch split keeps the
+repository itself tidy; `export-ignore` is what keeps the *download*
+tidy.
+
+## Updates
+
+Sites do not get theme updates from wordpress.org — the theme is not
+hosted there. `inc/updates.php` supplies them instead, and it works the
+same whether the theme was installed by the plugin or by hand, because
+the mechanism travels inside the theme.
+
+- `Update URI` in `style.css` takes the theme out of the wordpress.org
+  update check entirely. Without it, core could one day offer an
+  unrelated theme that happens to share the slug, and overwrite this one.
+- On each update check the theme reads a manifest published as a release
+  asset, at
+  `releases/latest/download/update.json` — a URL that always resolves to
+  the newest release. The result is cached for twelve hours (one hour
+  after a failure), and "Check again" on Dashboard → Updates bypasses the
+  cache.
+- If the manifest names a higher version than `style.css`, WordPress
+  shows the usual update notice on Appearance → Themes and Dashboard →
+  Updates, with one-click update and auto-update support. Anything
+  else — no release yet, no outbound network, malformed JSON, a package
+  URL that is not HTTPS on a GitHub host — is silent: no notice, no
+  error.
+- `tempo_book_it_update_manifest_url` and
+  `tempo_book_it_update_package_hosts` repoint the channel, should the
+  plugin or a tenant mirror ever take it over.
+
+### Cutting a release
+
+1. Merge `development` into `main`.
+2. Bump `Version:` in `style.css`. This is the number every site
+   compares against, so nothing ships without it.
+3. Tag the merge commit `vX.Y.Z` and push the tag.
+
+`.github/workflows/release.yml` does the rest: it refuses the tag if it
+disagrees with the header, builds `tempo-book-it-theme.zip` (unpacking to
+a folder named exactly `tempo-book-it-theme/`, which is what lets
+WordPress update in place — GitHub's own source zip unpacks to a
+versioned folder and cannot), writes `update.json` from the theme
+headers, and publishes both as release assets.
+
+Point manual installers at that release asset rather than "Download ZIP",
+so their theme folder is named correctly from the start.
+
 ## Preview in Playground (no plugin needed)
 
 Run this from a `development` checkout — `blueprint.json` is not on `main`.
@@ -138,6 +187,11 @@ set-password email only after the complete operation succeeds.
   account, coupon or order logic.
 - `assets/fonts/` — Poppins 600/700 + Montserrat variable, bundled locally
   (no Google Fonts requests).
+- `inc/updates.php` — the update channel described above; no other file
+  in the theme knows about it.
+- `.github/workflows/release.yml`, `.gitattributes` — the release build,
+  and the rules that keep it (and every other archive) to theme files
+  only. Neither ends up in the zip a tenant installs.
 - `screenshot.png` — 1200×900 brand card for Appearance → Themes: the
   Tempo Book It logo on the brand navy, with the product greens and the
   theme's bundled Poppins/Montserrat faces.
