@@ -396,3 +396,143 @@ function tempo_book_it_remove_pingback_header($headers)
 	return $headers;
 }
 add_filter('wp_headers', 'tempo_book_it_remove_pingback_header');
+
+/* -------------------------------------------------------------------------
+ * Keeping the member list private
+ *
+ * Knowing who holds an account is the first half of guessing their password,
+ * and on a site whose members are children and their families the list is
+ * worth protecting on its own account. WordPress hands it out in several
+ * places by default; each is closed below for visitors who are not signed in.
+ * ---------------------------------------------------------------------- */
+
+/**
+ * Answer author archive requests with a 404 for signed-out visitors.
+ *
+ * Asking for /?author=1 normally earns a redirect to that member's archive,
+ * and the address of that archive contains their login name. Counting upwards
+ * walks the whole membership.
+ */
+function tempo_book_it_block_author_scan()
+{
+	if (is_user_logged_in()) {
+		return;
+	}
+
+	$is_author_request = isset($_GET['author']) // phpcs:ignore WordPress.Security.NonceVerification.Recommended -- reading a public query variable, not acting on a submission.
+		|| is_author()
+		|| '' !== (string) get_query_var('author')
+		|| '' !== (string) get_query_var('author_name');
+
+	if (! $is_author_request) {
+		return;
+	}
+
+	global $wp_query;
+	if ($wp_query instanceof WP_Query) {
+		$wp_query->set_404();
+	}
+	status_header(404);
+	nocache_headers();
+
+	// The redirect is the leak itself, and bouncing to the sign-in form would
+	// answer the question just as plainly by treating these requests
+	// differently from any other unknown address.
+	remove_action('template_redirect', 'redirect_canonical');
+	remove_action('template_redirect', 'tempo_book_it_require_login');
+}
+add_action('template_redirect', 'tempo_book_it_block_author_scan', 1);
+
+/**
+ * Leave author URLs uncorrected for signed-out visitors.
+ *
+ * Backs up the check above for any path that reaches canonical redirection
+ * without it having run.
+ *
+ * @param string $redirect_url  Where core wants to send the request.
+ * @param string $requested_url Where the request was aimed.
+ * @return string|false
+ */
+function tempo_book_it_disable_author_canonical($redirect_url, $requested_url = '')
+{
+	if (is_user_logged_in()) {
+		return $redirect_url;
+	}
+	if (isset($_GET['author']) || is_author()) { // phpcs:ignore WordPress.Security.NonceVerification.Recommended -- reading a public query variable, not acting on a submission.
+		return false;
+	}
+	return $redirect_url;
+}
+add_filter('redirect_canonical', 'tempo_book_it_disable_author_canonical', 10, 2);
+
+/**
+ * Keep the REST user routes for signed-in users only.
+ *
+ * /wp-json/wp/v2/users lists every account with a name and a login. Signed-in
+ * requests are left alone so the editor's author menus keep working; the
+ * routes simply do not exist for anyone else.
+ *
+ * @param array $endpoints REST routes.
+ * @return array
+ */
+function tempo_book_it_restrict_rest_users($endpoints)
+{
+	if (is_user_logged_in()) {
+		return $endpoints;
+	}
+
+	unset(
+		$endpoints['/wp/v2/users'],
+		$endpoints['/wp/v2/users/(?P<id>[\d]+)'],
+		$endpoints['/wp/v2/users/me']
+	);
+
+	return $endpoints;
+}
+add_filter('rest_endpoints', 'tempo_book_it_restrict_rest_users');
+
+/**
+ * Leave members out of the sitemap.
+ *
+ * @param WP_Sitemaps_Provider $provider Provider to register.
+ * @param string               $name     Provider name.
+ * @return WP_Sitemaps_Provider|false
+ */
+function tempo_book_it_remove_users_sitemap($provider, $name)
+{
+	return 'users' === $name ? false : $provider;
+}
+add_filter('wp_sitemaps_add_provider', 'tempo_book_it_remove_users_sitemap', 10, 2);
+
+/**
+ * Say the same thing whichever credential was wrong on wp-login.php.
+ *
+ * Core names the problem precisely — unknown username, or known username with
+ * the wrong password — which confirms an account exists. The theme's own form
+ * already speaks generally; this brings the fallback form into line using the
+ * very same wording. Anything that is not about credentials, such as a
+ * confirmation notice after registering, is left exactly as core wrote it.
+ *
+ * @param WP_Error $errors      Errors core is about to display.
+ * @param string   $redirect_to Where a successful sign-in would have gone.
+ * @return WP_Error
+ */
+function tempo_book_it_generic_login_errors($errors, $redirect_to = '')
+{
+	if (! $errors instanceof WP_Error || ! $errors->has_errors()) {
+		return $errors;
+	}
+
+	$credential_codes = array('invalid_username', 'invalid_email', 'incorrect_password', 'empty_username', 'empty_password');
+	if (! array_intersect($credential_codes, $errors->get_error_codes())) {
+		return $errors;
+	}
+
+	$messages = tempo_book_it_login_error_messages($errors);
+	if (! $messages) {
+		return $errors;
+	}
+
+	return new WP_Error('invalid_credentials', reset($messages));
+}
+add_filter('wp_login_errors', 'tempo_book_it_generic_login_errors', 10, 2);

@@ -276,6 +276,13 @@ function tempo_book_it_custom_login()
 	nocache_headers();
 	header('Referrer-Policy: no-referrer');
 	header('X-Content-Type-Options: nosniff');
+	// Stop the sign-in form being framed by another site and steered by
+	// invisible overlays, and keep its submissions on this origin.
+	// Note for future edits: no script-src belongs in this policy. The security
+	// check runs its hashing in a worker created from an inline blob, which a
+	// script or worker directive would block.
+	header('X-Frame-Options: DENY');
+	header("Content-Security-Policy: frame-ancestors 'none'; form-action 'self'");
 	$allowed_actions = array('login', 'register', 'registered', 'lostpassword', 'checkemail', 'rp', 'resetpass', 'resetcomplete');
 	$action          = isset($_REQUEST['action']) ? sanitize_key(wp_unslash($_REQUEST['action'])) : 'login';
 	$action          = in_array($action, $allowed_actions, true) ? $action : 'login';
