@@ -539,6 +539,9 @@ require_once get_theme_file_path( 'inc/custom-login.php' );
 require_once get_theme_file_path( 'inc/login-security-log.php' );
 require_once get_theme_file_path( 'inc/login-security.php' );
 require_once get_theme_file_path( 'inc/altcha.php' );
+if ( is_admin() ) {
+	require_once get_theme_file_path( 'inc/login-security-admin.php' );
+}
 require_once get_theme_file_path( 'inc/woocommerce-account.php' );
 require_once get_theme_file_path( 'inc/woocommerce-checkout.php' );
 require_once get_theme_file_path( 'inc/woocommerce-notices.php' );
