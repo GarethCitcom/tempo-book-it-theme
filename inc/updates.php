@@ -223,12 +223,16 @@ function tempo_book_it_check_for_update( $value ) {
 	$offer = tempo_book_it_update_offer( $theme, true );
 
 	if ( ! $offer ) {
+		tempo_book_it_update_record( 'no manifest', $theme->get( 'Version' ), '' );
+
 		return $value;
 	}
 
 	if ( version_compare( $offer['new_version'], $theme->get( 'Version' ), '>' ) ) {
 		$value->response[ $stylesheet ] = $offer;
 		unset( $value->no_update[ $stylesheet ] );
+
+		tempo_book_it_update_record( 'update offered', $theme->get( 'Version' ), $offer['new_version'] );
 
 		return $value;
 	}
@@ -237,6 +241,8 @@ function tempo_book_it_check_for_update( $value ) {
 	// auto-update toggle on Appearance → Themes.
 	$value->no_update[ $stylesheet ] = $offer;
 	unset( $value->response[ $stylesheet ] );
+
+	tempo_book_it_update_record( 'already current', $theme->get( 'Version' ), $offer['new_version'] );
 
 	return $value;
 }
@@ -264,3 +270,141 @@ function tempo_book_it_update_uri_response( $update, $theme_data, $theme_stylesh
 	return $offer ? $offer : $update;
 }
 add_filter( 'update_themes_github.com', 'tempo_book_it_update_uri_response', 10, 3 );
+
+/* -------------------------------------------------------------------------
+ * Diagnostics
+ *
+ * An update channel that quietly does nothing is indistinguishable, from the
+ * outside, from one that is working and has nothing to offer. These two
+ * functions make the difference visible under Tools → Site Health → Info →
+ * "Tempo Book It theme updates", so a site that is not seeing a release can
+ * say which step failed instead of leaving it to guesswork.
+ * ---------------------------------------------------------------------- */
+
+/**
+ * Remember what the last update check concluded.
+ *
+ * Written on every check, read only by the Site Health panel. The value it
+ * records is the one thing no amount of poking at the outside of a site can
+ * recover: whether this code ran at all, and what it decided when it did.
+ *
+ * @param string $decision  What happened, in words.
+ * @param string $installed Version installed at the time.
+ * @param string $latest    Version the manifest reported, or ''.
+ */
+function tempo_book_it_update_record( $decision, $installed, $latest ) {
+	update_option(
+		'tempo_book_it_update_last_check',
+		array(
+			'time'      => time(),
+			'decision'  => $decision,
+			'installed' => $installed,
+			'latest'    => $latest,
+		),
+		false
+	);
+}
+
+/**
+ * Add the update channel's state to Site Health → Info.
+ *
+ * Everything here is either read from the site or fetched live at the moment
+ * the screen is opened, so the panel reports what a check would find now
+ * rather than what one found earlier.
+ *
+ * @param array $info Site Health info sections.
+ * @return array
+ */
+function tempo_book_it_update_debug_info( $info ) {
+	$stylesheet = get_template();
+	$theme      = wp_get_theme( $stylesheet );
+	$transient  = get_site_transient( 'update_themes' );
+	$last       = get_option( 'tempo_book_it_update_last_check' );
+
+	// Fetched here rather than read from the cache: the question this panel
+	// answers is whether this server can reach the manifest at all.
+	$response = wp_remote_get(
+		tempo_book_it_update_manifest_url(),
+		array(
+			'timeout' => 10,
+			'headers' => array( 'Accept' => 'application/json' ),
+		)
+	);
+
+	if ( is_wp_error( $response ) ) {
+		$fetch = sprintf(
+			/* translators: %s: error message from the HTTP request. */
+			__( 'Failed: %s', 'tempo-book-it-theme' ),
+			$response->get_error_message()
+		);
+	} else {
+		$code     = wp_remote_retrieve_response_code( $response );
+		$manifest = json_decode( wp_remote_retrieve_body( $response ), true );
+		$fetch    = sprintf(
+			/* translators: 1: HTTP status code, 2: version in the manifest, or a note that there is none. */
+			__( 'HTTP %1$s, manifest version %2$s', 'tempo-book-it-theme' ),
+			$code,
+			is_array( $manifest ) && ! empty( $manifest['version'] ) ? $manifest['version'] : __( 'not readable', 'tempo-book-it-theme' )
+		);
+	}
+
+	if ( isset( $transient->response[ $stylesheet ]['new_version'] ) ) {
+		$state = sprintf(
+			/* translators: %s: version number. */
+			__( 'Update pending: %s', 'tempo-book-it-theme' ),
+			$transient->response[ $stylesheet ]['new_version']
+		);
+	} elseif ( isset( $transient->no_update[ $stylesheet ] ) ) {
+		$state = __( 'Listed as up to date', 'tempo-book-it-theme' );
+	} else {
+		$state = __( 'Not listed at all — WordPress is not tracking this theme', 'tempo-book-it-theme' );
+	}
+
+	$info['tempo-book-it-theme-updates'] = array(
+		'label'  => __( 'Tempo Book It theme updates', 'tempo-book-it-theme' ),
+		'fields' => array(
+			'installed'  => array(
+				'label' => __( 'Installed version', 'tempo-book-it-theme' ),
+				'value' => $theme->get( 'Version' ) . ' (' . $stylesheet . ')',
+			),
+			'update_uri' => array(
+				'label' => __( 'Update URI header', 'tempo-book-it-theme' ),
+				'value' => $theme->get( 'UpdateURI' ) ? $theme->get( 'UpdateURI' ) : __( 'Missing — WordPress did not read the header', 'tempo-book-it-theme' ),
+			),
+			'hooked'     => array(
+				'label' => __( 'Update check hooked', 'tempo-book-it-theme' ),
+				'value' => false === has_filter( 'pre_set_site_transient_update_themes', 'tempo_book_it_check_for_update' )
+					? __( 'No — the theme\'s update code is not running', 'tempo-book-it-theme' )
+					: __( 'Yes', 'tempo-book-it-theme' ),
+			),
+			'manifest'   => array(
+				'label' => __( 'Manifest', 'tempo-book-it-theme' ),
+				'value' => tempo_book_it_update_manifest_url(),
+			),
+			'fetch'      => array(
+				'label' => __( 'Manifest fetched just now', 'tempo-book-it-theme' ),
+				'value' => $fetch,
+			),
+			'last_check' => array(
+				'label' => __( 'Last update check', 'tempo-book-it-theme' ),
+				'value' => is_array( $last )
+					? sprintf(
+						/* translators: 1: how long ago, 2: what was decided, 3: installed version, 4: version found. */
+						__( '%1$s ago — %2$s (installed %3$s, found %4$s)', 'tempo-book-it-theme' ),
+						human_time_diff( $last['time'] ),
+						$last['decision'],
+						$last['installed'],
+						'' === $last['latest'] ? '—' : $last['latest']
+					)
+					: __( 'Never — no check has reached this theme', 'tempo-book-it-theme' ),
+			),
+			'transient'  => array(
+				'label' => __( 'In the WordPress update list', 'tempo-book-it-theme' ),
+				'value' => $state,
+			),
+		),
+	);
+
+	return $info;
+}
+add_filter( 'debug_information', 'tempo_book_it_update_debug_info' );

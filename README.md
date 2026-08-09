@@ -65,6 +65,13 @@ the mechanism travels inside the theme.
   `tempo_book_it_update_package_hosts` repoint the channel, should the
   plugin or a tenant mirror ever take it over.
 
+When a site is not seeing a release, **Tools → Site Health → Info → Tempo
+Book It theme updates** says which step failed: whether WordPress read
+the `Update URI` header, whether the theme's check is hooked at all,
+whether this server can fetch the manifest right now, what the last check
+concluded, and whether the theme appears in the WordPress update list.
+Silence in the admin has one cause per line there.
+
 ### Cutting a release
 
 1. Merge `development` into `main`.
