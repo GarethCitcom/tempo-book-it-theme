@@ -288,6 +288,77 @@ function tempo_book_it_limit_lostpassword($errors, $user_data = false)
 add_action('lostpassword_post', 'tempo_book_it_limit_lostpassword', 10, 2);
 
 /* -------------------------------------------------------------------------
+ * Password policy
+ * ---------------------------------------------------------------------- */
+
+/**
+ * Shortest password members may choose.
+ *
+ * The reset form quotes this number and the check below enforces it, so the
+ * two cannot drift apart.
+ *
+ * @return int
+ */
+function tempo_book_it_password_min_length()
+{
+	/**
+	 * Filter the shortest password members may choose.
+	 *
+	 * @param int $min Minimum number of characters.
+	 */
+	return max(1, (int) apply_filters('tempo_book_it_password_min_length', 12));
+}
+
+/**
+ * Hold new passwords to the standard the reset form advertises.
+ *
+ * The form has always asked for at least twelve characters; nothing checked.
+ * Core fires this action for the theme route and for wp-login.php, so the rule
+ * applies wherever a password is chosen. Length is the requirement that
+ * actually resists guessing, so there is no character-class rule to push people
+ * towards a short password with a symbol stuck on the end.
+ *
+ * @param WP_Error $errors Errors gathered so far.
+ * @param WP_User  $user   Account the password belongs to.
+ */
+function tempo_book_it_validate_password_reset($errors, $user = null)
+{
+	if (! $errors instanceof WP_Error) {
+		return;
+	}
+
+	// The action also fires while the form is merely being displayed, and the
+	// empty case already has its own message.
+	$password = isset($_POST['pass1']) ? trim((string) wp_unslash($_POST['pass1'])) : ''; // phpcs:ignore WordPress.Security.NonceVerification.Missing -- the reset handlers verify their own nonce before this runs.
+	if ('' === $password) {
+		return;
+	}
+
+	$min = tempo_book_it_password_min_length();
+	if (strlen($password) < $min) {
+		$errors->add(
+			'tempo_password_too_short',
+			sprintf(
+				/* translators: %d: minimum number of characters in a password. */
+				__('Use at least %d characters with a mix of words, numbers and symbols.', 'tempo-book-it-theme'),
+				$min
+			)
+		);
+	}
+
+	if ($user instanceof WP_User) {
+		$lowered = strtolower($password);
+		if ($lowered === strtolower($user->user_login) || $lowered === strtolower($user->user_email)) {
+			$errors->add(
+				'tempo_password_matches_identity',
+				__('Your password cannot be the same as your username or email address.', 'tempo-book-it-theme')
+			);
+		}
+	}
+}
+add_action('validate_password_reset', 'tempo_book_it_validate_password_reset', 10, 2);
+
+/* -------------------------------------------------------------------------
  * XML-RPC
  * ---------------------------------------------------------------------- */
 

@@ -618,14 +618,16 @@ function tempo_book_it_render_login($action, $errors, $redirect_to, $user_login,
 						<a class="tempo-login__back" href="<?php echo esc_url(tempo_book_it_login_url($redirect_to)); ?>">&larr; <?php esc_html_e('Back to sign in', 'tempo-book-it-theme'); ?></a>
 					<?php elseif ('resetpass' === $action && $reset_user instanceof WP_User) : ?>
 						<?php do_action('login_form_resetpass'); ?>
+						<?php $password_min = tempo_book_it_password_min_length(); ?>
 						<form id="tempo-login-form" class="tempo-login__form" action="<?php echo esc_url(tempo_book_it_login_url('', 'resetpass')); ?>" method="post">
 							<div class="tempo-field">
 								<label for="tempo-new-password"><?php esc_html_e('New password', 'tempo-book-it-theme'); ?></label>
-								<div class="tempo-field__password"><input id="tempo-new-password" name="pass1" type="password" autocomplete="new-password" required autofocus><button class="tempo-password-toggle" type="button" aria-controls="tempo-new-password" aria-pressed="false"><span class="screen-reader-text"><?php esc_html_e('Show password', 'tempo-book-it-theme'); ?></span><span aria-hidden="true"></span></button></div>
-								<p class="tempo-field__hint"><?php esc_html_e('Use at least 12 characters with a mix of words, numbers and symbols.', 'tempo-book-it-theme'); ?></p>
+								<div class="tempo-field__password"><input id="tempo-new-password" name="pass1" type="password" autocomplete="new-password" minlength="<?php echo esc_attr($password_min); ?>" required autofocus><button class="tempo-password-toggle" type="button" aria-controls="tempo-new-password" aria-pressed="false"><span class="screen-reader-text"><?php esc_html_e('Show password', 'tempo-book-it-theme'); ?></span><span aria-hidden="true"></span></button></div>
+								<?php /* translators: %d: minimum number of characters in a password. */ ?>
+								<p class="tempo-field__hint"><?php printf(esc_html__('Use at least %d characters with a mix of words, numbers and symbols.', 'tempo-book-it-theme'), (int) $password_min); ?></p>
 							</div>
 							<div class="tempo-field"><label for="tempo-confirm-password"><?php esc_html_e('Confirm new password', 'tempo-book-it-theme'); ?></label>
-								<div class="tempo-field__password"><input id="tempo-confirm-password" name="pass2" type="password" autocomplete="new-password" required><button class="tempo-password-toggle" type="button" aria-controls="tempo-confirm-password" aria-pressed="false"><span class="screen-reader-text"><?php esc_html_e('Show password', 'tempo-book-it-theme'); ?></span><span aria-hidden="true"></span></button></div>
+								<div class="tempo-field__password"><input id="tempo-confirm-password" name="pass2" type="password" autocomplete="new-password" minlength="<?php echo esc_attr($password_min); ?>" required><button class="tempo-password-toggle" type="button" aria-controls="tempo-confirm-password" aria-pressed="false"><span class="screen-reader-text"><?php esc_html_e('Show password', 'tempo-book-it-theme'); ?></span><span aria-hidden="true"></span></button></div>
 							</div>
 							<?php wp_nonce_field('tempo_reset_password', 'tempo_reset_nonce'); ?>
 							<input type="hidden" name="rp_key" value="<?php echo esc_attr(tempo_book_it_reset_key()); ?>">
