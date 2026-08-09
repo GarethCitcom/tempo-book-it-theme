@@ -46,19 +46,17 @@ the mechanism travels inside the theme.
 - `Update URI` in `style.css` takes the theme out of the wordpress.org
   update check entirely. Without it, core could one day offer an
   unrelated theme that happens to share the slug, and overwrite this one.
-- On each update check the theme reads a manifest published as a release
+- On each update check the theme fetches a manifest published as a release
   asset, at
   `releases/latest/download/update.json` — a URL that always resolves to
-  the newest release. The result is cached for five minutes only (fifteen
-  after a failure): WordPress already decides how often a site checks —
-  twice daily on cron, hourly on the themes screen, every minute on
-  Dashboard → Updates — and a longer cache on top of that buys nothing
-  except the risk of reporting "up to date" hours after a release. "Check
-  again" clears the cache outright. The cached entry is stamped with the
-  theme version that wrote it and ignored if that is not the running one:
-  an entry written by an older copy carries whatever expiry *that* copy
-  chose, and updating the theme cannot shorten it. It is also dropped
-  outright whenever an upgrade completes.
+  the newest release. Nothing successful is stored between requests.
+  WordPress already decides how often a check happens (twice daily on
+  cron, hourly on the themes screen, every minute on Dashboard →
+  Updates), so one request per check is the right cost, and a stored
+  answer can only ever make a check report something the network would
+  not have. A *failed* fetch is remembered for fifteen minutes, so a site
+  with no outbound access is not made to wait on a timeout every time;
+  "Check again" retries it immediately.
 - If the manifest names a higher version than `style.css`, WordPress
   shows the usual update notice on Appearance → Themes and Dashboard →
   Updates, with one-click update and auto-update support. Anything

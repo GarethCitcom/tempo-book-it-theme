@@ -10,10 +10,10 @@
  *
  * The source of truth is a small JSON manifest published as an asset on every
  * GitHub release, reached through the `releases/latest/download/` URL that
- * always resolves to the newest one. Both entry points below read the same
- * briefly-cached copy: WordPress decides how often a site checks for theme
- * updates, and this only runs when it does, so one request per check is the
- * right cost.
+ * always resolves to the newest one. It is fetched afresh on every update
+ * check and never stored: WordPress decides how often a check happens, so one
+ * request per check is the right cost, and a stored answer can only ever make
+ * a check report something the network would not have.
  *
  * Two entry points, deliberately:
  *
@@ -50,48 +50,40 @@ function tempo_book_it_update_manifest_url() {
 }
 
 /**
- * Fetch the release manifest, briefly cached.
+ * Fetch the release manifest.
  *
- * The cache is deliberately short. WordPress already decides how often a site
- * asks about theme updates — twice a day on cron, hourly on the themes screen,
- * every minute on Dashboard → Updates — and this function only runs when one of
- * those checks happens. A long cache on top of that does not save requests
- * worth saving; it just means a site can be told "up to date" hours after a
- * release, which is exactly what a long cache did the first time this shipped.
+ * Nothing successful is kept between requests, and that is the whole design.
+ * WordPress decides how often a site asks about theme updates — twice a day on
+ * cron, hourly on the themes screen, every minute on Dashboard → Updates — and
+ * this only runs when one of those checks happens. One request per check is
+ * the correct cost, and a stored answer can only ever make a check report
+ * something other than what the network would have said.
  *
- * So: minutes, not hours. Enough to collapse repeat calls inside a single
- * check, and short enough that a release published a moment ago is seen by the
- * next check that runs.
+ * That is not a theoretical preference. Two releases were spent on the same
+ * bug wearing different clothes: first a twelve-hour entry that outlived three
+ * releases, then a five-minute entry that outlived one. Every fix kept the
+ * cache and tightened the rules around it. The cache was the bug.
  *
- * The cache holds one of three things: a manifest stamped with the theme
- * version that fetched it, the string 'unavailable' after a failed attempt (so
- * a site with no outbound access is not made to wait on a timeout at every
- * check), or nothing at all. The stamp matters — see below.
+ * A failed fetch is still remembered, because that is the one answer worth
+ * keeping: it spares a site with no outbound access a ten-second timeout on
+ * every check, and being briefly wrong about a failure costs nothing.
  *
- * @param bool $allow_remote Whether an expired cache may be refilled over the
- *                           network. False from any path that runs on ordinary
- *                           page loads.
+ * The static memo collapses the two entry points below into one request when
+ * both run in the same check, and dies with the request.
+ *
+ * @param bool $allow_remote Whether a request may be made now. False from any
+ *                           path that runs on ordinary page loads.
  * @return array|false Manifest data, or false when none is available.
  */
 function tempo_book_it_update_manifest( $allow_remote = false ) {
-	$installed = (string) wp_get_theme( get_template() )->get( 'Version' );
-	$cached    = get_site_transient( 'tempo_book_it_update_manifest' );
+	static $memo = null;
 
-	// Only an entry written by this exact copy of the theme is trusted. One
-	// left behind by an older copy carries whatever expiry that copy chose,
-	// and no amount of shortening the cache here can cut it short.
-	//
-	// Not hypothetical: a twelve-hour entry written by 0.5.3 went on
-	// answering "0.5.3 is the newest" through three later releases, and
-	// through two updates of this very file, because updating the code
-	// cannot reach into a cache the old code had already filled.
-	if ( is_array( $cached ) && isset( $cached['for'], $cached['manifest'] )
-		&& $cached['for'] === $installed && is_array( $cached['manifest'] ) ) {
-		return $cached['manifest'];
+	if ( is_array( $memo ) ) {
+		return $memo;
 	}
 
-	// A recent failure, or a caller that must not make requests.
-	if ( 'unavailable' === $cached || ! $allow_remote ) {
+	// A failure seen recently, or a caller that must not make requests.
+	if ( 'unavailable' === get_site_transient( 'tempo_book_it_update_manifest' ) || ! $allow_remote ) {
 		return false;
 	}
 
@@ -118,25 +110,20 @@ function tempo_book_it_update_manifest( $allow_remote = false ) {
 		return false;
 	}
 
-	set_site_transient(
-		'tempo_book_it_update_manifest',
-		array(
-			'for'      => $installed,
-			'manifest' => $manifest,
-		),
-		5 * MINUTE_IN_SECONDS
-	);
+	// A previous failure is over.
+	delete_site_transient( 'tempo_book_it_update_manifest' );
+
+	$memo = $manifest;
 
 	return $manifest;
 }
 
 /**
- * Drop the cached manifest whenever anything on the site is upgraded.
+ * Forget a remembered fetch failure whenever anything on the site is upgraded.
  *
- * Chiefly for this theme's own update: the moment it lands, the cache
- * describes the version that was just replaced. Firing on every upgrade
- * rather than only ours costs one HTTP request at the next check and needs no
- * guesswork about which upgrade this was.
+ * An upgrade is the likeliest moment for whatever was blocking outbound
+ * requests to have changed, and the point at which someone is watching. There
+ * is no successful answer to clear — none is kept.
  */
 function tempo_book_it_update_flush_manifest() {
 	delete_site_transient( 'tempo_book_it_update_manifest' );
@@ -225,9 +212,9 @@ function tempo_book_it_update_offer( $theme, $allow_remote = false ) {
 /**
  * Put the offer into the update transient core reads.
  *
- * Runs on every themes update check — twice-daily cron, and whenever someone
- * hits "Check again" on Dashboard → Updates, which is also the moment to
- * bypass the manifest cache so a just-published release shows up immediately.
+ * Runs on every themes update check — twice-daily cron, the themes screen, and
+ * whenever someone hits "Check again" on Dashboard → Updates. Each one fetches
+ * the manifest, so what it reports is what the network says at that moment.
  *
  * The theme is looked up by template rather than stylesheet: with a child
  * theme active it is still this theme that gets updated.
@@ -247,8 +234,10 @@ function tempo_book_it_check_for_update( $value ) {
 		return $value;
 	}
 
-	// phpcs:ignore WordPress.Security.NonceVerification.Recommended -- Core's own flag on the updates screen, read only to skip a cache.
+	// phpcs:ignore WordPress.Security.NonceVerification.Recommended -- Core's own flag on the updates screen, read only to retry sooner.
 	if ( ! empty( $_GET['force-check'] ) ) {
+		// Someone is watching and has asked. Retry now rather than sit out the
+		// rest of a remembered failure.
 		delete_site_transient( 'tempo_book_it_update_manifest' );
 	}
 
@@ -347,34 +336,11 @@ function tempo_book_it_update_record( $decision, $installed, $latest ) {
  * @return string
  */
 function tempo_book_it_update_cache_state() {
-	$cached    = get_site_transient( 'tempo_book_it_update_manifest' );
-	$installed = (string) wp_get_theme( get_template() )->get( 'Version' );
-
-	if ( 'unavailable' === $cached ) {
-		return __( 'A failed fetch, remembered for a few minutes', 'tempo-book-it-theme' );
+	if ( 'unavailable' === get_site_transient( 'tempo_book_it_update_manifest' ) ) {
+		return __( 'A failed fetch, remembered for up to 15 minutes', 'tempo-book-it-theme' );
 	}
 
-	if ( ! is_array( $cached ) ) {
-		return __( 'Empty — the next check fetches fresh', 'tempo-book-it-theme' );
-	}
-
-	if ( ! isset( $cached['for'], $cached['manifest']['version'] ) ) {
-		return __( 'Written by an older copy of the theme, so it is ignored', 'tempo-book-it-theme' );
-	}
-
-	if ( $cached['for'] !== $installed ) {
-		return sprintf(
-			/* translators: %s: theme version that wrote the cache. */
-			__( 'Written by version %s, so it is ignored', 'tempo-book-it-theme' ),
-			$cached['for']
-		);
-	}
-
-	return sprintf(
-		/* translators: %s: version number held in the cache. */
-		__( 'Says %s', 'tempo-book-it-theme' ),
-		$cached['manifest']['version']
-	);
+	return __( 'Nothing stored — every check fetches afresh', 'tempo-book-it-theme' );
 }
 
 /**
@@ -458,7 +424,7 @@ function tempo_book_it_update_debug_info( $info ) {
 				'value' => $fetch,
 			),
 			'cache'      => array(
-				'label' => __( 'Cached manifest', 'tempo-book-it-theme' ),
+				'label' => __( 'Between checks', 'tempo-book-it-theme' ),
 				'value' => tempo_book_it_update_cache_state(),
 			),
 			'last_check' => array(
