@@ -531,7 +531,7 @@ function tempo_book_it_require_login() {
 add_action( 'template_redirect', 'tempo_book_it_require_login' );
 
 /* -------------------------------------------------------------------------
- * Theme-owned sign-in experience.
+ * Theme-owned features living in their own files.
  * ---------------------------------------------------------------------- */
 
 require_once get_theme_file_path( 'inc/nav-menu.php' );
@@ -539,3 +539,4 @@ require_once get_theme_file_path( 'inc/custom-login.php' );
 require_once get_theme_file_path( 'inc/woocommerce-account.php' );
 require_once get_theme_file_path( 'inc/woocommerce-checkout.php' );
 require_once get_theme_file_path( 'inc/woocommerce-notices.php' );
+require_once get_theme_file_path( 'inc/updates.php' );

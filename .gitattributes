@@ -1,0 +1,14 @@
+# Keep repository plumbing out of every archive: the release zip built by
+# `git archive`, and GitHub's own "Download ZIP". What is left is the theme
+# WordPress loads and nothing else.
+#
+# Paths that only exist on the development branch are listed too, so an archive
+# taken from there is as clean as one taken from main.
+
+/.gitattributes		export-ignore
+/.github/		export-ignore
+/README.md		export-ignore
+/CLAUDE.md		export-ignore
+/blueprint.json		export-ignore
+/design/		export-ignore
+/dsb/			export-ignore
