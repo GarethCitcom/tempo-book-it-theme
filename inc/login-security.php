@@ -379,6 +379,152 @@ function tempo_book_it_limit_lostpassword($errors, $user_data = false)
 add_action('lostpassword_post', 'tempo_book_it_limit_lostpassword', 10, 2);
 
 /* -------------------------------------------------------------------------
+ * Lifting a block
+ *
+ * A block clears itself after its window, which is the right answer for a bot
+ * and the wrong one for a parent on the phone to the school office. These are
+ * what the Sign-in security screen calls to let someone through early. They
+ * live here, beside the counters they manipulate, so they are also available
+ * to WP-CLI, where the admin screen is never loaded.
+ * ---------------------------------------------------------------------- */
+
+/**
+ * Lift any sign-in block held against a member.
+ *
+ * The connection they are using is deliberately left alone: an administrator
+ * asked about a person, not about an address.
+ *
+ * @param string $login Username or email address.
+ * @return int How many counters were actually holding something back.
+ */
+function tempo_book_it_unlock_login($login)
+{
+	$keys    = tempo_book_it_login_counter_keys($login);
+	$cleared = 0;
+
+	foreach ($keys as $key) {
+		if (tempo_book_it_rate_limit_count($key) > 0) {
+			$cleared++;
+		}
+		tempo_book_it_rate_limit_clear($key);
+	}
+
+	// Recorded even when nothing needed lifting. That an administrator went
+	// looking at this account is worth a line of its own.
+	tempo_book_it_security_log_record(
+		'unlocked',
+		array(
+			'subject'     => tempo_book_it_normalize_login($login),
+			'fingerprint' => '',
+			'actor_id'    => get_current_user_id(),
+		)
+	);
+
+	return $cleared;
+}
+
+/**
+ * Lift the block a particular log entry describes.
+ *
+ * @param string $entry_id Entry handle.
+ * @return int How many counters were actually holding something back.
+ */
+function tempo_book_it_unlock_entry($entry_id)
+{
+	$entry = tempo_book_it_security_log_find($entry_id);
+	if (null === $entry) {
+		return 0;
+	}
+
+	$keys = isset($entry['keys']) && is_array($entry['keys']) ? $entry['keys'] : array();
+
+	// Lifting a block on an account should free the member however they sign
+	// in, not only under the form that happened to trip the limit.
+	if ('login_lockout_account' === $entry['type'] && '' !== $entry['subject']) {
+		$keys = array_unique(array_merge($keys, tempo_book_it_login_counter_keys($entry['subject'])));
+	}
+
+	$cleared = 0;
+	foreach ($keys as $key) {
+		// What is about to be deleted comes out of an option, so check its shape
+		// first. Then it does not matter what else might ever write there.
+		if (! is_string($key) || ! preg_match('/^tempo_rl_[a-z_]+_[0-9a-f]{32}$/', $key)) {
+			continue;
+		}
+		if (tempo_book_it_rate_limit_count($key) > 0) {
+			$cleared++;
+		}
+		tempo_book_it_rate_limit_clear($key);
+	}
+
+	tempo_book_it_security_log_record(
+		'unlocked',
+		array(
+			'subject'     => $entry['subject'],
+			'fingerprint' => $entry['fingerprint'],
+			'actor_id'    => get_current_user_id(),
+		)
+	);
+
+	return $cleared;
+}
+
+/**
+ * The blocks still in force, newest first.
+ *
+ * Whether a block is still in force is decided by the counter, never by the
+ * time the entry predicted it would lift. A client that keeps knocking keeps
+ * pushing the real expiry back, and trusting the recorded time would drop a
+ * member off this list while they are still shut out.
+ *
+ * @return array Log entries whose counters are still holding.
+ */
+function tempo_book_it_current_blocks()
+{
+	/**
+	 * Filter how far back to look for blocks that might still be in force.
+	 *
+	 * Longer than the longest limit window. A site that lengthens a window past
+	 * a day should lengthen this too.
+	 *
+	 * @param int $age Seconds.
+	 */
+	$age    = max(HOUR_IN_SECONDS, (int) apply_filters('tempo_book_it_security_block_scan_age', DAY_IN_SECONDS));
+	$oldest = time() - $age;
+	$types  = tempo_book_it_security_block_types();
+	$blocks = array();
+	$seen   = array();
+
+	foreach (tempo_book_it_security_log_get() as $entry) {
+		if (! is_array($entry) || ! isset($entry['type'], $entry['keys'])) {
+			continue;
+		}
+		if (! in_array($entry['type'], $types, true) || empty($entry['keys'])) {
+			continue;
+		}
+		if ((int) $entry['time'] < $oldest) {
+			continue;
+		}
+
+		// Folds together the duplicate entries two simultaneous writes can leave.
+		$signature = $entry['type'] . '|' . implode(',', (array) $entry['keys']);
+		if (isset($seen[$signature])) {
+			continue;
+		}
+		$seen[$signature] = true;
+
+		foreach ((array) $entry['keys'] as $key) {
+			if (tempo_book_it_rate_limit_count($key) > 0) {
+				$blocks[] = $entry;
+				break;
+			}
+		}
+	}
+
+	return $blocks;
+}
+
+/* -------------------------------------------------------------------------
  * Password policy
  * ---------------------------------------------------------------------- */
 
