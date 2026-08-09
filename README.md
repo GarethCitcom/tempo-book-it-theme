@@ -13,7 +13,24 @@ background and login. It contains **no booking UI**.
 - PHP 7.4+
 - WooCommerce (checkout / My Account pages; the plugin decorates them)
 
+## Branches
+
+- **`main`** — what tenants install. Runtime files only: no design sources,
+  no project-memory file, no Playground blueprint.
+- **`development`** — where the work happens. Everything on `main` plus
+  `design/` (prototypes and design-system tokens), `CLAUDE.md` (the
+  responsibility split between theme and plugin) and `blueprint.json`
+  (the Playground preview below).
+
+Develop on `development`, then merge it into `main` to release. Git keeps
+the development-only paths deleted on `main` on its own: `development`
+never touches those files after the split, so a merge has nothing to
+reintroduce. If one of them is ever edited on `development`, the merge
+raises a modify/delete conflict — resolve it by deleting on `main`.
+
 ## Preview in Playground (no plugin needed)
+
+Run this from a `development` checkout — `blueprint.json` is not on `main`.
 
 ```bash
 npx @wp-playground/cli server \
@@ -116,4 +133,7 @@ set-password email only after the complete operation succeeds.
   account, coupon or order logic.
 - `assets/fonts/` — Poppins 600/700 + Montserrat variable, bundled locally
   (no Google Fonts requests).
-- `design/` — design sources (prototypes, tokens); not shipped to production.
+- `screenshot.png` — 1200×900 theme preview for Appearance → Themes,
+  rendered from the theme's own stylesheets, fonts and tokens.
+- `design/` — design sources (prototypes, tokens). On the `development`
+  branch only; never shipped to tenants.
