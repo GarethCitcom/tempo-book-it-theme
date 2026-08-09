@@ -11,7 +11,9 @@
  * The source of truth is a small JSON manifest published as an asset on every
  * GitHub release, reached through the `releases/latest/download/` URL that
  * always resolves to the newest one. Both entry points below read the same
- * cached copy, so a site makes at most one request every twelve hours.
+ * briefly-cached copy: WordPress decides how often a site checks for theme
+ * updates, and this only runs when it does, so one request per check is the
+ * right cost.
  *
  * Two entry points, deliberately:
  *
@@ -48,11 +50,22 @@ function tempo_book_it_update_manifest_url() {
 }
 
 /**
- * Fetch the release manifest, cached for twelve hours.
+ * Fetch the release manifest, briefly cached.
+ *
+ * The cache is deliberately short. WordPress already decides how often a site
+ * asks about theme updates — twice a day on cron, hourly on the themes screen,
+ * every minute on Dashboard → Updates — and this function only runs when one of
+ * those checks happens. A long cache on top of that does not save requests
+ * worth saving; it just means a site can be told "up to date" hours after a
+ * release, which is exactly what a long cache did the first time this shipped.
+ *
+ * So: minutes, not hours. Enough to collapse repeat calls inside a single
+ * check, and short enough that a release published a moment ago is seen by the
+ * next check that runs.
  *
  * The cache holds one of three things: the decoded manifest, the string
- * 'unavailable' after a failed attempt (so a site with no outbound access
- * retries hourly rather than on every check), or nothing at all.
+ * 'unavailable' after a failed attempt (so a site with no outbound access is
+ * not made to wait on a timeout at every check), or nothing at all.
  *
  * @param bool $allow_remote Whether an expired cache may be refilled over the
  *                           network. False from any path that runs on ordinary
@@ -80,7 +93,7 @@ function tempo_book_it_update_manifest( $allow_remote = false ) {
 	);
 
 	if ( is_wp_error( $response ) || 200 !== wp_remote_retrieve_response_code( $response ) ) {
-		set_site_transient( 'tempo_book_it_update_manifest', 'unavailable', HOUR_IN_SECONDS );
+		set_site_transient( 'tempo_book_it_update_manifest', 'unavailable', 15 * MINUTE_IN_SECONDS );
 
 		return false;
 	}
@@ -89,12 +102,12 @@ function tempo_book_it_update_manifest( $allow_remote = false ) {
 
 	if ( ! is_array( $manifest ) || empty( $manifest['version'] ) || empty( $manifest['download_url'] )
 		|| ! tempo_book_it_update_package_allowed( $manifest['download_url'] ) ) {
-		set_site_transient( 'tempo_book_it_update_manifest', 'unavailable', HOUR_IN_SECONDS );
+		set_site_transient( 'tempo_book_it_update_manifest', 'unavailable', 15 * MINUTE_IN_SECONDS );
 
 		return false;
 	}
 
-	set_site_transient( 'tempo_book_it_update_manifest', $manifest, 12 * HOUR_IN_SECONDS );
+	set_site_transient( 'tempo_book_it_update_manifest', $manifest, 5 * MINUTE_IN_SECONDS );
 
 	return $manifest;
 }
