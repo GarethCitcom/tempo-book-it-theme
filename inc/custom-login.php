@@ -102,13 +102,20 @@ function tempo_book_it_registration_attempt_allowed()
 {
 	$limit  = max(1, (int) apply_filters('tempo_book_it_registration_attempt_limit', 5));
 	$window = max(MINUTE_IN_SECONDS, (int) apply_filters('tempo_book_it_registration_attempt_window', 15 * MINUTE_IN_SECONDS));
-	$remote = isset($_SERVER['REMOTE_ADDR']) ? sanitize_text_field(wp_unslash($_SERVER['REMOTE_ADDR'])) : 'unknown';
-	$key    = 'tempo_reg_' . substr(hash_hmac('sha256', $remote, wp_salt('nonce')), 0, 32);
-	$count  = (int) get_transient($key);
-	if ($count >= $limit) {
+	$key    = tempo_book_it_rate_limit_key('reg_ip', tempo_book_it_client_ip());
+	if (tempo_book_it_rate_limit_count($key) >= $limit) {
 		return false;
 	}
-	set_transient($key, $count + 1, $window);
+	// This attempt is still allowed; the block starts with the next one.
+	if (tempo_book_it_rate_limit_hit($key, $window) === $limit) {
+		tempo_book_it_security_log_record(
+			'registration_limit_connection',
+			array(
+				'keys'       => array($key),
+				'expires_at' => time() + $window,
+			)
+		);
+	}
 	return true;
 }
 
@@ -278,6 +285,13 @@ function tempo_book_it_custom_login()
 	nocache_headers();
 	header('Referrer-Policy: no-referrer');
 	header('X-Content-Type-Options: nosniff');
+	// Stop the sign-in form being framed by another site and steered by
+	// invisible overlays, and keep its submissions on this origin.
+	// Note for future edits: no script-src belongs in this policy. The security
+	// check runs its hashing in a worker created from an inline blob, which a
+	// script or worker directive would block.
+	header('X-Frame-Options: DENY');
+	header("Content-Security-Policy: frame-ancestors 'none'; form-action 'self'");
 	$allowed_actions = array('login', 'register', 'registered', 'lostpassword', 'checkemail', 'rp', 'resetpass', 'resetcomplete');
 	$action          = isset($_REQUEST['action']) ? sanitize_key(wp_unslash($_REQUEST['action'])) : 'login';
 	$action          = in_array($action, $allowed_actions, true) ? $action : 'login';
@@ -315,6 +329,8 @@ function tempo_book_it_custom_login()
 			$user_login = isset($_POST['log']) ? sanitize_text_field(wp_unslash($_POST['log'])) : '';
 			if (! isset($_POST['tempo_login_nonce']) || ! wp_verify_nonce(sanitize_text_field(wp_unslash($_POST['tempo_login_nonce'])), 'tempo_login')) {
 				$errors->add('invalid_nonce', __('Your session expired. Refresh the page and try again.', 'tempo-book-it-theme'));
+			} elseif (tempo_book_it_altcha_required_for_login() && ! tempo_book_it_check_altcha()) {
+				$errors->add('tempo_altcha', __('Please complete the security check and try again.', 'tempo-book-it-theme'));
 			} else {
 				$user = wp_signon(
 					array(
@@ -341,6 +357,8 @@ function tempo_book_it_custom_login()
 			} elseif ('' !== $honeypot) {
 				wp_safe_redirect(tempo_book_it_login_url($redirect_to, 'registered'));
 				exit;
+			} elseif (! tempo_book_it_check_altcha()) {
+				$errors->add('tempo_altcha', __('Please complete the security check and try again.', 'tempo-book-it-theme'));
 			} elseif (! tempo_book_it_registration_attempt_allowed()) {
 				$errors->add('registration_rate_limit', __('Too many registration attempts were made from this connection. Wait 15 minutes and try again.', 'tempo-book-it-theme'));
 			} elseif (! tempo_book_it_registration_available() || ! function_exists('dsb_register_member')) {
@@ -358,6 +376,8 @@ function tempo_book_it_custom_login()
 			$user_login = isset($_POST['user_login']) ? sanitize_text_field(wp_unslash($_POST['user_login'])) : '';
 			if (! isset($_POST['tempo_lostpassword_nonce']) || ! wp_verify_nonce(sanitize_text_field(wp_unslash($_POST['tempo_lostpassword_nonce'])), 'tempo_lostpassword')) {
 				$errors->add('invalid_nonce', __('Your session expired. Refresh the page and try again.', 'tempo-book-it-theme'));
+			} elseif (! tempo_book_it_check_altcha()) {
+				$errors->add('tempo_altcha', __('Please complete the security check and try again.', 'tempo-book-it-theme'));
 			} else {
 				$result = retrieve_password($user_login);
 				if (! is_wp_error($result) || array_intersect(array('invalid_email', 'invalidcombo', 'invalid_username'), $result->get_error_codes())) {
@@ -535,6 +555,9 @@ function tempo_book_it_render_login($action, $errors, $redirect_to, $user_login,
 							<?php wp_nonce_field('tempo_login', 'tempo_login_nonce'); ?>
 							<input type="hidden" name="redirect_to" value="<?php echo esc_attr($redirect_to); ?>">
 							<?php do_action('login_form'); ?>
+							<?php if (tempo_book_it_altcha_required_for_login()) : ?>
+								<?php tempo_book_it_altcha_field(); ?>
+							<?php endif; ?>
 							<button class="tempo-login__submit" type="submit"><?php esc_html_e('Sign in', 'tempo-book-it-theme'); ?><span aria-hidden="true">&rarr;</span></button>
 						</form>
 						<?php if (tempo_book_it_registration_available()) : ?>
@@ -591,6 +614,7 @@ function tempo_book_it_render_login($action, $errors, $redirect_to, $user_login,
 							<?php wp_nonce_field('tempo_register', 'tempo_register_nonce'); ?>
 							<input type="hidden" name="redirect_to" value="<?php echo esc_attr($redirect_to); ?>">
 							<?php do_action('register_form'); ?>
+							<?php tempo_book_it_altcha_field(); ?>
 							<button class="tempo-login__submit" type="submit"><?php esc_html_e('Create account', 'tempo-book-it-theme'); ?><span aria-hidden="true">&rarr;</span></button>
 						</form>
 						<a class="tempo-login__back" href="<?php echo esc_url(tempo_book_it_login_url($redirect_to)); ?>">&larr; <?php esc_html_e('Back to sign in', 'tempo-book-it-theme'); ?></a>
@@ -604,19 +628,22 @@ function tempo_book_it_render_login($action, $errors, $redirect_to, $user_login,
 							<?php wp_nonce_field('tempo_lostpassword', 'tempo_lostpassword_nonce'); ?>
 							<input type="hidden" name="redirect_to" value="<?php echo esc_attr($redirect_to); ?>">
 							<?php do_action('lostpassword_form'); ?>
+							<?php tempo_book_it_altcha_field(); ?>
 							<button class="tempo-login__submit" type="submit"><?php esc_html_e('Send reset link', 'tempo-book-it-theme'); ?><span aria-hidden="true">&rarr;</span></button>
 						</form>
 						<a class="tempo-login__back" href="<?php echo esc_url(tempo_book_it_login_url($redirect_to)); ?>">&larr; <?php esc_html_e('Back to sign in', 'tempo-book-it-theme'); ?></a>
 					<?php elseif ('resetpass' === $action && $reset_user instanceof WP_User) : ?>
 						<?php do_action('login_form_resetpass'); ?>
+						<?php $password_min = tempo_book_it_password_min_length(); ?>
 						<form id="tempo-login-form" class="tempo-login__form" action="<?php echo esc_url(tempo_book_it_login_url('', 'resetpass')); ?>" method="post">
 							<div class="tempo-field">
 								<label for="tempo-new-password"><?php esc_html_e('New password', 'tempo-book-it-theme'); ?></label>
-								<div class="tempo-field__password"><input id="tempo-new-password" name="pass1" type="password" autocomplete="new-password" required autofocus><button class="tempo-password-toggle" type="button" aria-controls="tempo-new-password" aria-pressed="false"><span class="screen-reader-text"><?php esc_html_e('Show password', 'tempo-book-it-theme'); ?></span><span aria-hidden="true"></span></button></div>
-								<p class="tempo-field__hint"><?php esc_html_e('Use at least 12 characters with a mix of words, numbers and symbols.', 'tempo-book-it-theme'); ?></p>
+								<div class="tempo-field__password"><input id="tempo-new-password" name="pass1" type="password" autocomplete="new-password" minlength="<?php echo esc_attr($password_min); ?>" required autofocus><button class="tempo-password-toggle" type="button" aria-controls="tempo-new-password" aria-pressed="false"><span class="screen-reader-text"><?php esc_html_e('Show password', 'tempo-book-it-theme'); ?></span><span aria-hidden="true"></span></button></div>
+								<?php /* translators: %d: minimum number of characters in a password. */ ?>
+								<p class="tempo-field__hint"><?php printf(esc_html__('Use at least %d characters with a mix of words, numbers and symbols.', 'tempo-book-it-theme'), (int) $password_min); ?></p>
 							</div>
 							<div class="tempo-field"><label for="tempo-confirm-password"><?php esc_html_e('Confirm new password', 'tempo-book-it-theme'); ?></label>
-								<div class="tempo-field__password"><input id="tempo-confirm-password" name="pass2" type="password" autocomplete="new-password" required><button class="tempo-password-toggle" type="button" aria-controls="tempo-confirm-password" aria-pressed="false"><span class="screen-reader-text"><?php esc_html_e('Show password', 'tempo-book-it-theme'); ?></span><span aria-hidden="true"></span></button></div>
+								<div class="tempo-field__password"><input id="tempo-confirm-password" name="pass2" type="password" autocomplete="new-password" minlength="<?php echo esc_attr($password_min); ?>" required><button class="tempo-password-toggle" type="button" aria-controls="tempo-confirm-password" aria-pressed="false"><span class="screen-reader-text"><?php esc_html_e('Show password', 'tempo-book-it-theme'); ?></span><span aria-hidden="true"></span></button></div>
 							</div>
 							<?php wp_nonce_field('tempo_reset_password', 'tempo_reset_nonce'); ?>
 							<input type="hidden" name="rp_key" value="<?php echo esc_attr(tempo_book_it_reset_key()); ?>">
