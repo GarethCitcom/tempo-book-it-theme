@@ -18,6 +18,16 @@
 }
 
 /* -------------------------------------------------------------------------
+ * Minimum comfortable touch/click target for chrome controls (WCAG 2.2
+ * "Target Size (Minimum)" is 24px; 44px is the platform guidance both iOS
+ * and Android use, and what the header links below size themselves to).
+ * ---------------------------------------------------------------------- */
+
+:root {
+	--tempo-tap-target: 44px;
+}
+
+/* -------------------------------------------------------------------------
  * Header bar — white, thick purple bottom border, 1140px shell
  * ---------------------------------------------------------------------- */
 
@@ -54,15 +64,28 @@
 	}
 }
 
-/* Right side: [basket pill] + nav links */
+/* Right side: [basket pill] + nav links
+ *
+ * Header links are small type (11px), so their text box alone is a ~15px
+ * tall target — far under a finger, and worse in icons-only mobile mode
+ * where the link shrinks to the 20px icon. Every link is therefore a flex
+ * box with its own padding and a --tempo-tap-target minimum, and the gaps
+ * between links shrink by about the padding that was added so the header
+ * still reads as it did in the prototype. Nothing is painted on the
+ * padding: the box only widens where the tap lands. */
 
 .tempo-header-nav {
 	display: flex;
 	align-items: center;
-	gap: 14px;
+	gap: 6px;
 }
 
 .tempo-header-nav__link {
+	display: inline-flex;
+	align-items: center;
+	justify-content: center;
+	min-height: var(--tempo-tap-target, 44px);
+	padding: 6px 8px;
 	color: var(--wp--custom--header--foreground, var(--wp--preset--color--brand-secondary, #330164));
 	font-family: var(--wp--preset--font-family--body, Montserrat, sans-serif);
 	font-size: 11px;
@@ -91,20 +114,31 @@
 .tempo-classic-nav__list {
 	display: flex;
 	align-items: center;
-	gap: 20px;
+	/* Was 20px between bare text links; the links now carry 8px of side
+	 * padding each, so 4px here keeps the same 20px optical gap. */
+	gap: 4px;
 	margin: 0;
 	padding: 0;
 	list-style: none;
 }
 
+/* Flex column, so the link fills the item exactly (an inline-flex link in
+ * a line box would sit on the baseline and leave descender space under a
+ * 44px target) while an inline submenu still stacks below it. */
 .tempo-classic-nav__list li {
 	position: relative;
+	display: flex;
+	flex-direction: column;
+	align-items: stretch;
 }
 
 .tempo-classic-nav__list a {
 	display: inline-flex;
 	align-items: center;
+	justify-content: center;
 	gap: 6px;
+	min-height: var(--tempo-tap-target, 44px);
+	padding: 6px 8px;
 	color: var(--wp--custom--header--foreground, var(--wp--preset--color--brand-secondary, #330164));
 	font-family: var(--wp--preset--font-family--body, Montserrat, sans-serif);
 	font-size: 11px;
@@ -167,7 +201,8 @@
 
 .tempo-classic-nav__list .sub-menu a {
 	width: 100%;
-	padding: 6px 10px;
+	justify-content: flex-start;
+	padding: 8px 10px;
 	border-radius: 6px;
 	white-space: normal;
 }
@@ -177,6 +212,9 @@
 .tempo-classic-nav__toggle {
 	display: none;
 	align-items: center;
+	justify-content: center;
+	min-width: var(--tempo-tap-target, 44px);
+	min-height: var(--tempo-tap-target, 44px);
 	padding: 4px;
 	background: none;
 	border: 0;
@@ -227,7 +265,8 @@
 	}
 
 	.tempo-classic-nav--m-collapse .tempo-classic-nav__list a {
-		padding: 8px 10px;
+		justify-content: flex-start;
+		padding: 10px 12px;
 		border-radius: 6px;
 		white-space: normal;
 	}
@@ -244,7 +283,19 @@
 	}
 
 	/* Icons-only mode: links stay inline; labels of links that have an
-	 * icon are visually hidden but stay readable to assistive tech. */
+	 * icon are visually hidden but stay readable to assistive tech.
+	 * With the label out of the flow the link would collapse to the icon
+	 * itself (20×20), so square it off at the tap-target size — the icon
+	 * stays 20px, the touchable box around it does not. */
+	.tempo-classic-nav--m-icons .tempo-classic-nav__list {
+		gap: 0;
+	}
+
+	.tempo-classic-nav--m-icons .tempo-classic-nav__list a {
+		min-width: var(--tempo-tap-target, 44px);
+		padding: 6px;
+	}
+
 	.tempo-classic-nav--m-icons .tempo-nav-icon svg,
 	.tempo-classic-nav--m-icons .tempo-nav-icon .tempo-nav-icon__img {
 		width: 20px;
@@ -301,7 +352,14 @@
 	margin: 0 2px;
 }
 
+/* The strip is a deliberately thin band, so Log out can't take the full
+ * 44px box the header links get. Padding it out and pulling the same
+ * amount back in as negative margin widens the hit area to the full
+ * height of the band without moving the text or growing it. */
 .tempo-portal-strip__logout {
+	display: inline-block;
+	padding: 6px;
+	margin: -6px;
 	color: inherit;
 	text-decoration: none;
 }
