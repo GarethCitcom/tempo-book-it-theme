@@ -44,7 +44,7 @@
 	registerStub(
 		'tempo/header-nav',
 		__( 'Portal header nav', 'tempo-book-it-theme' ),
-		__( 'rendered on the front end: basket pill + the role-aware Book classes / My classes link; hidden once a menu is assigned to the viewer’s header location', 'tempo-book-it-theme' )
+		__( 'rendered on the front end: basket pill + the role-aware Book classes / My classes link; assigning a menu to the viewer’s header location drops the link but keeps the basket pill', 'tempo-book-it-theme' )
 	);
 	registerStub(
 		'tempo/classic-nav',
