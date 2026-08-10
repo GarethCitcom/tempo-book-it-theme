@@ -15,26 +15,25 @@ background and login. It contains **no booking UI**.
 
 ## Branches
 
-- **`main`** — what tenants install: the files WordPress loads, and
-  nothing else. No design sources, no documentation (this README
-  included), no project-memory file, no Playground blueprint.
-- **`development`** — where the work happens, and the only place the
-  project is documented. Everything on `main` plus `design/` (prototypes
-  and design-system tokens), `README.md`, `dsb/README.md`, `CLAUDE.md`
-  (the responsibility split between theme and plugin) and
-  `blueprint.json` (the Playground preview below).
+- **`development`** — where the work happens. Branch from it for a change,
+  merge back into it when the change is done.
+- **`main`** — production: what tenants install and what everyone
+  downloads. It only ever receives merges from `development`, so every
+  commit on it is a state that was fit to release.
 
-Develop on `development`, then merge it into `main` to release. Git keeps
-the development-only paths deleted on `main` on its own: `development`
-never touches those files after the split, so a merge has nothing to
-reintroduce. If one of them is ever edited on `development`, the merge
-raises a modify/delete conflict — resolve it by deleting on `main`.
+Both branches hold the same files. What keeps a *download* to the theme
+alone is `.gitattributes`, which marks `design/`, `README.md`,
+`CLAUDE.md`, `blueprint.json`, `dsb/` and `.github/` as `export-ignore`:
+a zip built by `git archive` — which is what the release workflow and
+GitHub's own "Download ZIP" both use — contains only the files WordPress
+loads, whichever branch it was built from.
 
-`.gitattributes` marks the same paths `export-ignore`, so a zip built by
-`git archive` — or downloaded from GitHub with "Download ZIP" — contains
-only the theme, whichever branch it came from. The branch split keeps the
-repository itself tidy; `export-ignore` is what keeps the *download*
-tidy.
+That is worth stating plainly, because the two were once kept apart by
+hand as well: development-only paths were deleted from `main` on every
+merge. It was never needed — `export-ignore` had already made the
+download tidy — and the manual step was fragile enough that `main` ended
+up with no README, leaving the repository's front page blank. One shape,
+one mechanism.
 
 ## Updates
 
@@ -76,9 +75,11 @@ Silence in the admin has one cause per line there.
 
 ### Cutting a release
 
-1. Merge `development` into `main`.
-2. Bump `Version:` in `style.css`. This is the number every site
-   compares against, so nothing ships without it.
+1. On `development`, bump `Version:` in `style.css`. This is the number
+   every site compares against, so nothing ships without it. Bumping it
+   here rather than on `main` keeps `main` a branch that is only ever
+   merged into.
+2. Merge `development` into `main`.
 3. Either tag the merge commit `vX.Y.Z` and push the tag, or run
    **Actions → Release → Run workflow** against `main` — the manual route
    derives the tag from the header and creates it, so there is nothing to
