@@ -83,31 +83,6 @@ function tempo_book_it_order_received_body_class( $classes ) {
 add_filter( 'body_class', 'tempo_book_it_order_received_body_class' );
 
 /**
- * Render the endpoint title above the plugin's greeting and account tabs.
- *
- * The plugin deliberately owns the greeting/navigation. The endpoint title
- * belongs to the surrounding theme shell and uses WooCommerce's own resolved
- * endpoint title so custom account endpoints remain compatible.
- */
-function tempo_book_it_account_page_title() {
-	if ( ! is_user_logged_in() || ! function_exists( 'WC' ) || ! WC()->query ) {
-		return;
-	}
-
-	$endpoint = WC()->query->get_current_endpoint();
-	$title    = $endpoint
-		? WC()->query->get_endpoint_title( $endpoint )
-		: __( 'My account', 'woocommerce' );
-
-	if ( '' === trim( (string) $title ) ) {
-		return;
-	}
-
-	echo '<h1 class="tempo-woo-account__page-title">' . esc_html( $title ) . '</h1>';
-}
-add_action( 'woocommerce_account_navigation', 'tempo_book_it_account_page_title', 5 );
-
-/**
  * Shape the native orders table into the approved compact card fields.
  *
  * @param array<string,string> $columns Native WooCommerce columns.

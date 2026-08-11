@@ -39,15 +39,6 @@
 	line-height: var(--dsb-type-supporting-line, 19px);
 }
 
-.tempo-woo-account .tempo-woo-account__page-title {
-	margin: 0 0 22px;
-	font-family: var(--dsb-font-heading, var(--wp--preset--font-family--heading, Poppins, sans-serif));
-	font-size: var(--dsb-type-page-size, 28px);
-	font-weight: 700;
-	line-height: 1.15;
-	color: var(--dsb-color-text-brand, var(--tempo-woo-secondary));
-}
-
 .tempo-woo-account .woocommerce-MyAccount-content {
 	min-width: 0;
 }
@@ -885,10 +876,6 @@
 		grid-template-columns: 200px minmax(0, 1fr);
 		gap: 0 32px;
 		align-items: start;
-	}
-
-	.tempo-woo-account:not(.dsb-plugin-account) .tempo-woo-account__page-title {
-		grid-column: 1 / -1;
 	}
 
 	.tempo-woo-account:not(.dsb-plugin-account) .woocommerce-MyAccount-navigation {
