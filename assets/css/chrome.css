@@ -223,9 +223,10 @@
 	cursor: pointer;
 }
 
+/* 28px reads at roughly the weight of the 34px mobile logo it sits opposite. */
 .tempo-classic-nav__toggle svg {
-	width: 22px;
-	height: 22px;
+	width: 28px;
+	height: 28px;
 }
 
 .tempo-classic-nav__toggle-close,
