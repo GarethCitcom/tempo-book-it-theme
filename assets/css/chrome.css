@@ -445,6 +445,20 @@ footer.wp-block-template-part {
 	flex: 1 0 auto;
 }
 
+/*
+ * On mobile the templates' vertical padding is dead space — the booking
+ * surfaces carry their own. Every template sets that padding inline on the
+ * main group, so an override needs !important to reach it; the templates
+ * themselves cannot hold a breakpoint. 767px matches the sticky-header
+ * breakpoint above so the chrome changes shape at one width.
+ */
+@media (max-width: 767px) {
+	.wp-site-blocks > main {
+		padding-top: 0 !important;
+		padding-bottom: 0 !important;
+	}
+}
+
 
 /* -----------------------------------------------------------------------
  * Overrides for WooCommerce blocks — the plugin owns the content, but we need to make it look right in the chrome. These are all about spacing, typography, and colour.
