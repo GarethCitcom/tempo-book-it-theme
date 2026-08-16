@@ -274,6 +274,39 @@ function tempo_my_classes_url() {
 	);
 }
 
+/**
+ * URL of the plugin's "Need help?" page ([dsb_help]), or '' when the plugin
+ * doesn't offer one (older plugin, no published page) — callers hide their
+ * link on '' rather than pointing at a 404. Same shape as tempo_book_url();
+ * there is no shortcode-scan fallback because the page only exists in
+ * plugin versions that also ship dsb_help_page_url().
+ */
+function tempo_help_url() {
+	$url = function_exists( 'dsb_help_page_url' ) ? (string) dsb_help_page_url() : '';
+	return (string) apply_filters( 'tempo_book_it_help_url', $url );
+}
+
+/**
+ * Extra links shown in the portal strip between the member's name and
+ * "Log out": each item is array( 'label' => …, 'url' => … ). The plugin's
+ * "Need help?" page is the only default; a child theme can add or remove
+ * entries through the filter without touching the block's markup.
+ *
+ * @return array<int,array{label:string,url:string}>
+ */
+function tempo_portal_strip_links() {
+	$links = array();
+	$help  = tempo_help_url();
+	if ( '' !== $help ) {
+		$links[] = array(
+			'label' => __( 'Need help?', 'tempo-book-it-theme' ),
+			'url'   => $help,
+		);
+	}
+	$links = apply_filters( 'tempo_book_it_portal_strip_links', $links );
+	return is_array( $links ) ? $links : array();
+}
+
 /** WooCommerce My Account URL, with a sane fallback when Woo is absent. */
 function tempo_account_url() {
 	if ( function_exists( 'wc_get_page_permalink' ) ) {

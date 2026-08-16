@@ -130,6 +130,12 @@ chrome, or `teacher` / `password` for the teacher chrome.
 - **Nav URLs**: "Book classes" / "My classes" links auto-detect the pages
   hosting `[dsb_booking]` / `[dsb_register]` (cached daily, flushed on
   page save); the filters below still override.
+- **Need help?**: the plugin's `[dsb_help]` page (`dsb_help_page_url()`,
+  wrapped by `tempo_help_url()`) is linked from the portal strip and
+  appended to the header menu — both only while the plugin offers the page,
+  and the menu item steps aside when a school's own menu already links
+  there. Filters: `tempo_book_it_help_url`, `tempo_book_it_portal_strip_links`
+  (the strip's link list), `tempo_book_it_help_in_header_nav`.
 - **JS**: the plugin's `dsb-booking.js` installs `window.dsbBooking` and
   auto-fills `[data-dsb-basket]` / `[data-dsb-basket-count]` /
   `[data-dsb-basket-clock]` — the theme ships **no basket JS of its own**.

@@ -91,8 +91,62 @@ function tempo_book_it_nav_fallback() {
 	echo '<ul id="tempo-classic-nav-list" class="tempo-classic-nav__list"><li class="menu-item"><a href="'
 		. esc_url( tempo_account_url() ) . '">'
 		. esc_html__( 'My account', 'tempo-book-it-theme' )
-		. '</a></li></ul>';
+		. '</a></li>'
+		. tempo_book_it_nav_help_item() // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- escaped where built.
+		. '</ul>';
 }
+
+/**
+ * The plugin's "Need help?" page as one more header-menu item, appended
+ * after whatever the school put in the menu (and after the bare My account
+ * fallback). It comes from the plugin at runtime — dsb_help_page_url() via
+ * tempo_help_url() — so it appears only once the plugin offers the page and
+ * follows the page wherever Settings → General points it; nothing is
+ * hardcoded to a URL and there is nothing to seed into a menu. A school that
+ * would rather place it themselves adds the page to their menu as usual and
+ * this steps aside (the assigned menu already links there). Filter
+ * `tempo_book_it_help_in_header_nav` to false to keep it out of the header
+ * altogether — the portal strip carries the same link either way.
+ *
+ * @return string `<li>` markup, or '' when there is nothing to link to.
+ */
+function tempo_book_it_nav_help_item() {
+	$url = tempo_help_url();
+	if ( '' === $url || ! apply_filters( 'tempo_book_it_help_in_header_nav', true ) ) {
+		return '';
+	}
+	$is_here = is_singular() && untrailingslashit( strtok( (string) get_permalink(), '?#' ) ) === untrailingslashit( strtok( $url, '?#' ) );
+	$label   = esc_html__( 'Need help?', 'tempo-book-it-theme' );
+	if ( tempo_nav_show_icons() ) {
+		$label = '<span class="tempo-nav-icon" aria-hidden="true">' . tempo_book_it_nav_icon_svg( 'help' ) . '</span>'
+			. '<span class="tempo-nav-label">' . $label . '</span>';
+	}
+	return '<li class="menu-item tempo-menu-item--help' . ( $is_here ? ' current-menu-item' : '' ) . '">'
+		. '<a href="' . esc_url( $url ) . '"' . ( $is_here ? ' aria-current="page"' : '' ) . '>' . $label . '</a></li>';
+}
+
+/**
+ * Append the "Need help?" item to an assigned header menu — unless the
+ * school's own menu already links to that page, in which case theirs wins.
+ */
+function tempo_book_it_nav_append_help( $items, $args ) {
+	if ( empty( $args->theme_location ) || ! array_key_exists( $args->theme_location, tempo_book_it_nav_locations() ) ) {
+		return $items;
+	}
+	$url = tempo_help_url();
+	if ( '' === $url ) {
+		return $items;
+	}
+	$path    = untrailingslashit( strtok( $url, '?#' ) );
+	$menu_id = get_nav_menu_locations()[ $args->theme_location ] ?? 0;
+	foreach ( (array) wp_get_nav_menu_items( $menu_id ) as $item ) {
+		if ( untrailingslashit( strtok( (string) $item->url, '?#' ) ) === $path ) {
+			return $items;
+		}
+	}
+	return $items . tempo_book_it_nav_help_item();
+}
+add_filter( 'wp_nav_menu_items', 'tempo_book_it_nav_append_help', 10, 2 );
 
 /* -------------------------------------------------------------------------
  * Settings (Customize → Header navigation)
@@ -227,6 +281,10 @@ function tempo_book_it_nav_icons() {
 		'info'     => array(
 			'label' => __( 'Info', 'tempo-book-it-theme' ),
 			'paths' => '<circle cx="12" cy="12" r="10"/><line x1="12" y1="16" x2="12" y2="12"/><line x1="12" y1="8" x2="12.01" y2="8"/>',
+		),
+		'help'     => array(
+			'label' => __( 'Help', 'tempo-book-it-theme' ),
+			'paths' => '<circle cx="12" cy="12" r="10"/><path d="M9.09 9a3 3 0 0 1 5.83 1c0 2-3 3-3 3"/><line x1="12" y1="17" x2="12.01" y2="17"/>',
 		),
 	);
 }
