@@ -357,6 +357,7 @@
  * 44px box the header links get. Padding it out and pulling the same
  * amount back in as negative margin widens the hit area to the full
  * height of the band without moving the text or growing it. */
+.tempo-portal-strip__link,
 .tempo-portal-strip__logout {
 	display: inline-block;
 	padding: 6px;
@@ -365,10 +366,20 @@
 	text-decoration: none;
 }
 
+.tempo-portal-strip__link:hover,
+.tempo-portal-strip__link:focus,
 .tempo-portal-strip__logout:hover,
 .tempo-portal-strip__logout:focus {
 	color: inherit;
 	text-decoration: underline;
+}
+
+/* The strip link that points at the page being viewed (Need help? on the
+ * help page): a quiet underline rather than a colour change, since the
+ * band is a single brand colour. */
+.tempo-portal-strip__link[aria-current="page"] {
+	text-decoration: underline;
+	text-underline-offset: 2px;
 }
 
 /* -------------------------------------------------------------------------

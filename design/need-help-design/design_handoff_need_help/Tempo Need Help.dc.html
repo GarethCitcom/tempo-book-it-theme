@@ -1,0 +1,238 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <link rel="stylesheet" href="_ds/sjp-theatre-arts-design-system-175e544c-62db-4215-acdb-7b1da4bfaa75/tokens/fonts.css">
+  <link rel="stylesheet" href="_ds/sjp-theatre-arts-design-system-175e544c-62db-4215-acdb-7b1da4bfaa75/components/fig-tokens.css">
+  <link rel="stylesheet" href="_ds/sjp-theatre-arts-design-system-175e544c-62db-4215-acdb-7b1da4bfaa75/tokens/typography.css">
+  <link rel="stylesheet" href="_ds/sjp-theatre-arts-design-system-175e544c-62db-4215-acdb-7b1da4bfaa75/styles.css">
+  <style>
+    body { margin: 0; background: var(--color-bg-subtle); -webkit-font-smoothing: antialiased; }
+    * { box-sizing: border-box; }
+    input, select, textarea, button { font: inherit; }
+    a { color: var(--color-brand-primary); }
+    a:hover { color: var(--color-brand-secondary); }
+  </style>
+</helmet>
+
+<div style="font-family: Montserrat, sans-serif; color: var(--color-text-primary); min-height: 100vh; display: flex; flex-direction: column;">
+
+  <!-- Theme chrome -->
+  <div style="background: var(--color-bg-surface); border-bottom: 5px solid var(--color-brand-secondary); flex-shrink: 0;">
+    <div style="max-width: 1140px; margin: 0 auto; padding: 12px 20px; display: flex; align-items: center; justify-content: space-between; gap: 16px;">
+      <img src="assets/logo.svg" alt="SJP Theatre Arts" style="height: {{ logoH }};">
+      <span style="font-size: 12px; font-weight: 600; color: var(--color-text-primary);">Book classes &nbsp;&nbsp; My account</span>
+    </div>
+  </div>
+  <div style="background: var(--color-brand-primary); flex-shrink: 0;">
+    <div style="max-width: 1140px; margin: 0 auto; padding: 6px 20px; display: flex; align-items: center; justify-content: space-between; gap: 12px;">
+      <span style="font-size: 11px; font-weight: 600; color: var(--color-text-inverse);">Booking portal</span>
+      <span style="font-size: 11px; color: var(--color-text-inverse); opacity: 0.9;">Becky Smith · Log out</span>
+    </div>
+  </div>
+
+  <div style="max-width: 800px; margin: 0 auto; width: 100%; padding: {{ shellPad }}; flex: 1; display: flex; flex-direction: column; gap: 16px;">
+
+    <div data-screen-label="Need help" style="display: flex; flex-direction: column; gap: 14px;">
+      <span style="font-size: 11px; font-weight: 600; letter-spacing: 0.06em; color: var(--color-text-muted);">HELP &amp; SUPPORT</span>
+      <h1 style="margin: 0; font-family: Poppins, sans-serif; font-weight: 700; font-size: 25px; line-height: 32px; color: var(--color-text-brand);">Need a hand?</h1>
+      <span style="font-size: 13px; line-height: 19px; color: var(--color-text-primary);">Pick the option that sounds most like your question, and we will point you to the right people.</span>
+
+      <!-- Avenue cards -->
+      <div style="display: grid; grid-template-columns: {{ cardCols }}; gap: 14px; align-items: stretch;">
+
+        <div onClick="{{ goSchool }}" style="cursor: pointer; border-radius: 14px; background: var(--color-bg-surface); box-shadow: inset 0 0 0 {{ schoolRing }}; padding: 18px; display: flex; flex-direction: column; gap: 10px;" style-hover="box-shadow: inset 0 0 0 2px var(--color-brand-primary);">
+          <span style="font-family: Poppins, sans-serif; font-weight: 700; font-size: 17px; line-height: 23px; color: var(--color-brand-secondary);">Classes and your child</span>
+          <span style="font-size: 12px; line-height: 18px; color: var(--color-text-primary);">Questions for the SJP office about classes, terms and what to bring.</span>
+          <div style="display: flex; flex-direction: column; gap: 6px; margin-top: 2px;">
+            <sc-for list="{{ schoolExamples }}" as="q" hint-placeholder-count="3">
+              <span style="font-size: 12px; line-height: 17px; color: var(--color-text-muted);">“{{ q.text }}”</span>
+            </sc-for>
+          </div>
+          <span style="margin-top: auto; font-size: 12px; font-weight: 600; color: var(--color-brand-primary);">Ask the school ›</span>
+        </div>
+
+        <div onClick="{{ goTech }}" style="cursor: pointer; border-radius: 14px; background: var(--color-bg-surface); box-shadow: inset 0 0 0 {{ techRing }}; padding: 18px; display: flex; flex-direction: column; gap: 10px;" style-hover="box-shadow: inset 0 0 0 2px var(--color-brand-primary);">
+          <span style="font-family: Poppins, sans-serif; font-weight: 700; font-size: 17px; line-height: 23px; color: var(--color-brand-secondary);">Something not working?</span>
+          <span style="font-size: 12px; line-height: 18px; color: var(--color-text-primary);">Trouble with booking, paying or logging in on this website.</span>
+          <div style="display: flex; flex-direction: column; gap: 6px; margin-top: 2px;">
+            <sc-for list="{{ techExamples }}" as="q" hint-placeholder-count="3">
+              <span style="font-size: 12px; line-height: 17px; color: var(--color-text-muted);">“{{ q.text }}”</span>
+            </sc-for>
+          </div>
+          <span style="margin-top: auto; font-size: 12px; font-weight: 600; color: var(--color-brand-primary);">Get booking support ›</span>
+        </div>
+      </div>
+    </div>
+
+    <!-- ══ SCHOOL AVENUE ══ -->
+    <sc-if value="{{ isSchool }}" hint-placeholder-val="{{ true }}">
+      <div data-screen-label="School help" style="display: flex; flex-direction: column; gap: 14px;">
+        <h2 style="margin: 6px 0 0; font-family: Poppins, sans-serif; font-weight: 700; font-size: 19px; line-height: 26px; color: var(--color-text-brand);">Ask the school</h2>
+
+        <div style="border-radius: 14px; background: var(--color-bg-brand-subtle); padding: 16px; display: flex; flex-direction: column; gap: 6px;">
+          <span style="font-weight: 600; font-size: 13px; color: var(--color-brand-secondary);">Email the office</span>
+          <a href="mailto:sjptheatrearts@yahoo.co.uk" style="font-family: Poppins, sans-serif; font-weight: 700; font-size: 16px; color: var(--color-brand-primary); text-decoration: none; word-break: break-all;">sjptheatrearts@yahoo.co.uk</a>
+          <sc-if value="{{ showResponseNote }}" hint-placeholder-val="{{ true }}">
+            <span style="font-size: 12px; line-height: 17px; color: var(--color-text-primary);">We usually reply within one working day. For anything urgent on a class day, speak to your teacher at the studio.</span>
+          </sc-if>
+        </div>
+
+        <span style="font-weight: 600; font-size: 13px; color: var(--color-brand-secondary); margin-top: 4px;">Common questions</span>
+        <div style="display: flex; flex-direction: column; gap: 8px;">
+          <sc-for list="{{ faqs }}" as="f" hint-placeholder-count="5">
+            <div style="border-radius: 12px; background: var(--color-bg-surface); box-shadow: inset 0 0 0 1px var(--color-border-default); overflow: hidden;">
+              <div onClick="{{ f.toggle }}" style="cursor: pointer; min-height: 44px; display: flex; align-items: center; justify-content: space-between; gap: 12px; padding: 12px 14px;">
+                <span style="font-weight: 600; font-size: 13px; line-height: 19px; color: var(--color-text-primary);">{{ f.q }}</span>
+                <span style="flex-shrink: 0; width: 22px; height: 22px; border-radius: 999px; background: var(--color-bg-subtle); color: var(--color-brand-secondary); display: flex; align-items: center; justify-content: center; font-size: 13px; font-weight: 700; transform: {{ f.chev }}; transition: transform 150ms ease;">⌄</span>
+              </div>
+              <sc-if value="{{ f.open }}" hint-placeholder-val="{{ false }}">
+                <div style="padding: 0 14px 14px; font-size: 13px; line-height: 19px; color: var(--color-text-primary);">{{ f.a }}</div>
+              </sc-if>
+            </div>
+          </sc-for>
+        </div>
+        <span style="font-size: 12px; line-height: 18px; color: var(--color-text-muted);">Can't see your question? <a href="mailto:sjptheatrearts@yahoo.co.uk" style="font-weight: 600;">Email the office</a> and we'll help.</span>
+      </div>
+    </sc-if>
+
+    <!-- ══ TECH AVENUE ══ -->
+    <sc-if value="{{ isTech }}" hint-placeholder-val="{{ false }}">
+      <div data-screen-label="Technical help" style="display: flex; flex-direction: column; gap: 14px;">
+        <h2 style="margin: 6px 0 0; font-family: Poppins, sans-serif; font-weight: 700; font-size: 19px; line-height: 26px; color: var(--color-text-brand);">Booking system support</h2>
+
+        <span style="font-weight: 600; font-size: 13px; color: var(--color-brand-secondary);">Try these first</span>
+        <div style="display: flex; flex-direction: column; gap: 8px;">
+          <sc-for list="{{ fixes }}" as="fx" hint-placeholder-count="4">
+            <div style="border-radius: 12px; background: var(--color-bg-surface); box-shadow: inset 0 0 0 1px var(--color-border-default); padding: 12px 14px; display: flex; gap: 12px; align-items: flex-start;">
+              <span style="flex-shrink: 0; width: 24px; height: 24px; border-radius: 999px; background: var(--color-brand-secondary); color: var(--color-text-inverse); display: flex; align-items: center; justify-content: center; font-family: Poppins, sans-serif; font-weight: 700; font-size: 12px;">{{ fx.n }}</span>
+              <div style="display: flex; flex-direction: column; gap: 3px;">
+                <span style="font-weight: 600; font-size: 13px; line-height: 19px; color: var(--color-text-primary);">{{ fx.t }}</span>
+                <span style="font-size: 12px; line-height: 18px; color: var(--color-text-muted);">{{ fx.d }}</span>
+              </div>
+            </div>
+          </sc-for>
+        </div>
+
+        <span style="font-weight: 600; font-size: 13px; color: var(--color-brand-secondary); margin-top: 4px;">Still stuck? Email support</span>
+
+        <sc-if value="{{ notSent }}" hint-placeholder-val="{{ true }}">
+          <div style="border-radius: 14px; background: var(--color-bg-surface); box-shadow: inset 0 0 0 1px var(--color-border-default); padding: 16px; display: flex; flex-direction: column; gap: 12px;">
+            <div style="display: grid; grid-template-columns: {{ nameCols }}; gap: 12px;">
+              <label style="display: flex; flex-direction: column; gap: 5px; font-size: 12px; font-weight: 600; color: var(--color-text-primary);">Your name
+                <input value="{{ fName }}" onChange="{{ setName }}" style="min-height: 44px; border-radius: 10px; border: 1px solid var(--color-border-default); padding: 10px 12px; font-size: 14px; color: var(--color-text-primary); background: var(--color-bg-surface);">
+              </label>
+              <label style="display: flex; flex-direction: column; gap: 5px; font-size: 12px; font-weight: 600; color: var(--color-text-primary);">Email for our reply
+                <input value="{{ fEmail }}" onChange="{{ setEmail }}" type="email" style="min-height: 44px; border-radius: 10px; border: 1px solid var(--color-border-default); padding: 10px 12px; font-size: 14px; color: var(--color-text-primary); background: var(--color-bg-surface);">
+              </label>
+            </div>
+            <label style="display: flex; flex-direction: column; gap: 5px; font-size: 12px; font-weight: 600; color: var(--color-text-primary);">What went wrong?
+              <textarea value="{{ fMsg }}" onChange="{{ setMsg }}" rows="4" placeholder="Tell us what you were trying to do and what happened instead" style="border-radius: 10px; border: 1px solid var(--color-border-default); padding: 10px 12px; font-size: 14px; line-height: 1.5; color: var(--color-text-primary); background: var(--color-bg-surface); resize: vertical; font-family: Montserrat, sans-serif;"></textarea>
+            </label>
+            <span style="font-size: 11px; line-height: 16px; color: var(--color-text-muted);">Your account email and the page you were on are included automatically, so support can find your booking without asking.</span>
+            <button onClick="{{ send }}" style="align-self: flex-start; min-height: 44px; border: 0; border-radius: 999px; padding: 12px 22px; background: var(--color-brand-primary); color: var(--color-text-inverse); font-weight: 700; font-size: 13px; cursor: pointer;" style-hover="background: var(--color-brand-secondary);">Send to support</button>
+          </div>
+        </sc-if>
+
+        <sc-if value="{{ sent }}" hint-placeholder-val="{{ false }}">
+          <div style="border-radius: 14px; background: var(--color-status-success-bg); padding: 16px; display: flex; gap: 12px; align-items: flex-start;">
+            <span style="flex-shrink: 0; width: 22px; height: 22px; border-radius: 999px; background: var(--color-bg-surface); color: var(--color-status-success-fg); display: flex; align-items: center; justify-content: center; font-size: 12px; font-weight: 800;">✓</span>
+            <div style="display: flex; flex-direction: column; gap: 4px;">
+              <span style="font-weight: 700; font-size: 14px; color: var(--color-status-success-fg);">Message sent</span>
+              <span style="font-size: 13px; line-height: 19px; color: var(--color-status-success-fg);">Support will reply to {{ sentTo }}. Most messages get an answer within one working day.</span>
+            </div>
+          </div>
+        </sc-if>
+
+        <sc-if value="{{ showTempoLine }}" hint-placeholder-val="{{ true }}">
+          <span style="font-size: 11px; line-height: 16px; color: var(--color-text-muted);">Booking system support is provided by Tempo, <a href="mailto:support@tempo-book-it.com" style="color: var(--color-text-muted); font-weight: 600;">support@tempo-book-it.com</a>. <br>The SJP office can't fix technical problems, so this route is faster.</span>
+        </sc-if>
+      </div>
+    </sc-if>
+
+  </div>
+
+  <div style="flex-shrink: 0; background: var(--color-brand-secondary); margin-top: 32px;">
+    <div style="max-width: 1140px; margin: 0 auto; padding: 14px 20px; font-size: 11px; color: var(--color-text-inverse); opacity: 0.85;">SJP Theatre Arts · Bromsgrove, Worcestershire</div>
+  </div>
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props="{&quot;startOn&quot;:{&quot;editor&quot;:&quot;enum&quot;,&quot;options&quot;:[&quot;school&quot;,&quot;tech&quot;],&quot;default&quot;:&quot;school&quot;,&quot;tsType&quot;:&quot;string&quot;,&quot;section&quot;:&quot;Demo&quot;},&quot;showResponseNote&quot;:{&quot;editor&quot;:&quot;boolean&quot;,&quot;default&quot;:true,&quot;tsType&quot;:&quot;boolean&quot;,&quot;section&quot;:&quot;School avenue&quot;},&quot;tempoAttribution&quot;:{&quot;editor&quot;:&quot;enum&quot;,&quot;options&quot;:[&quot;Small print&quot;,&quot;Hidden&quot;],&quot;default&quot;:&quot;Small print&quot;,&quot;tsType&quot;:&quot;string&quot;,&quot;section&quot;:&quot;Technical avenue&quot;}}">
+class Component extends DCLogic {
+  state = { avenue: "school", openFaq: 0, sent: false, form: { name: "Becky Smith", email: "becky.smith@example.com", msg: "" }, w: typeof window !== "undefined" ? window.innerWidth : 1200 };
+
+  componentDidMount() {
+    this._onR = () => this.setState({ w: window.innerWidth });
+    window.addEventListener("resize", this._onR);
+  }
+  componentWillUnmount() { window.removeEventListener("resize", this._onR); }
+
+  setField(k, e) { this.setState(s => ({ form: Object.assign({}, s.form, { [k]: e.target.value }) })); }
+
+  renderVals() {
+    const S = this.state;
+    const desk = S.w >= 1000;
+    const avenue = this.props.startOn && !S._touched ? this.props.startOn : S.avenue;
+    const faqData = [
+      { q: "What should my child wear to class?", a: "Comfortable clothes they can move in and bare feet or soft shoes for the first few sessions. Once they settle in, the office will let you know if the class has a uniform and where to get it." },
+      { q: "When does the term start and finish?", a: "Term dates are shown on the package step when you book, and on each booking under My account. The office emails all members before each new term opens." },
+      { q: "My child can't make a class. Do we lose the session?", a: "Let the office know before the class and we will do our best to offer a make-up session or booking credit. Credit appears under My account and comes off your next booking automatically." },
+      { q: "Can we move to a different day or class?", a: "Usually yes, if the other class has space. Email the office with your child's name and the class you'd like, and we will move the booking for you." },
+      { q: "How do I use my booking credit?", a: "Nothing to do. Any credit on your account is offered at checkout, and you choose how much of it to use before you pay." },
+    ];
+    const faqs = faqData.map((f, i) => ({
+      q: f.q, a: f.a,
+      open: S.openFaq === i,
+      chev: S.openFaq === i ? "rotate(180deg)" : "rotate(0deg)",
+      toggle: () => this.setState({ openFaq: S.openFaq === i ? -1 : i }),
+    }));
+    return {
+      logoH: desk ? "46px" : "34px",
+      shellPad: desk ? "28px 20px 40px" : "20px 16px 32px",
+      cardCols: desk ? "1fr 1fr" : "1fr",
+      nameCols: desk ? "1fr 1fr" : "1fr",
+      isSchool: avenue === "school",
+      isTech: avenue === "tech",
+      schoolRing: avenue === "school" ? "2px var(--color-brand-primary)" : "1px var(--color-border-default)",
+      techRing: avenue === "tech" ? "2px var(--color-brand-primary)" : "1px var(--color-border-default)",
+      goSchool: () => this.setState({ avenue: "school", _touched: true }),
+      goTech: () => this.setState({ avenue: "tech", _touched: true }),
+      schoolExamples: [
+        { text: "What should my child wear?" },
+        { text: "When does the new term start?" },
+        { text: "Can we switch to the Thursday class?" },
+      ],
+      techExamples: [
+        { text: "My payment didn't go through" },
+        { text: "My basket emptied itself" },
+        { text: "The page shows an error" },
+      ],
+      showResponseNote: this.props.showResponseNote ?? true,
+      faqs,
+      fixes: [
+        { n: "1", t: "Payment didn't go through?", d: "Your places stay held while the countdown runs, so check your card details and try again. Nothing is charged for a failed attempt." },
+        { n: "2", t: "Basket suddenly empty?", d: "Held places are released when the hold timer runs out. If the class still has space, just add the booking again." },
+        { n: "3", t: "Page looks stuck or out of date?", d: "Refresh the page. Your basket and any held places survive a refresh." },
+        { n: "4", t: "Not getting confirmation emails?", d: "Check the address under My account › Account details, and look in spam for messages from the booking system." },
+      ],
+      notSent: !S.sent,
+      sent: S.sent,
+      sentTo: S.form.email || "your email",
+      fName: S.form.name, setName: (e) => this.setField("name", e),
+      fEmail: S.form.email, setEmail: (e) => this.setField("email", e),
+      fMsg: S.form.msg, setMsg: (e) => this.setField("msg", e),
+      send: () => this.setState({ sent: true }),
+      showTempoLine: (this.props.tempoAttribution ?? "Small print") !== "Hidden",
+    };
+  }
+}
+</script>
+</body>
+</html>
