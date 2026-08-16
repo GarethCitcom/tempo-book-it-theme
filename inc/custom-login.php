@@ -489,7 +489,6 @@ function tempo_book_it_render_login($action, $errors, $redirect_to, $user_login,
 		<meta name="viewport" content="width=device-width, initial-scale=1">
 		<meta name="robots" content="noindex, nofollow">
 		<title><?php echo esc_html($title . ' - ' . $site_name); ?></title>
-		<?php wp_print_styles(); ?>
 		<?php do_action('login_head'); ?>
 	</head>
 
