@@ -8,6 +8,24 @@
 ( function () {
 	'use strict';
 
+	/** Whether Woo's cart store says there is nothing to pay. */
+	function cartTotalIsFree() {
+		if ( ! window.wp || ! window.wp.data ) {
+			return false;
+		}
+
+		const cartStore = window.wp.data.select( 'wc/store/cart' );
+		const totals = cartStore && cartStore.getCartTotals
+			? cartStore.getCartTotals()
+			: null;
+
+		return Boolean(
+			totals
+			&& Object.prototype.hasOwnProperty.call( totals, 'total_price' )
+			&& Number( totals.total_price ) <= 0
+		);
+	}
+
 	function initialiseCheckoutSkeleton( checkout ) {
 		const root = document.documentElement;
 		const stage = document.querySelector( '[data-tempo-checkout-stage]' );
@@ -54,23 +72,6 @@
 			}, 180 );
 		}
 
-		function storeTotalIsFree() {
-			if ( ! window.wp || ! window.wp.data ) {
-				return false;
-			}
-
-			const cartStore = window.wp.data.select( 'wc/store/cart' );
-			const totals = cartStore && cartStore.getCartTotals
-				? cartStore.getCartTotals()
-				: null;
-
-			return Boolean(
-				totals
-				&& Object.prototype.hasOwnProperty.call( totals, 'total_price' )
-				&& Number( totals.total_price ) <= 0
-			);
-		}
-
 		function usableCheckoutIsRendered() {
 			const expressBlock = checkout.querySelector(
 				'.wp-block-woocommerce-checkout-express-payment-block'
@@ -95,7 +96,7 @@
 					'.wc-block-components-checkout-place-order-button'
 				)
 			);
-			const paymentReady = storeTotalIsFree() || Boolean(
+			const paymentReady = cartTotalIsFree() || Boolean(
 				checkout.querySelector(
 					'.wp-block-woocommerce-checkout-payment-block '
 					+ '.wc-block-components-radio-control__option, '
@@ -155,6 +156,178 @@
 		check();
 	}
 
+	/**
+	 * Keep a loading mask over the payment area until Woo's payment store
+	 * reports gateways that can actually pay.
+	 *
+	 * The page frame above reveals as soon as the booking side is usable.
+	 * Payment lags behind it: gateways answer "can pay?" only after their SDK
+	 * is up (Stripe returns false until Stripe.js is initialised), so Woo's
+	 * first pass can legitimately find zero methods and paint its "No payment
+	 * methods available" notice for a few seconds before the real options
+	 * arrive. Express buttons (Apple/Google Pay, Link) resolve later still.
+	 *
+	 * Readiness comes from the store, not from timing: paymentMethodsInitialized
+	 * plus at least one available method whose UI has mounted. A store that
+	 * stays empty is given a grace window, after which the genuine notice is
+	 * shown, and everything falls open at 15s regardless.
+	 */
+	function initialisePaymentLoading( checkout ) {
+		const root = document.documentElement;
+		const stage = document.querySelector( '[data-tempo-checkout-stage]' );
+
+		if ( ! stage || ! checkout || ! window.wp || ! window.wp.data ) {
+			root.classList.remove( 'tempo-payment-loading-enabled' );
+			return;
+		}
+
+		const EMPTY_GRACE = 6000;
+		const FAILSAFE = 15000;
+		const paymentBlockSelector = '.wp-block-woocommerce-checkout-payment-block ';
+
+		let emptySince = 0;
+		let finished = false;
+		let unsubscribe = null;
+		let observer = null;
+		let interval = 0;
+		let timeout = 0;
+
+		const status = document.createElement( 'span' );
+		status.className = 'screen-reader-text';
+		status.setAttribute( 'role', 'status' );
+		status.setAttribute( 'aria-live', 'polite' );
+		status.textContent = 'Loading payment options…';
+		stage.appendChild( status );
+
+		function paymentStore() {
+			try {
+				return window.wp.data.select( 'wc/store/payment' ) || null;
+			} catch ( error ) {
+				return null;
+			}
+		}
+
+		function countKeys( value ) {
+			return value && typeof value === 'object'
+				? Object.keys( value ).length
+				: 0;
+		}
+
+		function paymentIsReady() {
+			if ( cartTotalIsFree() ) {
+				return true; // Woo hides the payment step for free orders.
+			}
+
+			const store = paymentStore();
+			if ( ! store || typeof store.paymentMethodsInitialized !== 'function' ) {
+				return true; // No block payment store — nothing to wait for.
+			}
+			if ( ! store.paymentMethodsInitialized() ) {
+				return false;
+			}
+
+			const available = typeof store.getAvailablePaymentMethods === 'function'
+				? store.getAvailablePaymentMethods()
+				: null;
+
+			if ( ! countKeys( available ) ) {
+				if ( ! emptySince ) {
+					emptySince = Date.now();
+				}
+				return Date.now() - emptySince >= EMPTY_GRACE;
+			}
+			emptySince = 0;
+
+			// A method can pay; wait for its UI so the reveal is never an empty box.
+			return Boolean(
+				checkout.querySelector(
+					paymentBlockSelector + '.wc-block-components-radio-control__option, '
+					+ paymentBlockSelector + '.wc-block-components-payment-method-content, '
+					+ paymentBlockSelector + '.wc-block-checkout__only-express-payments-notice'
+				)
+			);
+		}
+
+		function expressIsReady() {
+			const store = paymentStore();
+			if ( ! store || typeof store.expressPaymentMethodsInitialized !== 'function' ) {
+				return true;
+			}
+			if ( ! store.expressPaymentMethodsInitialized() ) {
+				return false;
+			}
+
+			const available = typeof store.getAvailableExpressPaymentMethods === 'function'
+				? store.getAvailableExpressPaymentMethods()
+				: null;
+
+			if ( ! countKeys( available ) ) {
+				return true; // Woo renders no express box at all.
+			}
+
+			return Boolean(
+				checkout.querySelector(
+					'.wc-block-components-express-payment__event-buttons > *'
+				)
+			);
+		}
+
+		function finish() {
+			if ( finished ) {
+				return;
+			}
+
+			finished = true;
+			stage.classList.add( 'is-payment-ready', 'is-express-ready' );
+			root.classList.remove( 'tempo-payment-loading-enabled' );
+			status.textContent = '';
+
+			if ( unsubscribe ) {
+				unsubscribe();
+			}
+			if ( observer ) {
+				observer.disconnect();
+			}
+			if ( interval ) {
+				window.clearInterval( interval );
+			}
+			if ( timeout ) {
+				window.clearTimeout( timeout );
+			}
+		}
+
+		function check() {
+			if ( finished ) {
+				return;
+			}
+
+			if ( ! stage.classList.contains( 'is-payment-ready' ) && paymentIsReady() ) {
+				stage.classList.add( 'is-payment-ready' );
+			}
+			if ( ! stage.classList.contains( 'is-express-ready' ) && expressIsReady() ) {
+				stage.classList.add( 'is-express-ready' );
+			}
+			if (
+				stage.classList.contains( 'is-payment-ready' )
+				&& stage.classList.contains( 'is-express-ready' )
+			) {
+				finish();
+			}
+		}
+
+		if ( typeof window.wp.data.subscribe === 'function' ) {
+			unsubscribe = window.wp.data.subscribe( check );
+		}
+		observer = new MutationObserver( check );
+		observer.observe( checkout, {
+			childList: true,
+			subtree: true,
+		} );
+		interval = window.setInterval( check, 200 ); // The grace window is time-based.
+		timeout = window.setTimeout( finish, FAILSAFE );
+		check();
+	}
+
 	function initialiseCheckoutTotalMirror() {
 		if ( ! document.body.classList.contains( 'tempo-woo-checkout' ) ) {
 			return;
@@ -165,6 +338,7 @@
 		);
 
 		initialiseCheckoutSkeleton( checkoutRoot );
+		initialisePaymentLoading( checkoutRoot );
 
 		const shell = document.querySelector( '.dsb-checkout:not(.dsb-checkout--inline)' );
 		if ( ! shell ) {
