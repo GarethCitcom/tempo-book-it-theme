@@ -452,6 +452,72 @@
 	margin-top: 4px;
 }
 
+/*
+ * Payment-area loading mask. The page frame above lifts as soon as the
+ * booking side is usable; the payment step and express box keep this softer
+ * mask until Woo's payment store reports gateways that can actually pay
+ * (see initialisePaymentLoading). Woo's markup stays mounted underneath so
+ * gateway SDKs initialise normally; only its paint is dimmed and blurred.
+ */
+@keyframes tempoCheckoutSpin {
+	to {
+		transform: rotate(360deg);
+	}
+}
+
+.tempo-payment-loading-enabled .tempo-woo-checkout .tempo-checkout-stage:not(.is-payment-ready) .wc-block-checkout__payment-method > .wc-block-components-checkout-step__content,
+.tempo-payment-loading-enabled .tempo-woo-checkout .tempo-checkout-stage:not(.is-express-ready) .wc-block-components-express-payment {
+	position: relative;
+	min-height: 168px;
+	pointer-events: none;
+	border-radius: var(--tempo-checkout-radius);
+}
+
+.tempo-payment-loading-enabled .tempo-woo-checkout .tempo-checkout-stage:not(.is-payment-ready) .wc-block-checkout__payment-method > .wc-block-components-checkout-step__content > *,
+.tempo-payment-loading-enabled .tempo-woo-checkout .tempo-checkout-stage:not(.is-express-ready) .wc-block-components-express-payment > * {
+	opacity: 0.35;
+	filter: blur(3px);
+	transition: none;
+}
+
+/* Woo's first, pre-gateway pass may paint this; it is not the answer yet. */
+.tempo-payment-loading-enabled .tempo-woo-checkout .tempo-checkout-stage:not(.is-payment-ready) .wc-block-checkout__no-payment-methods-notice {
+	visibility: hidden;
+}
+
+.tempo-payment-loading-enabled .tempo-woo-checkout .tempo-checkout-stage:not(.is-payment-ready) .wc-block-checkout__payment-method > .wc-block-components-checkout-step__content::before,
+.tempo-payment-loading-enabled .tempo-woo-checkout .tempo-checkout-stage:not(.is-express-ready) .wc-block-components-express-payment::before {
+	content: "";
+	position: absolute;
+	z-index: 2;
+	top: calc(50% - 26px);
+	left: calc(50% - 14px);
+	width: 28px;
+	height: 28px;
+	border: 3px solid var(--tempo-checkout-border);
+	border-top-color: var(--tempo-checkout-primary);
+	border-radius: 50%;
+	animation: tempoCheckoutSpin 800ms linear infinite;
+}
+
+.tempo-payment-loading-enabled .tempo-woo-checkout .tempo-checkout-stage:not(.is-payment-ready) .wc-block-checkout__payment-method > .wc-block-components-checkout-step__content::after,
+.tempo-payment-loading-enabled .tempo-woo-checkout .tempo-checkout-stage:not(.is-express-ready) .wc-block-components-express-payment::after {
+	content: "Loading payment options…";
+	position: absolute;
+	z-index: 2;
+	top: calc(50% + 12px);
+	left: 0;
+	right: 0;
+	color: var(--tempo-checkout-muted);
+	font-size: var(--dsb-type-small-size, 12px);
+	font-weight: 600;
+	text-align: center;
+}
+
+.tempo-payment-loading-enabled .tempo-woo-checkout .tempo-checkout-stage:not(.is-express-ready) .wc-block-components-express-payment::after {
+	content: "Loading express checkout…";
+}
+
 .tempo-woo-checkout .wc-block-checkout__payment-method {
 	padding: 0;
 	border: 0;
@@ -1449,6 +1515,13 @@
 @media (prefers-reduced-motion: reduce) {
 	.tempo-woo-checkout .tempo-checkout-stage__content {
 		transition: none;
+	}
+
+	.tempo-payment-loading-enabled .tempo-woo-checkout .tempo-checkout-stage:not(.is-payment-ready) .wc-block-checkout__payment-method > .wc-block-components-checkout-step__content::before,
+	.tempo-payment-loading-enabled .tempo-woo-checkout .tempo-checkout-stage:not(.is-express-ready) .wc-block-components-express-payment::before {
+		animation: none;
+		border-top-color: var(--tempo-checkout-border);
+		border-right-color: var(--tempo-checkout-primary);
 	}
 
 	.tempo-woo-checkout .tempo-checkout-skeleton__bar {
