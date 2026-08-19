@@ -217,6 +217,52 @@ function tempo_is_school_admin( $user = null ) {
 }
 
 /**
+ * Whether a user should be offered a way back into wp-admin from the front
+ * end. Sites often hide the admin bar (or the whole dashboard) from members,
+ * which also hides it from the staff who need it; this gates the floating
+ * "Site admin" button so administrators and school officers
+ * (WooCommerce's shop_manager, renamed per site) can still get there.
+ * Teachers, parents and students never qualify: their roles carry no
+ * dashboard capabilities. Filter `tempo_book_it_wp_admin_roles` to map any
+ * other role.
+ *
+ * @param WP_User|null $user Defaults to the current user.
+ */
+function tempo_can_access_wp_admin( $user = null ) {
+	$user = $user instanceof WP_User ? $user : wp_get_current_user();
+	if ( ! $user->exists() ) {
+		return false;
+	}
+	$roles = apply_filters( 'tempo_book_it_wp_admin_roles', array( 'administrator', 'shop_manager' ) );
+	if ( array_intersect( (array) $roles, (array) $user->roles ) ) {
+		return true;
+	}
+	return user_can( $user, 'manage_options' );
+}
+
+/**
+ * Floating "Site admin" button — fixed, bottom-centre, black circle with a
+ * dashboard icon — for users tempo_can_access_wp_admin() allows. Printed in
+ * the footer so it sits above every page's content; styled in chrome.css.
+ */
+function tempo_book_it_wp_admin_button() {
+	if ( is_admin() || ! tempo_can_access_wp_admin() ) {
+		return;
+	}
+	?>
+	<a class="tempo-admin-fab" href="<?php echo esc_url( admin_url() ); ?>" title="<?php esc_attr_e( 'Site admin', 'tempo-book-it-theme' ); ?>">
+		<span class="screen-reader-text"><?php esc_html_e( 'Site admin', 'tempo-book-it-theme' ); ?></span>
+		<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="24" height="24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false">
+			<path d="M12 2.5 4 6v6c0 5 3.4 8.6 8 9.5 4.6-.9 8-4.5 8-9.5V6l-8-3.5Z"/>
+			<circle cx="12" cy="10.5" r="2.5"/>
+			<path d="M7.5 17.5c1-2 2.6-3 4.5-3s3.5 1 4.5 3"/>
+		</svg>
+	</a>
+	<?php
+}
+add_action( 'wp_footer', 'tempo_book_it_wp_admin_button' );
+
+/**
  * Permalink of the first published page containing a shortcode, cached for a
  * day. Falls back when the plugin (and so the shortcode) isn't registered.
  *
