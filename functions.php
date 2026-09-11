@@ -94,7 +94,36 @@ function tempo_logo_url( $variant = 'default' ) {
 			return $url;
 		}
 	}
+	// A venue running Tempo Book It Box Office alone brands from its settings.
+	if ( function_exists( 'tempo_box_office_logo_url' ) ) {
+		$url = tempo_box_office_logo_url( 'medium' );
+		if ( '' !== $url ) {
+			return $url;
+		}
+	}
 	return get_theme_file_uri( 'assets/images/logo.svg' );
+}
+
+/**
+ * The tenant's brand colour from whichever Tempo plugin supplies one: the
+ * classes plugin first, then Box Office. '' when neither has it set.
+ *
+ * @param string $which 'primary' or 'secondary'.
+ */
+function tempo_brand_colour( $which = 'primary' ) {
+	if ( function_exists( 'dsb_brand_colour' ) ) {
+		$hex = sanitize_hex_color( (string) dsb_brand_colour( $which ) );
+		if ( $hex ) {
+			return $hex;
+		}
+	}
+	if ( function_exists( 'tempo_box_office_brand_colour' ) ) {
+		$hex = sanitize_hex_color( (string) tempo_box_office_brand_colour( $which ) );
+		if ( $hex ) {
+			return $hex;
+		}
+	}
+	return '';
 }
 
 /** Optional full-bleed login-panel image supplied by the companion plugin. */
@@ -129,6 +158,12 @@ function tempo_vocab( $word ) {
 function tempo_brand_colour_contrast( $which = 'primary' ) {
 	if ( function_exists( 'dsb_brand_colour_contrast' ) ) {
 		return dsb_brand_colour_contrast( $which );
+	}
+	if ( function_exists( 'tempo_box_office_brand_colour_contrast' ) ) {
+		$on = tempo_box_office_brand_colour_contrast( $which );
+		if ( '' !== $on ) {
+			return $on;
+		}
 	}
 
 	$hex = tempo_book_it_hex( tempo_book_it_brand_colour_fallback( $which ) );
@@ -457,13 +492,9 @@ function tempo_book_it_tint( $hex, $amount ) {
  * the defaults when the plugin is absent or a colour is unset.
  */
 function tempo_book_it_brand_palette( $theme_json ) {
-	if ( ! function_exists( 'dsb_brand_colour' ) ) {
-		return $theme_json;
-	}
-
 	$overrides = array();
-	$primary   = sanitize_hex_color( dsb_brand_colour( 'primary' ) );
-	$secondary = sanitize_hex_color( dsb_brand_colour( 'secondary' ) );
+	$primary   = tempo_brand_colour( 'primary' );
+	$secondary = tempo_brand_colour( 'secondary' );
 	if ( $primary ) {
 		$overrides['brand-primary']          = $primary;
 		$overrides['brand-tint-primary']     = tempo_book_it_tint( $primary, 0.09 );
