@@ -88,12 +88,49 @@ add_filter( 'hooked_block_types', 'tempo_book_it_unhook_woo_nav_icons', 10, 3 );
  * it holds the checkout countdown and the only route back to a held basket.
  */
 function tempo_book_it_nav_fallback() {
-	echo '<ul id="tempo-classic-nav-list" class="tempo-classic-nav__list"><li class="menu-item"><a href="'
+	echo '<ul id="tempo-classic-nav-list" class="tempo-classic-nav__list">'
+		. tempo_book_it_nav_tickets_item() // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- escaped where built.
+		. '<li class="menu-item"><a href="'
 		. esc_url( tempo_account_url() ) . '">'
 		. esc_html__( 'My account', 'tempo-book-it-theme' )
 		. '</a></li>'
 		. tempo_book_it_nav_help_item() // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- escaped where built.
 		. '</ul>';
+}
+
+/**
+ * Where Tempo Book It Box Office lists its events, when that plugin is
+ * active: the event post type's archive. '' when there is nothing to link.
+ */
+function tempo_tickets_url() {
+	if ( ! post_type_exists( 'tempo_event' ) ) {
+		return '';
+	}
+	$url = get_post_type_archive_link( 'tempo_event' );
+	return $url ? (string) $url : '';
+}
+
+/**
+ * A "Tickets" header item, present only while the Box Office plugin is
+ * active. Same rules as the help item: a school that places the link in
+ * its own menu keeps theirs; filter `tempo_book_it_tickets_in_header_nav`
+ * to false to keep it out of the header.
+ *
+ * @return string `<li>` markup, or '' when there is nothing to link to.
+ */
+function tempo_book_it_nav_tickets_item() {
+	$url = tempo_tickets_url();
+	if ( '' === $url || ! apply_filters( 'tempo_book_it_tickets_in_header_nav', true ) ) {
+		return '';
+	}
+	$is_here = is_post_type_archive( 'tempo_event' ) || is_singular( 'tempo_event' );
+	$label   = esc_html__( 'Tickets', 'tempo-book-it-theme' );
+	if ( tempo_nav_show_icons() ) {
+		$label = '<span class="tempo-nav-icon" aria-hidden="true">' . tempo_book_it_nav_icon_svg( 'tickets' ) . '</span>'
+			. '<span class="tempo-nav-label">' . $label . '</span>';
+	}
+	return '<li class="menu-item tempo-menu-item--tickets' . ( $is_here ? ' current-menu-item' : '' ) . '">'
+		. '<a href="' . esc_url( $url ) . '"' . ( $is_here ? ' aria-current="page"' : '' ) . '>' . $label . '</a></li>';
 }
 
 /**
@@ -133,18 +170,22 @@ function tempo_book_it_nav_append_help( $items, $args ) {
 	if ( empty( $args->theme_location ) || ! array_key_exists( $args->theme_location, tempo_book_it_nav_locations() ) ) {
 		return $items;
 	}
-	$url = tempo_help_url();
-	if ( '' === $url ) {
-		return $items;
-	}
-	$path    = untrailingslashit( strtok( $url, '?#' ) );
 	$menu_id = get_nav_menu_locations()[ $args->theme_location ] ?? 0;
+	$linked  = array();
 	foreach ( (array) wp_get_nav_menu_items( $menu_id ) as $item ) {
-		if ( untrailingslashit( strtok( (string) $item->url, '?#' ) ) === $path ) {
-			return $items;
-		}
+		$linked[ untrailingslashit( strtok( (string) $item->url, '?#' ) ) ] = true;
 	}
-	return $items . tempo_book_it_nav_help_item();
+	$already = static function ( $url ) use ( $linked ) {
+		return '' === $url || isset( $linked[ untrailingslashit( strtok( $url, '?#' ) ) ] );
+	};
+	// Tickets goes first (it is the public face of the site); help stays last.
+	if ( ! $already( tempo_tickets_url() ) ) {
+		$items = tempo_book_it_nav_tickets_item() . $items;
+	}
+	if ( ! $already( tempo_help_url() ) ) {
+		$items .= tempo_book_it_nav_help_item();
+	}
+	return $items;
 }
 add_filter( 'wp_nav_menu_items', 'tempo_book_it_nav_append_help', 10, 2 );
 
@@ -241,6 +282,10 @@ function tempo_book_it_nav_icons() {
 		'calendar' => array(
 			'label' => __( 'Calendar', 'tempo-book-it-theme' ),
 			'paths' => '<rect x="3" y="4" width="18" height="18" rx="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/>',
+		),
+		'tickets'  => array(
+			'label' => __( 'Tickets', 'tempo-book-it-theme' ),
+			'paths' => '<path d="M3 9V7a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2v2a2 2 0 0 0 0 4v2a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-2a2 2 0 0 0 0-4Z"/><line x1="9" y1="5" x2="9" y2="17" stroke-dasharray="2 2"/>',
 		),
 		'user'     => array(
 			'label' => __( 'Person', 'tempo-book-it-theme' ),
