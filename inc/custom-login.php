@@ -161,8 +161,8 @@ function tempo_book_it_login_styles()
 		true
 	);
 
-	$primary   = function_exists('dsb_brand_colour') ? sanitize_hex_color(dsb_brand_colour('primary')) : '';
-	$secondary = function_exists('dsb_brand_colour') ? sanitize_hex_color(dsb_brand_colour('secondary')) : '';
+	$primary   = tempo_brand_colour('primary');
+	$secondary = tempo_brand_colour('secondary');
 	$primary   = $primary ?: tempo_book_it_brand_colour_fallback('primary');
 	$secondary = $secondary ?: tempo_book_it_brand_colour_fallback('secondary');
 	$vars      = sprintf(
