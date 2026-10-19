@@ -10,6 +10,12 @@
 	var __ = i18n.__;
 
 	function registerStub( name, title, hint ) {
+		// The plugin (1.1.0+) registers its own placeholders for the blocks it
+		// owns, including the tempo/* aliases; a second registration would
+		// only log an error.
+		if ( blocks.getBlockType( name ) ) {
+			return;
+		}
 		blocks.registerBlockType( name, {
 			title: title,
 			icon: 'admin-site-alt3',
