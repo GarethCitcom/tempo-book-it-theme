@@ -139,8 +139,10 @@ chrome, or `teacher` / `password` for the teacher chrome.
 - **JS**: the plugin's `dsb-booking.js` installs `window.dsbBooking` and
   auto-fills `[data-dsb-basket]` / `[data-dsb-basket-count]` /
   `[data-dsb-basket-clock]` — the theme ships **no basket JS of its own**.
-- **Roles**: the plugin registers `teacher`; teachers get "Teacher portal" +
-  a collapsed nav (My classes · My account).
+- **Roles**: the plugin registers `dsbook_teacher` (`teacher` before plugin
+  1.1.0); `tempo_is_teacher()` defers to the plugin's `dsb_is_teacher()`
+  when it exists. Teachers get "Teacher portal" + a collapsed nav (My
+  classes · My account).
 - **WooCommerce account pages**: the plugin keeps ownership of its custom
   Bookings / Credit / Students tabs and account settings. The theme only
   presents WooCommerce's required Account details, Payment methods, Orders
@@ -152,11 +154,32 @@ chrome, or `teacher` / `password` for the teacher chrome.
   not at all on `main`, and the plugin's loader simply finds no override
   until someone creates the path.
 
+## Standing down behind plugin 1.1
+
+From Tempo Book It 1.1.0 the plugin can own what this theme used to carry,
+each as a plugin setting (Tempo → Settings → Sign-in & security), and theme
+1.1 steps aside piece by piece:
+
+| Plugin setting / registration | Theme stops |
+| --- | --- |
+| Branded sign-in page (`dsb_owns_auth()`) | loading `inc/custom-login.php`, `login-security.php`, `login-security-log.php`, `altcha.php` and the Users → Sign-in security screen: one sign-in page, one failure counter, one widget |
+| Members-only site (`dsb_members_only()`) | hooking `tempo_book_it_require_login` |
+| Blocks `tempo-book-it/logo`, `header-nav`, `portal-strip` registered | registering its own `tempo/logo`, `tempo/header-nav`, `tempo/portal-strip` (the plugin registers those names as hidden aliases instead, so `parts/header.html` and any saved header part keep rendering); `tempo/classic-nav` stays the theme's |
+
+The checks run at theme load and on `init` 15 (`tempo_book_it_plugin_owns()`),
+so a site without the plugin, or with an older one, keeps everything. The
+plugin's counters, log option and ALTCHA secret are compatible with the
+theme's, and it still applies this theme's filters (`tempo_book_it_public_paths`,
+`tempo_book_it_login_path`, `tempo_book_it_client_ip`, the nav URL and
+portal-strip filters) as deprecated aliases. Switch the plugin's protections
+on at the same time as its branded sign-in page: the theme stands its own
+down as one unit.
+
 ## Members-only
 
-The whole front end requires login (`template_redirect` gate in
-`functions.php`); logged-out visitors are redirected to the theme-owned
-`/sign-in/` experience. Sign-in, password recovery and password reset all
+Until the plugin's own members-only setting is on, the whole front end
+requires login (`template_redirect` gate in `functions.php`); logged-out
+visitors are redirected to the theme-owned `/sign-in/` experience. Sign-in, password recovery and password reset all
 use WordPress core authentication behind the custom route. The privacy policy
 page stays public.
 

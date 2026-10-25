@@ -31,13 +31,44 @@ function tempo_book_it_setup() {
 }
 add_action( 'after_setup_theme', 'tempo_book_it_setup' );
 
-function tempo_book_it_register_blocks() {
-	register_block_type( get_theme_file_path( 'blocks/logo' ) );
-	register_block_type( get_theme_file_path( 'blocks/header-nav' ) );
-	register_block_type( get_theme_file_path( 'blocks/classic-nav' ) );
-	register_block_type( get_theme_file_path( 'blocks/portal-strip' ) );
+/**
+ * Whether the Tempo Book It plugin (1.1.0+) owns a piece of behaviour this
+ * theme used to carry. The plugin asks its own settings; a theme on a site
+ * without the plugin, or with an older plugin, keeps doing everything itself.
+ *
+ * @param string $what 'auth' (sign-in, security, log, ALTCHA), 'members_only',
+ *                     or a block slug ('logo', 'header-nav', 'portal-strip').
+ */
+function tempo_book_it_plugin_owns( $what ) {
+	switch ( $what ) {
+		case 'auth':
+			return function_exists( 'dsb_owns_auth' ) && dsb_owns_auth();
+		case 'members_only':
+			return function_exists( 'dsb_members_only' ) && dsb_members_only();
+		default:
+			return class_exists( 'WP_Block_Type_Registry' )
+				&& WP_Block_Type_Registry::get_instance()->is_registered( 'tempo-book-it/' . $what );
+	}
 }
-add_action( 'init', 'tempo_book_it_register_blocks' );
+
+/**
+ * The theme's blocks. From plugin 1.1.0 the logo, header nav and portal
+ * strip are registered by the plugin (as tempo-book-it/* plus hidden tempo/*
+ * aliases), so those three are only registered here when the plugin has not
+ * done so first. The classic menu block is the theme's alone.
+ */
+function tempo_book_it_register_blocks() {
+	foreach ( array( 'logo', 'header-nav', 'portal-strip' ) as $slug ) {
+		if ( ! tempo_book_it_plugin_owns( $slug ) ) {
+			register_block_type( get_theme_file_path( 'blocks/' . $slug ) );
+		}
+	}
+	register_block_type( get_theme_file_path( 'blocks/classic-nav' ) );
+}
+// Priority 15: after the plugin registers its blocks (init 10) and before it
+// registers the tempo/* aliases (init 20), which it only does when the theme
+// has not registered them here.
+add_action( 'init', 'tempo_book_it_register_blocks', 15 );
 
 function tempo_book_it_enqueue() {
 	$version = wp_get_theme()->get( 'Version' );
@@ -228,7 +259,12 @@ function tempo_is_teacher( $user = null ) {
 	if ( ! $user->exists() ) {
 		return false;
 	}
-	$teacher_roles = apply_filters( 'tempo_book_it_teacher_roles', array( 'teacher' ) );
+	// The plugin owns the role (dsbook_teacher since plugin 1.1.0) and the
+	// answer; the theme's own list is only for a site running without it.
+	if ( function_exists( 'dsb_is_teacher' ) ) {
+		return (bool) dsb_is_teacher( $user );
+	}
+	$teacher_roles = apply_filters( 'tempo_book_it_teacher_roles', array( 'dsbook_teacher', 'teacher' ) );
 	return (bool) array_intersect( $teacher_roles, (array) $user->roles );
 }
 
@@ -638,19 +674,29 @@ function tempo_book_it_require_login() {
 	wp_safe_redirect( wp_login_url( $requested ) );
 	exit;
 }
-add_action( 'template_redirect', 'tempo_book_it_require_login' );
+// The plugin's own members-only setting (1.1.0+) replaces this gate; the
+// theme's runs only while the plugin's is off.
+if ( ! tempo_book_it_plugin_owns( 'members_only' ) ) {
+	add_action( 'template_redirect', 'tempo_book_it_require_login' );
+}
 
 /* -------------------------------------------------------------------------
  * Theme-owned features living in their own files.
  * ---------------------------------------------------------------------- */
 
 require_once get_theme_file_path( 'inc/nav-menu.php' );
-require_once get_theme_file_path( 'inc/custom-login.php' );
-require_once get_theme_file_path( 'inc/login-security-log.php' );
-require_once get_theme_file_path( 'inc/login-security.php' );
-require_once get_theme_file_path( 'inc/altcha.php' );
-if ( is_admin() ) {
-	require_once get_theme_file_path( 'inc/login-security-admin.php' );
+// Sign-in, security, the security log and ALTCHA: one unit, and the
+// plugin's from 1.1.0 (Settings → Sign-in & security → Branded sign-in
+// page). While the plugin owns them the theme loads none of its copies, so
+// there is one sign-in page, one failure counter and one widget.
+if ( ! tempo_book_it_plugin_owns( 'auth' ) ) {
+	require_once get_theme_file_path( 'inc/custom-login.php' );
+	require_once get_theme_file_path( 'inc/login-security-log.php' );
+	require_once get_theme_file_path( 'inc/login-security.php' );
+	require_once get_theme_file_path( 'inc/altcha.php' );
+	if ( is_admin() ) {
+		require_once get_theme_file_path( 'inc/login-security-admin.php' );
+	}
 }
 require_once get_theme_file_path( 'inc/woocommerce-account.php' );
 require_once get_theme_file_path( 'inc/woocommerce-checkout.php' );
