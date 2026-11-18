@@ -23,7 +23,7 @@ background and login. It contains **no booking UI**.
 
 Both branches hold the same files. What keeps a *download* to the theme
 alone is `.gitattributes`, which marks `design/`, `README.md`,
-`CLAUDE.md`, `blueprint.json`, `dsb/` and `.github/` as `export-ignore`:
+`CLAUDE.md`, `blueprint.json`, `dsbook/` and `.github/` as `export-ignore`:
 a zip built by `git archive` — which is what the release workflow and
 GitHub's own "Download ZIP" both use — contains only the files WordPress
 loads, whichever branch it was built from.
@@ -116,9 +116,9 @@ chrome, or `teacher` / `password` for the teacher chrome.
 ## How it fits the plugin (integration contract)
 
 - **PHP bridge** (all `function_exists`-guarded, theme works standalone):
-  `dsb_basket_pill()`, `dsb_logo_url()`, `dsb_vocab()` — wrapped by
+  `dsbook_basket_pill()`, `dsbook_logo_url()`, `dsbook_vocab()` — wrapped by
   `tempo_logo_url()`, `tempo_vocab()` etc. in `functions.php`.
-- **Brand colours**: the plugin's branding settings (`dsb_brand_colour()`)
+- **Brand colours**: the plugin's branding settings (`dsbook_brand_colour()`)
   are fed into the theme.json palette at runtime
   (`wp_theme_json_data_theme`), with light tints computed from them — so
   the header border, portal strip, headings, links, buttons and the login
@@ -128,9 +128,9 @@ chrome, or `teacher` / `password` for the teacher chrome.
   full-bleed image for the right side of `/sign-in/`. The built-in studio
   illustration remains the fallback when no image is selected.
 - **Nav URLs**: "Book classes" / "My classes" links auto-detect the pages
-  hosting `[dsb_booking]` / `[dsb_register]` (cached daily, flushed on
+  hosting `[dsbook_booking]` / `[dsbook_register]` (cached daily, flushed on
   page save); the filters below still override.
-- **Need help?**: the plugin's `[dsb_help]` page (`dsb_help_page_url()`,
+- **Need help?**: the plugin's `[dsbook_help]` page (`dsbook_help_page_url()`,
   wrapped by `tempo_help_url()`) is linked from the portal strip and
   appended to the header menu — both only while the plugin offers the page,
   and the menu item steps aside when a school's own menu already links
@@ -140,7 +140,7 @@ chrome, or `teacher` / `password` for the teacher chrome.
   auto-fills `[data-dsb-basket]` / `[data-dsb-basket-count]` /
   `[data-dsb-basket-clock]` — the theme ships **no basket JS of its own**.
 - **Roles**: the plugin registers `dsbook_teacher` (`teacher` before plugin
-  1.1.0); `tempo_is_teacher()` defers to the plugin's `dsb_is_teacher()`
+  1.1.0); `tempo_is_teacher()` defers to the plugin's `dsbook_is_teacher()`
   when it exists. Teachers get "Teacher portal" + a collapsed nav (My
   classes · My account).
 - **WooCommerce account pages**: the plugin keeps ownership of its custom
@@ -148,8 +148,8 @@ chrome, or `teacher` / `password` for the teacher chrome.
   presents WooCommerce's required Account details, Payment methods, Orders
   and single-order screens, using Woo's forms, endpoint hooks, gateway actions
   and order templates rather than replacing their behaviour.
-- **Template overrides**: `dsb/` is the plugin's override location — see
-  `dsb/README.md`. Last resort only; never restyle `.dsb-*` internals.
+- **Template overrides**: `dsbook/` is the plugin's override location — see
+  `dsbook/README.md`. Last resort only; never restyle `.dsb-*` internals.
   The directory is documentation, not machinery: it ships empty here and
   not at all on `main`, and the plugin's loader simply finds no override
   until someone creates the path.
@@ -162,8 +162,8 @@ each as a plugin setting (Tempo → Settings → Sign-in & security), and theme
 
 | Plugin setting / registration | Theme stops |
 | --- | --- |
-| Branded sign-in page (`dsb_owns_auth()`) | loading `inc/custom-login.php`, `login-security.php`, `login-security-log.php`, `altcha.php` and the Users → Sign-in security screen: one sign-in page, one failure counter, one widget |
-| Members-only site (`dsb_members_only()`) | hooking `tempo_book_it_require_login` |
+| Branded sign-in page (`dsbook_owns_auth()`) | loading `inc/custom-login.php`, `login-security.php`, `login-security-log.php`, `altcha.php` and the Users → Sign-in security screen: one sign-in page, one failure counter, one widget |
+| Members-only site (`dsbook_members_only()`) | hooking `tempo_book_it_require_login` |
 | Blocks `tempo-book-it/logo`, `header-nav`, `portal-strip` registered | registering its own `tempo/logo`, `tempo/header-nav`, `tempo/portal-strip` (the plugin registers those names as hidden aliases instead, so `parts/header.html` and any saved header part keep rendering); `tempo/classic-nav` stays the theme's |
 
 The checks run at theme load and on `init` 15 (`tempo_book_it_plugin_owns()`),
@@ -184,7 +184,7 @@ use WordPress core authentication behind the custom route. The privacy policy
 page stays public.
 
 The same route provides public registration when the companion plugin exposes
-`dsb_registration_available()`. An independent student receives one customer
+`dsbook_registration_available()`. An independent student receives one customer
 account. A parent/guardian submission creates a parent account plus a linked,
 parent-managed student account. The real login account receives a secure
 set-password email only after the complete operation succeeds.
@@ -195,8 +195,8 @@ set-password email only after the complete operation succeeds.
 | --- | --- | --- |
 | `tempo_book_it_teacher_roles` | `['teacher']` | Roles that get the teacher chrome |
 | `tempo_book_it_admin_roles` | `['administrator']` | Roles that get the school-admin header menu (`manage_options` also qualifies) |
-| `tempo_book_it_book_url` | auto-detected, else `/book-classes/` | Page hosting `[dsb_booking]` |
-| `tempo_book_it_my_classes_url` | auto-detected, else `/my-classes/` | Page hosting `[dsb_register]` |
+| `tempo_book_it_book_url` | auto-detected, else `/book-classes/` | Page hosting `[dsbook_booking]` |
+| `tempo_book_it_my_classes_url` | auto-detected, else `/my-classes/` | Page hosting `[dsbook_register]` |
 | `tempo_book_it_public_paths` | `[]` | Path prefixes exempt from the login gate |
 | `tempo_book_it_login_path` | `/sign-in/` | Public path for the theme-owned authentication screen |
 
