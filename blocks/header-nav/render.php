@@ -18,7 +18,7 @@
  * only way back to a held basket once the customer navigates away, so it
  * survives an assigned menu and no static menu item can replace it.
  *
- * The basket pill markup comes from the plugin (dsb_basket_pill()); its
+ * The basket pill markup comes from the plugin (dsbook_basket_pill()); its
  * dsb-booking.js keeps the count/countdown live via [data-dsb-basket] hooks.
  * The plugin prints nothing when there's no basket to show, so the pill is
  * buffered here — with the link gone there may be nothing left to wrap.
@@ -32,9 +32,9 @@ $tempo_is_teacher = tempo_is_teacher();
 $tempo_has_menu   = has_nav_menu( tempo_nav_menu_location() );
 $tempo_pill       = '';
 
-if ( ! $tempo_is_teacher && function_exists( 'dsb_basket_pill' ) ) {
+if ( ! $tempo_is_teacher && function_exists( 'dsbook_basket_pill' ) ) {
 	ob_start();
-	dsb_basket_pill();
+	dsbook_basket_pill();
 	$tempo_pill = trim( (string) ob_get_clean() );
 }
 

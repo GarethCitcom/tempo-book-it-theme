@@ -24,9 +24,12 @@ function tempo_book_it_setup() {
 	// "Header background colour" setting only to a theme that declares
 	// this — never hardcodes our theme's name — so a fork or rebrand of
 	// this theme keeps the setting simply by keeping this line.
-	add_theme_support( 'dsb-header-background' );
-	add_theme_support( 'dsb-body-background' );
-	add_theme_support( 'dsb-login-panel-image' );
+	// The plugin asks for the dsbook- names. The dsb- spelling is declared
+	// as well for plugin releases before 1.4.0, which ask for that one.
+	foreach ( array( 'header-background', 'body-background', 'login-panel-image' ) as $tempo_feature ) {
+		add_theme_support( 'dsbook-' . $tempo_feature );
+		add_theme_support( 'dsb-' . $tempo_feature );
+	}
 	add_theme_support( 'dsb-student-profile' );
 }
 add_action( 'after_setup_theme', 'tempo_book_it_setup' );
@@ -42,9 +45,9 @@ add_action( 'after_setup_theme', 'tempo_book_it_setup' );
 function tempo_book_it_plugin_owns( $what ) {
 	switch ( $what ) {
 		case 'auth':
-			return function_exists( 'dsb_owns_auth' ) && dsb_owns_auth();
+			return function_exists( 'dsbook_owns_auth' ) && dsbook_owns_auth();
 		case 'members_only':
-			return function_exists( 'dsb_members_only' ) && dsb_members_only();
+			return function_exists( 'dsbook_members_only' ) && dsbook_members_only();
 		default:
 			return class_exists( 'WP_Block_Type_Registry' )
 				&& WP_Block_Type_Registry::get_instance()->is_registered( 'tempo-book-it/' . $what );
@@ -110,8 +113,8 @@ add_action( 'enqueue_block_editor_assets', 'tempo_book_it_editor_assets' );
  */
 function tempo_logo_url( $variant = 'default' ) {
 	if ( 'white' === $variant ) {
-		if ( function_exists( 'dsb_logo_url_inverse' ) ) {
-			$url = dsb_logo_url_inverse();
+		if ( function_exists( 'dsbook_logo_url_inverse' ) ) {
+			$url = dsbook_logo_url_inverse();
 			if ( '' !== $url ) {
 				return $url;
 			}
@@ -119,8 +122,8 @@ function tempo_logo_url( $variant = 'default' ) {
 		return get_theme_file_uri( 'assets/images/logo-white.svg' );
 	}
 
-	if ( function_exists( 'dsb_logo_url' ) ) {
-		$url = dsb_logo_url();
+	if ( function_exists( 'dsbook_logo_url' ) ) {
+		$url = dsbook_logo_url();
 		if ( '' !== $url ) {
 			return $url;
 		}
@@ -142,8 +145,8 @@ function tempo_logo_url( $variant = 'default' ) {
  * @param string $which 'primary' or 'secondary'.
  */
 function tempo_brand_colour( $which = 'primary' ) {
-	if ( function_exists( 'dsb_brand_colour' ) ) {
-		$hex = sanitize_hex_color( (string) dsb_brand_colour( $which ) );
+	if ( function_exists( 'dsbook_brand_colour' ) ) {
+		$hex = sanitize_hex_color( (string) dsbook_brand_colour( $which ) );
 		if ( $hex ) {
 			return $hex;
 		}
@@ -159,8 +162,8 @@ function tempo_brand_colour( $which = 'primary' ) {
 
 /** Optional full-bleed login-panel image supplied by the companion plugin. */
 function tempo_login_panel_image_url() {
-	if ( function_exists( 'dsb_login_panel_image_url' ) ) {
-		return esc_url_raw( dsb_login_panel_image_url( '2048x2048' ) );
+	if ( function_exists( 'dsbook_login_panel_image_url' ) ) {
+		return esc_url_raw( dsbook_login_panel_image_url( '2048x2048' ) );
 	}
 	return '';
 }
@@ -171,8 +174,8 @@ function tempo_login_panel_image_url() {
  * @param string $word 'class'|'classes'|'student'|'students'|'teacher'|'teachers'.
  */
 function tempo_vocab( $word ) {
-	if ( function_exists( 'dsb_vocab' ) ) {
-		return dsb_vocab( $word );
+	if ( function_exists( 'dsbook_vocab' ) ) {
+		return dsbook_vocab( $word );
 	}
 	return $word;
 }
@@ -180,15 +183,15 @@ function tempo_vocab( $word ) {
 /**
  * Readable text colour (white or the design system's dark ink) for placing
  * on top of a brand colour used as a background. Mirrors the plugin's
- * dsb_brand_colour_contrast() so the theme's own defaults (the fallback
+ * dsbook_brand_colour_contrast() so the theme's own defaults (the fallback
  * when the plugin is absent) behave the same way: white is kept unless it
  * would be genuinely hard to read, so today's orange/purple stay white.
  *
  * @param string $which 'primary' or 'secondary'.
  */
 function tempo_brand_colour_contrast( $which = 'primary' ) {
-	if ( function_exists( 'dsb_brand_colour_contrast' ) ) {
-		return dsb_brand_colour_contrast( $which );
+	if ( function_exists( 'dsbook_brand_colour_contrast' ) ) {
+		return dsbook_brand_colour_contrast( $which );
 	}
 	if ( function_exists( 'tempo_box_office_brand_colour_contrast' ) ) {
 		$on = tempo_box_office_brand_colour_contrast( $which );
@@ -261,8 +264,8 @@ function tempo_is_teacher( $user = null ) {
 	}
 	// The plugin owns the role (dsbook_teacher since plugin 1.1.0) and the
 	// answer; the theme's own list is only for a site running without it.
-	if ( function_exists( 'dsb_is_teacher' ) ) {
-		return (bool) dsb_is_teacher( $user );
+	if ( function_exists( 'dsbook_is_teacher' ) ) {
+		return (bool) dsbook_is_teacher( $user );
 	}
 	$teacher_roles = apply_filters( 'tempo_book_it_teacher_roles', array( 'dsbook_teacher', 'teacher' ) );
 	return (bool) array_intersect( $teacher_roles, (array) $user->roles );
@@ -337,7 +340,7 @@ add_action( 'wp_footer', 'tempo_book_it_wp_admin_button' );
  * Permalink of the first published page containing a shortcode, cached for a
  * day. Falls back when the plugin (and so the shortcode) isn't registered.
  *
- * @param string $shortcode Shortcode tag, e.g. 'dsb_booking'.
+ * @param string $shortcode Shortcode tag, e.g. 'dsbook_booking'.
  * @param string $fallback  URL to use when no page is found.
  */
 function tempo_book_it_shortcode_page_url( $shortcode, $fallback ) {
@@ -348,7 +351,9 @@ function tempo_book_it_shortcode_page_url( $shortcode, $fallback ) {
 	if ( ! array_key_exists( $shortcode, $cache ) ) {
 		$cache[ $shortcode ] = 0;
 		foreach ( get_pages( array( 'number' => 200 ) ) as $page ) {
-			if ( has_shortcode( (string) $page->post_content, $shortcode ) ) {
+			// Pages the plugin created before its 1.2.0 hold the dsb_ spelling.
+			$legacy = 0 === strpos( $shortcode, 'dsbook_' ) ? 'dsb_' . substr( $shortcode, 7 ) : $shortcode;
+			if ( has_shortcode( (string) $page->post_content, $shortcode ) || has_shortcode( (string) $page->post_content, $legacy ) ) {
 				$cache[ $shortcode ] = $page->ID;
 				break;
 			}
@@ -365,41 +370,41 @@ function tempo_book_it_flush_shortcode_pages() {
 add_action( 'save_post_page', 'tempo_book_it_flush_shortcode_pages' );
 
 /**
- * URL of the page hosting [dsb_booking]. The plugin creates this page on
+ * URL of the page hosting [dsbook_booking]. The plugin creates this page on
  * activation and lets a school reassign it (Settings → General), which is
  * now authoritative; the shortcode scan is only a fallback for an older
- * plugin version that predates dsb_booking_page_url().
+ * plugin version that predates dsbook_booking_page_url().
  */
 function tempo_book_url() {
-	if ( function_exists( 'dsb_booking_page_url' ) ) {
-		return apply_filters( 'tempo_book_it_book_url', dsb_booking_page_url() );
+	if ( function_exists( 'dsbook_booking_page_url' ) ) {
+		return apply_filters( 'tempo_book_it_book_url', dsbook_booking_page_url() );
 	}
 	return apply_filters(
 		'tempo_book_it_book_url',
-		tempo_book_it_shortcode_page_url( 'dsb_booking', home_url( '/book-classes/' ) )
+		tempo_book_it_shortcode_page_url( 'dsbook_booking', home_url( '/book-classes/' ) )
 	);
 }
 
-/** URL of the page hosting [dsb_register] (teacher day view). See tempo_book_url(). */
+/** URL of the page hosting [dsbook_register] (teacher day view). See tempo_book_url(). */
 function tempo_my_classes_url() {
-	if ( function_exists( 'dsb_register_page_url' ) ) {
-		return apply_filters( 'tempo_book_it_my_classes_url', dsb_register_page_url() );
+	if ( function_exists( 'dsbook_register_page_url' ) ) {
+		return apply_filters( 'tempo_book_it_my_classes_url', dsbook_register_page_url() );
 	}
 	return apply_filters(
 		'tempo_book_it_my_classes_url',
-		tempo_book_it_shortcode_page_url( 'dsb_register', home_url( '/my-classes/' ) )
+		tempo_book_it_shortcode_page_url( 'dsbook_register', home_url( '/my-classes/' ) )
 	);
 }
 
 /**
- * URL of the plugin's "Need help?" page ([dsb_help]), or '' when the plugin
+ * URL of the plugin's "Need help?" page ([dsbook_help]), or '' when the plugin
  * doesn't offer one (older plugin, no published page) — callers hide their
  * link on '' rather than pointing at a 404. Same shape as tempo_book_url();
  * there is no shortcode-scan fallback because the page only exists in
- * plugin versions that also ship dsb_help_page_url().
+ * plugin versions that also ship dsbook_help_page_url().
  */
 function tempo_help_url() {
-	$url = function_exists( 'dsb_help_page_url' ) ? (string) dsb_help_page_url() : '';
+	$url = function_exists( 'dsbook_help_page_url' ) ? (string) dsbook_help_page_url() : '';
 	return (string) apply_filters( 'tempo_book_it_help_url', $url );
 }
 
@@ -439,11 +444,11 @@ function tempo_account_url() {
  * Tenant's custom header background colour, or the theme's own default
  * white — the approved chrome — when nothing has been set. Declared via
  * Settings → Branding → "Header background colour" (Tempo Book It
- * plugin), unlocked by this theme's `add_theme_support( 'dsb-header-background' )`.
+ * plugin), unlocked by this theme's `add_theme_support( 'dsbook-header-background' )`.
  */
 function tempo_header_background_colour() {
-	if ( function_exists( 'dsb_header_background_colour' ) ) {
-		$hex = dsb_header_background_colour();
+	if ( function_exists( 'dsbook_header_background_colour' ) ) {
+		$hex = dsbook_header_background_colour();
 		if ( '' !== $hex ) {
 			return $hex;
 		}
@@ -468,8 +473,8 @@ function tempo_header_foreground_colour() {
 		return '';
 	}
 	$hex = tempo_header_background_colour();
-	if ( function_exists( 'dsb_contrast_text' ) ) {
-		return dsb_contrast_text( $hex );
+	if ( function_exists( 'dsbook_contrast_text' ) ) {
+		return dsbook_contrast_text( $hex );
 	}
 	return tempo_book_it_contrast_text( $hex );
 }
@@ -483,14 +488,14 @@ function tempo_header_logo_variant() {
  * Tenant's custom body (page) background colour, or '' when unset. Same
  * handshake as the header colour: Settings → Branding → "Body background
  * colour" (Tempo Book It plugin), unlocked by this theme's
- * `add_theme_support( 'dsb-body-background' )`. The plugin's default
+ * `add_theme_support( 'dsbook-body-background' )`. The plugin's default
  * white doubles as the "not set" sentinel — exactly like the header —
  * so the theme's own page background (#F1F3F5) applies until the tenant
  * picks a colour.
  */
 function tempo_body_background_colour() {
-	if ( function_exists( 'dsb_body_background_colour' ) ) {
-		$hex = dsb_body_background_colour();
+	if ( function_exists( 'dsbook_body_background_colour' ) ) {
+		$hex = dsbook_body_background_colour();
 		if ( '' !== $hex && '#FFFFFF' !== strtoupper( $hex ) ) {
 			return $hex;
 		}

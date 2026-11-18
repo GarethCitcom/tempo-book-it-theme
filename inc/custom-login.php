@@ -74,7 +74,7 @@ add_filter('register_url', 'tempo_book_it_filter_register_url');
 /** Whether the companion plugin can safely create member accounts. */
 function tempo_book_it_registration_available()
 {
-	return function_exists('dsb_registration_available') && dsb_registration_available();
+	return function_exists('dsbook_registration_available') && dsbook_registration_available();
 }
 
 /** Sanitized values retained when the registration form needs correction. */
@@ -361,10 +361,10 @@ function tempo_book_it_custom_login()
 				$errors->add('tempo_altcha', __('Please complete the security check and try again.', 'tempo-book-it-theme'));
 			} elseif (! tempo_book_it_registration_attempt_allowed()) {
 				$errors->add('registration_rate_limit', __('Too many registration attempts were made from this connection. Wait 15 minutes and try again.', 'tempo-book-it-theme'));
-			} elseif (! tempo_book_it_registration_available() || ! function_exists('dsb_register_member')) {
+			} elseif (! tempo_book_it_registration_available() || ! function_exists('dsbook_register_member')) {
 				$errors->add('registration_unavailable', __('Account registration is not available right now. Please contact the school.', 'tempo-book-it-theme'));
 			} else {
-				$result = dsb_register_member($registration);
+				$result = dsbook_register_member($registration);
 				if (is_wp_error($result)) {
 					$errors = $result;
 				} else {
@@ -461,10 +461,10 @@ function tempo_book_it_render_login($action, $errors, $redirect_to, $user_login,
 	$site_name       = get_bloginfo('name');
 	$logo            = tempo_logo_url();
 	$panel_image     = tempo_login_panel_image_url();
-	$student_word    = function_exists('dsb_vocab') ? dsb_vocab('student') : __('student', 'tempo-book-it-theme');
+	$student_word    = function_exists('dsbook_vocab') ? dsbook_vocab('student') : __('student', 'tempo-book-it-theme');
 	$classes_word    = tempo_vocab('classes');
 	$class_word      = tempo_vocab('class');
-	$business_type   = function_exists('dsb_business_type') ? dsb_business_type() : __('studio', 'tempo-book-it-theme');
+	$business_type   = function_exists('dsbook_business_type') ? dsbook_business_type() : __('studio', 'tempo-book-it-theme');
 	$student_label   = mb_strtoupper(mb_substr($student_word, 0, 1)) . mb_substr($student_word, 1);
 	$registration    = wp_parse_args($registration, array('account_type' => 'student'));
 	$registration_as = 'parent' === $registration['account_type'] ? 'parent' : 'student';
