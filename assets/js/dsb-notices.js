@@ -583,7 +583,7 @@
 		}
 
 		// The plugin decides the channel; a tenant demoting everything to inline
-		// through dsb_notice_channel already arrives here as 'inline', and there is
+		// through dsbook_notice_channel already arrives here as 'inline', and there is
 		// nothing for the theme to do with it — the plugin renders those in place.
 		if ( 'popup' !== detail.channel && 'toast' !== detail.channel ) {
 			return;

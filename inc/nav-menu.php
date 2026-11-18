@@ -136,7 +136,7 @@ function tempo_book_it_nav_tickets_item() {
 /**
  * The plugin's "Need help?" page as one more header-menu item, appended
  * after whatever the school put in the menu (and after the bare My account
- * fallback). It comes from the plugin at runtime — dsb_help_page_url() via
+ * fallback). It comes from the plugin at runtime — dsbook_help_page_url() via
  * tempo_help_url() — so it appears only once the plugin offers the page and
  * follows the page wherever Settings → General points it; nothing is
  * hardcoded to a URL and there is nothing to seed into a menu. A school that

@@ -9,7 +9,7 @@
  *
  * The links between the name and Log out come from tempo_portal_strip_links()
  * (functions.php): by default just the plugin's "Need help?" page, taken
- * from dsb_help_page_url() and left out when the plugin has no such page,
+ * from dsbook_help_page_url() and left out when the plugin has no such page,
  * so nothing here is hardcoded to a URL. Filter
  * `tempo_book_it_portal_strip_links` to add or remove entries.
  *

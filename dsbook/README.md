@@ -1,7 +1,7 @@
 # Tempo Book It template overrides
 
 This directory is the Tempo Book It plugin's template-override location
-(`{theme}/dsb/{path}`, resolved by the plugin's `Support\TemplateLoader`).
+(`{theme}/dsbook/{path}`, resolved by the plugin's `Support\TemplateLoader`).
 
 It is intentionally empty. The plugin owns all booking-shaped UI and its
 templates are designed to look right on any theme — overriding them here is a
@@ -12,5 +12,5 @@ To override a plugin template, mirror its path under this directory, e.g.:
 
 ```
 plugin:  templates/booking/screens/discover.php
-theme:   dsb/booking/screens/discover.php
+theme:   dsbook/booking/screens/discover.php
 ```
